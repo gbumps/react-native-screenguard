@@ -5,8 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.android.tools.build:gradle:7.2.2"
-    classpath("com.facebook.react:react-native-gradle-plugin")
+    classpath "com.android.tools.build:gradle:7.2.1"
   }
 }
 
@@ -19,14 +18,16 @@ apply plugin: "com.android.library"
 
 def appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
 
-apply plugin: "com.facebook.react"
+if (isNewArchitectureEnabled()) {
+  apply plugin: "com.facebook.react"
+}
 
 def getExtOrDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties["Screenguard_" + name]
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties["AwesomeLibrary_" + name]
 }
 
 def getExtOrIntegerDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["Screenguard_" + name]).toInteger()
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["AwesomeLibrary_" + name]).toInteger()
 }
 
 android {
@@ -64,12 +65,13 @@ dependencies {
   // For < 0.71, this will be from the local maven repo
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
   //noinspection GradleDynamicVersion
-  implementation "com.facebook.react:react-android:0.71.1"
-  implementation "com.facebook.react:hermes-android"
+  implementation "com.facebook.react:react-native:+"
 }
 
+if (isNewArchitectureEnabled()) {
   react {
     jsRootDir = file("../src/")
     libraryName = "ScreenGuard"
     codegenJavaPackageName = "com.screenguard"
   }
+}

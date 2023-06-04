@@ -4,9 +4,9 @@
   "description": "A native screenshot blocking library for React-native developer",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
-  "types": "lib/typescript/index.d.ts",
-  "react-native": "src/index",
-  "source": "src/index",
+  "types": "index.d.ts",
+  "react-native": "index",
+  "source": "index",
   "files": [
     "src",
     "lib",
@@ -59,7 +59,7 @@
     "@react-native-community/eslint-config": "^3.0.2",
     "@release-it/conventional-changelog": "^5.0.0",
     "@types/jest": "^28.1.2",
-    "@types/react": "~17.0.21",
+    "@types/react": "18.0.2",
     "@types/react-native": "0.70.0",
     "commitlint": "^17.0.2",
     "del-cli": "^5.0.0",
@@ -76,7 +76,9 @@
     "typescript": "^4.5.2"
   },
   "resolutions": {
-    "@types/react": "17.0.21"
+    "@types/react": "18.0.2",
+    "@types/react-dom": "18.0.2",
+    "graphql": "^16.5.0"
   },
   "peerDependencies": {
     "react": "*",

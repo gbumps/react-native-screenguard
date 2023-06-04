@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "react-native-screenguard": ["src/index"]
+      "react-native-screenguard": ["./index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
