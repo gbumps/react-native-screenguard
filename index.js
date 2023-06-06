@@ -2,6 +2,8 @@ import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 const EVENT_NAME = 'onSnapper';
 const { ScreenGuard } = NativeModules;
 var screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
+const BLACK_COLOR = '#000000';
+const REGEX = /[!@#$%^&*(),.?":{}|<>]/;
 export default {
   /**
    * activate screenshot blocking (iOS13+, Android 5+)
@@ -13,8 +15,9 @@ export default {
       let currentColor =
         capturedBackgroundColor == null ||
         capturedBackgroundColor.trim().length === 0 ||
-        !capturedBackgroundColor.startsWith('#')
-          ? '#000000'
+        !capturedBackgroundColor.trim().startsWith('#') ||
+        REGEX.test(capturedBackgroundColor.trim().substring(1))
+          ? BLACK_COLOR
           : capturedBackgroundColor;
       ScreenGuard.activateShield(currentColor);
     } else {
