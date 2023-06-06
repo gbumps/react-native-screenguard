@@ -2,13 +2,13 @@
   "name": "react-native-screenguard",
   "version": "0.0.1",
   "description": "A native screenshot blocking library for React-native developer",
-  "main": "lib/commonjs/index",
-  "module": "lib/module/index",
+  "main": "index",
+  "module": "index",
   "types": "index.d.ts",
   "react-native": "index",
   "source": "index",
   "files": [
-    "src",
+    "index",
     "lib",
     "android",
     "ios",
@@ -38,8 +38,10 @@
   },
   "keywords": [
     "react-native",
-    "screenshot-prevent",
-    "screen-capture",
+    "prevent screen capture",
+    "screenshot prevent",
+    "screen capture",
+    "block screenshot",
     "ios",
     "android"
   ],
@@ -150,7 +152,7 @@
     "useTabs": false
   },
   "react-native-builder-bob": {
-    "source": "src",
+    "source": "index",
     "output": "lib",
     "targets": [
       "commonjs",
