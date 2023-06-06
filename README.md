@@ -8,7 +8,8 @@
 
 A Native library for blocking screenshot for react-native developer, with background color screenshot customizable.
 
-https://github.com/gbumps/react-native-screenguard/assets/16846439/d53511c3-3e91-4d78-81da-20160a3bde02
+
+https://github.com/gbumps/react-native-screenguard/assets/16846439/50b64c82-c93d-4dbd-8262-3ad918841577
 
 
 # Get started
