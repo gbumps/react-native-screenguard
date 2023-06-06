@@ -4,6 +4,8 @@
   <a href="https://aleen42.github.io/badges/src/eslint.svg"><img src="https://aleen42.github.io/badges/src/eslint.svg"></a>
 </p>
 
+![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue)
+
 A Native library for blocking screenshot for react-native developer, with background color screenshot customizable.
 
 # Get started
@@ -55,11 +57,9 @@ $ yarn add react-native-screenguard
       compile project(':react-native-screenguard')
   	```
 
-For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to use this library.
+For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to use this library, check Expo docs below: 
 
-  	```
-	  https://docs.expo.dev/workflow/prebuild/
-	```
+	https://docs.expo.dev/workflow/prebuild/
 
 ## Usage
 
