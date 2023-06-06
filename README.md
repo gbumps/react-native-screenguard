@@ -89,6 +89,10 @@ ScreenGuardModule.register(
 });
 ```
 
+
+https://github.com/gbumps/react-native-screenguard/assets/16846439/96a355f7-2563-4ed2-a435-f7f8cccdaa23
+
+
 Deactivate the screenguard
 
 ```js
