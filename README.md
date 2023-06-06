@@ -18,7 +18,7 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/d53511c3-3e91
 1. Install the dependency
 
 ```sh
-$ npm install react-native-screenguard
+$ npm install react-native-screenguard --save
 ```
 ```sh
 $ yarn add react-native-screenguard
