@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hoangthongbui/react-native-scrollable-tabstring.git"
+    "url": "git+https://github.com/gbumps/react-native-screenguard.git"
   },
   "keywords": [
     "react",
@@ -24,7 +24,7 @@
   "author": "Thong Bui",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hoangthongbui/react-native-scrollable-tabstring/issues"
+    "url": "https://github.com/gbumps/react-native-screenguard/issues"
   },
-  "homepage": "https://github.com/hoangthongbui/react-native-scrollable-tabstring/blob/master/README.md"
+  "homepage": "https://github.com/gbumps/react-native-screenguard/blob/master/README.md"
 }
