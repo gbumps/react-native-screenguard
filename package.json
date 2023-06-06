@@ -1,6 +1,6 @@
 {
   "name": "react-native-screenguard",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A native screenshot blocking library for React-native developer",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
