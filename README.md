@@ -70,7 +70,7 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 (iOS + Android) Activate the screenguard
 
 ```js
-import ScreenGuard from 'react-native-screenguard';
+import ScreenGuardModule from 'react-native-screenguard';
 
 ScreenGuardModule.register(null, (_) => {
 	.....do anything you want after the screenshot 
@@ -80,7 +80,7 @@ ScreenGuardModule.register(null, (_) => {
 (iOS only) Activate the screenguard with your custom background color layout, received after taking the screenshot.
 
 ```js
-import ScreenGuard from 'react-native-screenguard';
+import ScreenGuardModule from 'react-native-screenguard';
 
 ScreenGuardModule.register(
 	//insert any hex color you want here, default black if null or empty
