@@ -4,9 +4,7 @@
   <a href="https://aleen42.github.io/badges/src/eslint.svg"><img src="https://aleen42.github.io/badges/src/eslint.svg"></a>
 </p>
 
-<img src="https://media.giphy.com/media/4vMWOXJFB8Jks2K3Fl/giphy.gif" />
-
-A Native library for blocking screenshot for react-native developer
+A Native library for blocking screenshot for react-native developer, with layout color screenshot customizable.
 
 # Get started
 
@@ -23,16 +21,49 @@ $ yarn add react-native-screenguard
 
 2. Linking:
 
-- React-native 0.60 and higher: just pod install and you are good to go!
+- React-native 0.60 and higher: just `cd ios && pod install`, no additional requirements.
 
-- React-native 0.59 and lower:
+- React-native 0.59 and lower: Please do manual installation as follow
+
+#### iOS
+
+1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
+
+2. Go to `node_modules` ➜ `react-native-screenguard` and add `ScreenGuard.xcodeproj`
+
+3. In XCode, in the project navigator, select your project. Add `libScreenguard.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
 
 
+#### Android
 
+1. Open up `android/app/src/main/java/[...]/MainActivity.java`
+
+  - Add `import com.screenguard.ScreenGuardPackage;` to the imports at the top of the file
+
+  - Add `new ScreenGuardPackage()` to the list returned by the `getPackages()` method
+
+2. Append the following lines to `android/settings.gradle`:
+
+  	```
+  	include ':react-native-screenguard'
+  	project(':react-native-screenguard').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-screenguard/android')
+  	```
+
+3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
+
+  	```
+      compile project(':react-native-screenguard')
+  	```
+
+For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to use this library.
+
+	```
+		https://docs.expo.dev/workflow/prebuild/
+	```
 
 ## Usage
 
-Activate the screenguard
+(iOS + Android) Activate the screenguard
 
 ```js
 import ScreenGuard from 'react-native-screenguard';
@@ -40,15 +71,15 @@ import ScreenGuard from 'react-native-screenguard';
 ScreenGuardModule.register(null, (_) => {
 	.....do anything you want after the screenshot 
 });
-```
 
-Activate the screenguard with your custom background color layout, received after taking the screenshot.
+```
+(iOS only) Activate the screenguard with your custom background color layout, received after taking the screenshot.
 
 ```js
 import ScreenGuard from 'react-native-screenguard';
 
 ScreenGuardModule.register(
-	//insert any hex color you want here, default is black if not
+	//insert any hex color you want here, default black if null or empty
 	'#0F9D58',
 	(_) => {
 	.....do anything you want after the screenshot 
