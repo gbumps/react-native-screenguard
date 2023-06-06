@@ -1,6 +1,14 @@
+
 # OSX
 #
 .DS_Store
+
+# node.js
+#
+node_modules/
+npm-debug.log
+yarn-error.log
+  
 
 # Xcode
 #
@@ -21,7 +29,8 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
-*.zip
+      
+
 # Android/IntelliJ
 #
 build/
@@ -29,44 +38,10 @@ build/
 .gradle
 local.properties
 *.iml
-*.hprof
-android/app/src/generated/debug/
 
-# node.js
-#
-node_modules/
-npm-debug.log
-yarn-error.log
-yarn.lock
-package-lock.json
 # BUCK
 buck-out/
 \.buckd/
-#*.keystore
+*.keystore
 
-# fastlane
-#
-# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
-# screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://docs.fastlane.tools/best-practices/source-control/
-
-*/fastlane/report.xml
-*/fastlane/Preview.html
-*/fastlane/screenshots
-
-# Bundle artifact
-*.jsbundle
-
-# CocoaPods
-*/ios/Pods/
-.vscode/.react/*
-/package-lock.json
-/ios_swift/Pods/
-/ios/Podfile.lock
-android/.settings/org.eclipse.buildship.core.prefs
-android/app/src/generated/release
-/app_builds
-/main.jsbundle.map
-.dist/
 example/

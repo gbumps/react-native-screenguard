@@ -152,7 +152,7 @@
     "useTabs": false
   },
   "react-native-builder-bob": {
-    "source": "index",
+    "source": "src",
     "output": "lib",
     "targets": [
       "commonjs",
@@ -164,5 +164,10 @@
         }
       ]
     ]
+  },
+  "codegenConfig": {
+    "name": "ScreenGuardSpec",
+    "type": "modules",
+    "jsSrcsDir": "src"
   }
 }
