@@ -52,6 +52,6 @@ export default {
   unregister() {
     // screenGuardEmitter.removeListener(EVENT_NAME);
     ScreenGuard.deactivateShield();
-    screenGuardEmitter.removeAllListener(EVENT_NAME);
+    screenGuardEmitter.removeAllListeners(EVENT_NAME);
   },
 };
