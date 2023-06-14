@@ -8,5 +8,6 @@
 - (void)register;
 - (void)unregister;
 - (void)activateShield;
+- (void)activateWithoutShield;
 - (void)deactivateShield;
 @end

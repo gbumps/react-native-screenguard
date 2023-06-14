@@ -1,9 +1,10 @@
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 const EVENT_NAME = 'onSnapper';
 const { ScreenGuard } = NativeModules;
-var screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
+var screenGuardEmitter: any = new NativeEventEmitter(ScreenGuard);
 const BLACK_COLOR = '#000000';
 const REGEX = /[!@#$%^&*(),.?":{}|<>]/;
+
 export default {
   /**
    * activate screenshot blocking (iOS 13+, Android 5+)
@@ -28,6 +29,7 @@ export default {
     };
     screenGuardEmitter.addListener(EVENT_NAME, _callback);
   },
+
   /**
    * activate without blocking screenshot (iOS 10+, Android 5+ )
    * @param void callback callback after a screenshot or a video screen capture has been taken
@@ -41,6 +43,7 @@ export default {
     };
     screenGuardEmitter.addListener(EVENT_NAME, _callback);
   },
+
   /**
    * Deactivate screenguard
    * both with and without screenguard can use this

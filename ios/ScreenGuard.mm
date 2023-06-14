@@ -106,6 +106,24 @@ RCT_EXPORT_METHOD(activateShield: (NSString *)screenshotBackgroundColor) {
   }];
 }
 
+RCT_EXPORT_METHOD(activateWithoutShield) {
+  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+  NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+  dispatch_async(dispatch_get_main_queue(), ^{
+      [self removeScreenShot];
+    });
+  [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
+  [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
+                      object:nil
+                       queue:mainQueue
+                  usingBlock:^(NSNotification *notification) {
+    
+    if (hasListeners) {
+      [self emit:@"onSnapper" body:nil];
+    }
+  }];
+}
+
 RCT_EXPORT_METHOD(deactivateShield) {
   if (hasListeners) {
     dispatch_async(dispatch_get_main_queue(), ^{
