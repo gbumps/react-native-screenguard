@@ -12,6 +12,7 @@ export default {
    * @param void callback callback after a screenshot or a video capture has been taken
    */
   register(capturedBackgroundColor, callback) {
+    ScreenGuard.listenEvent();
     if (Platform.OS === 'ios') {
       let currentColor =
         capturedBackgroundColor == null ||
@@ -51,9 +52,6 @@ export default {
   unregister() {
     // screenGuardEmitter.removeListener(EVENT_NAME);
     ScreenGuard.deactivateShield();
-    const listenerCount = screenGuardEmitter.listenerCount(EVENT_NAME);
-    if (!listenerCount) {
-      screenGuardEmitter.removeEvent();
-    }
+    screenGuardEmitter.removeAllListener(EVENT_NAME);
   },
 };
