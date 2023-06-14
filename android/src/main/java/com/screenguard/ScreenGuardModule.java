@@ -65,6 +65,20 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void activateWithoutShield() {
+        try {
+            if (mHandlerBlockScreenShot == null) {
+                mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
+            }
+            mHandlerBlockScreenShot.post(() -> Objects.requireNonNull(
+                    getReactApplicationContext().getCurrentActivity()
+            ).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @ReactMethod
     public void deactivateShield() {
         try {
             mHandlerBlockScreenShot.post(() -> Objects.requireNonNull(

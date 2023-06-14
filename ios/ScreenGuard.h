@@ -7,6 +7,7 @@
 @interface ScreenGuard : EventEmitter
 - (void)register;
 - (void)unregister;
-- (void)activateShield;
-- (void)deactivateShield;
+- (void)secureView: (UIView*)view screenShotBackgroundColor:(NSString *)screenshotColor;
+- (void)removeScreenShot;
+- (UIColor *)colorFromHexString:(NSString *)hexString;
 @end
