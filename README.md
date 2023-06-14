@@ -52,7 +52,7 @@ $ yarn add react-native-screenguard
 
   	```
   	include ':react-native-screenguard'
-  	project(':react-native-screenguard').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-screenguard/android')
+  	project(':react-native-screenguard').projectDir = new File(rootProject.projectDir,'../node_modules/react-native-screenguard/android')
   	```
 
 3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
@@ -67,17 +67,18 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 ## Usage
 
-(iOS + Android) Activate the screenguard
+1. (iOS + Android) Activate the screenguard
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
 
-ScreenGuardModule.register(null, (_) => {
+ScreenGuardModule.register('', (_) => {
 	.....do anything you want after the screenshot 
 });
 
 ```
-(iOS only) Activate the screenguard with your custom background color layout, received after taking the screenshot.
+
+- (iOS only) Activate the screenguard with your custom background color layout, received after taking the screenshot.
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
@@ -93,8 +94,18 @@ ScreenGuardModule.register(
 https://github.com/gbumps/react-native-screenguard/assets/16846439/fd4b3662-6e3b-4428-a927-23ee2068c22a
 
 
+2. (iOS + Android) Activate without screenguard, if you just want to detect and receive event callback only.
 
-Deactivate the screenguard
+```js
+import ScreenGuardModule from 'react-native-screenguard';
+
+ScreenGuardModule.registerWithoutScreenguard(
+	(_) => {
+	.....do anything you want after the screenshot 
+});
+```
+
+3. Deactivate all the screenguard
 
 ```js
 ScreenGuardModule.unregister();
@@ -105,7 +116,9 @@ ScreenGuardModule.unregister();
 
 This library support blocking view from being screenshoted for iOS 13+ only.
 
-Background color for the layout received after screenshoted and event callback after screenshot supports for iOS only.
+`register` supports Background color for the layout received after screenshoted and event callback after screenshot for iOS only.
+
+On Android, if you want to use callback after a screenshot, consider using `registerWithoutScreenguard` instead, as you might not receive any event after a screenshot has been triggered if using with `register`.
 
 
 ## Contributing
