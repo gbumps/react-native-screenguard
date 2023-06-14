@@ -21,11 +21,11 @@ static UITextField *textField;
 
 - (void)secureView: (UIView*)view screenShotBackgroundColor:(NSString *)screenshotColor {
   if (@available(iOS 13.0, *)) {
-    if (textField != nil) {
-      //for case textField that has already been added
+    if (textField != nil && !textField.isSecureTextEntry) {
+      //for case textField that has already been added and sercuring = false
       [textField setSecureTextEntry: TRUE];
+        [textField setBounds: CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height)];
         [textField setBackgroundColor: [self colorFromHexString: screenshotColor]];
-      
       return;
     }
   
@@ -57,10 +57,11 @@ static UITextField *textField;
 }
 
 - (void)removeScreenShot {
-  if (textField.superview != nil) {
+  if (textField != nil && textField.isSecureTextEntry) {
     [textField setSecureTextEntry: FALSE];
-      
-  }
+      [textField setBackgroundColor: [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
+      [textField setBounds: CGRectMake(0, 0, 0, 0)];
+   }
 }
 
 - (UIColor *)colorFromHexString:(NSString *)hexString {
