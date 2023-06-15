@@ -114,11 +114,11 @@ ScreenGuardModule.unregister();
 
 ## Limitation
 
-This library support blocking view from being screenshoted for iOS 13+ only.
+This library support blocking screenshot for iOS 13+ only.
 
-`register` supports Background color for the layout received after screenshoted and event callback after screenshot for iOS only.
+`register` supports background color for the layout received after screenshot and event callback for iOS only.
 
-On Android, if you want to use callback after a screenshot, consider using `registerWithoutScreenguard` instead, as you might not receive any event after a screenshot has been triggered if using with `register`.
+On Android, if you want to use callback, consider using `registerWithoutScreenguard` instead, as you might not receive any event after a screenshot has been triggered if using with `register`.
 
 
 ## Contributing
