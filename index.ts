@@ -1,18 +1,20 @@
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 const EVENT_NAME = 'onSnapper';
 const { ScreenGuard } = NativeModules;
-var screenGuardEmitter: any = new NativeEventEmitter(ScreenGuard);
+var screenGuardEmitter: any = null;
 const BLACK_COLOR = '#000000';
 const REGEX = /[!@#$%^&*(),.?":{}|<>]/;
 
 export default {
   /**
    * activate screenshot blocking (iOS 13+, Android 5+)
-   * @param string capturedBackgroundColor (iOS only) background color layout after taking a screenshot
+   * @param String? capturedBackgroundColor (iOS only) background color layout after taking a screenshot
    * @param void callback callback after a screenshot or a video capture has been taken
    */
-  register(capturedBackgroundColor, callback) {
-    ScreenGuard.listenEvent();
+  register(
+    capturedBackgroundColor: String | null,
+    callback: (arg: any) => void
+  ) {
     if (Platform.OS === 'ios') {
       let currentColor =
         capturedBackgroundColor == null ||
@@ -25,10 +27,18 @@ export default {
     } else {
       ScreenGuard.activateShield();
     }
+    if (screenGuardEmitter == null) {
+      screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
+    }
     const _callback = (res) => {
       callback(res);
     };
-    screenGuardEmitter.addListener(EVENT_NAME, _callback);
+
+    const listenerCount = screenGuardEmitter.listenerCount(EVENT_NAME);
+
+    if (!listenerCount) {
+      screenGuardEmitter.addListener(EVENT_NAME, _callback);
+    }
   },
 
   /**
@@ -36,13 +46,19 @@ export default {
    * @param void callback callback after a screenshot or a video screen capture has been taken
    */
   registerWithoutScreenguard(callback) {
-    // screenGuardEmitter.removeListener(EVENT_NAME);
-    ScreenGuard.listenEvent();
     ScreenGuard.activateWithoutShield();
+    if (screenGuardEmitter == null) {
+      screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
+    }
     const _callback = (res) => {
       callback(res);
     };
-    screenGuardEmitter.addListener(EVENT_NAME, _callback);
+
+    const listenerCount = screenGuardEmitter.listenerCount(EVENT_NAME);
+
+    if (!listenerCount) {
+      screenGuardEmitter.addListener(EVENT_NAME, _callback);
+    }
   },
 
   /**
@@ -52,6 +68,9 @@ export default {
   unregister() {
     // screenGuardEmitter.removeListener(EVENT_NAME);
     ScreenGuard.deactivateShield();
-    screenGuardEmitter.removeAllListeners(EVENT_NAME);
+    if (screenGuardEmitter != null) {
+      screenGuardEmitter.removeAllListeners(EVENT_NAME);
+      screenGuardEmitter = null;
+    }
   },
 };
