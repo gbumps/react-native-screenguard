@@ -21,24 +21,28 @@ static UITextField *textField;
 
 - (void)secureView: (UIView*)view screenShotBackgroundColor:(NSString *)screenshotColor {
   if (@available(iOS 13.0, *)) {
+    if (textField != nil && textField.isSecureTextEntry) {
+      //for case textField that has already been added and securing = true
+      [textField setBackgroundColor: [self colorFromHexString: screenshotColor]];
+      return;
+    }
     if (textField != nil && !textField.isSecureTextEntry) {
-      //for case textField that has already been added and sercuring = false
+      //for case textField that has already been added and securing = false
       [textField setSecureTextEntry: TRUE];
-        [textField setBounds: CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height)];
-        [textField setBackgroundColor: [self colorFromHexString: screenshotColor]];
+      [textField setBackgroundColor: [self colorFromHexString: screenshotColor]];
       return;
     }
   
     if (textField == nil) {
       textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height)];
-        textField.translatesAutoresizingMaskIntoConstraints = NO;
+      textField.translatesAutoresizingMaskIntoConstraints = NO;
       [textField setTextAlignment:NSTextAlignmentCenter];
-      
     }
     
     [textField setSecureTextEntry: TRUE];
   
     [textField setUserInteractionEnabled: NO];
+      
     [view addSubview:textField];
     
     [view sendSubviewToBack:textField];
@@ -50,6 +54,7 @@ static UITextField *textField;
     
     
     [view.layer.superlayer addSublayer:textField.layer];
+    [textField setBackgroundColor: [self colorFromHexString: screenshotColor]];
     if(textField.layer.sublayers.firstObject) {
       [textField.layer.sublayers.firstObject addSublayer:view.layer];
     }
@@ -59,9 +64,8 @@ static UITextField *textField;
 - (void)removeScreenShot {
   if (textField != nil && textField.isSecureTextEntry) {
     [textField setSecureTextEntry: FALSE];
-      [textField setBackgroundColor: [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
-      [textField setBounds: CGRectMake(0, 0, 0, 0)];
-   }
+    [textField setBackgroundColor: [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
+  }
 }
 
 - (UIColor *)colorFromHexString:(NSString *)hexString {
@@ -126,32 +130,17 @@ RCT_EXPORT_METHOD(activateWithoutShield) {
 }
 
 RCT_EXPORT_METHOD(deactivateShield) {
-  if (hasListeners) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self removeScreenShot];
-    });
-    [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self removeScreenShot];
+  });
+  [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
 }
 
 RCT_EXPORT_METHOD(removeEvent) {
-  if (hasListeners) {
-    [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
-  }
+  [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
 }
 
 @end
-// Example method
-// See // https://reactnative.dev/docs/native-modules-ios
-// RCT_REMAP_METHOD(multiply,
-//                  multiplyWithA:(double)a withB:(double)b
-//                  withResolver:(RCTPromiseResolveBlock)resolve
-//                  withRejecter:(RCTPromiseRejectBlock)reject)
-// {
-//     NSNumber *result = @(a * b);
-
-//     resolve(result);
-// }
 
 // // Don't compile this code when we build for the old architecture.
 // #ifdef RCT_NEW_ARCH_ENABLED
