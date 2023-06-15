@@ -1,6 +1,6 @@
 {
   "name": "react-native-screenguard",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "private": false,
   "description": "A Native library for blocking screenshot for react-native developer, with background color screenshot customizable",
   "main": "index",
