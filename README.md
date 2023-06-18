@@ -8,9 +8,7 @@
 
 A Native library for blocking screenshot for react-native developer, with background color screenshot customizable.
 
-
-https://github.com/gbumps/react-native-screenguard/assets/16846439/50b64c82-c93d-4dbd-8262-3ad918841577
-
+https://streamable.com/e/avnzod
 
 # Get started
 
@@ -67,7 +65,9 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 ## Usage
 
-1. (iOS + Android) Activate the screenguard
+#### `1. ScreenGuardModule.register`
+
+- (iOS + Android) : Activate the screenguard.
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
@@ -75,10 +75,9 @@ import ScreenGuardModule from 'react-native-screenguard';
 ScreenGuardModule.register('', (_) => {
 	.....do anything you want after the screenshot 
 });
-
 ```
 
-- (iOS only) Activate the screenguard with your custom background color layout, received after taking the screenshot.
+- (iOS only) Activate the screenguard with your custom background color layout. 
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
@@ -94,7 +93,9 @@ ScreenGuardModule.register(
 https://github.com/gbumps/react-native-screenguard/assets/16846439/fd4b3662-6e3b-4428-a927-23ee2068c22a
 
 
-2. (iOS + Android) Activate without screenguard, if you just want to detect and receive event callback only.
+#### `2. ScreenGuardModule.registerWithoutScreenguard (v0.0.6+)`
+
+- (iOS + Android) Activate without screenguard, if you just want to detect and receive event callback only.
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
@@ -105,7 +106,28 @@ ScreenGuardModule.registerWithoutScreenguard(
 });
 ```
 
-3. Deactivate all the screenguard
+#### `3. ScreenGuardModule.registerWithBlurView (v0.1.2+)`
+
+- (iOS only) Activate screenguard with a blurred effect view after captured.
+
+- Accepted a blur `radius` value number in between `[15, 50]` (Explain below) , throws warning if smaller than 15 or bigger than 50, exception if smaller than 1 or not a number.
+
+```js
+import ScreenGuardModule from 'react-native-screenguard';
+
+//register with a blur radius of 35
+ScreenGuardModule.registerWithBlurView(
+	35
+	(_) => {
+	.....do anything you want after the screenshot 
+});
+```
+
+ `Explain`: Set blur radius smaller than 15 won't help much, as content still look very clear and easy to read. Same with bigger than 50 but content will be shrinked and vanished inside the view, blurring is meaningless. So, between 15 and 50 is enough.
+
+#### `4. ScreenGuardModule.unregister (v0.0.2+)`
+
+- (iOS + Android) Deactivate the screenguard.
 
 ```js
 ScreenGuardModule.unregister();
@@ -114,11 +136,15 @@ ScreenGuardModule.unregister();
 
 ## Limitation
 
-This library support blocking screenshot for iOS 13+ only.
+- This library support blocking screenshot for iOS 13+ only.
 
-`register` supports background color for the layout received after screenshot and event callback for iOS only.
+- `register` supports background color and event callback for iOS only.
 
-On Android, if you want to use callback, consider using `registerWithoutScreenguard` instead, as you might not receive any event after a screenshot has been triggered if using with `register`.
+- `registerWithBlurView` supports blur view for iOS only.
+
+- You can use `registerWithBlurView` with `register` to add custom background color. However, please be aware that blur effect may not works properly if background color and your current view background color are the same. Use as your own risk.
+
+- On Android, if you want to use callback, consider using `registerWithoutScreenguard` instead, as you might not receive any event after a screenshot has been triggered if using with `register`.
 
 
 ## Contributing

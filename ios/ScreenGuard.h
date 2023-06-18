@@ -5,9 +5,11 @@
 #import <React/RCTEventDispatcher.h>
 
 @interface ScreenGuard : EventEmitter
-- (void)register;
 - (void)unregister;
-- (void)secureView: (UIView*)view screenShotBackgroundColor:(NSString *)screenshotColor;
+- (void)initTextField: (UIView*_Nonnull)view;
+- (void)secureViewWithBackgroundColor: (UIView*_Nonnull)view withScreenShotBackgroundColor:(NSString *_Nonnull)color;
+- (void)secureViewWithBlurView: (UIView*_Nonnull)view withBorderRadius:(nonnull NSNumber *)radius;
 - (void)removeScreenShot;
-- (UIColor *)colorFromHexString:(NSString *)hexString;
+- (UIColor *_Nonnull)colorFromHexString:(NSString *_Nonnull)hexString;
+- (UIImage *_Nonnull)convertViewToImage:(UIView *_Nonnull)view;
 @end

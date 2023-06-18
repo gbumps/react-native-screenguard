@@ -19,52 +19,75 @@ static UITextField *textField;
   hasListeners = NO;
 }
 
-- (void)secureView: (UIView*)view screenShotBackgroundColor:(NSString *)screenshotColor {
+- (void)secureViewWithBackgroundColor: (UIView*)view withScreenShotBackgroundColor:(NSString *)color {
   if (@available(iOS 13.0, *)) {
-    if (textField != nil && textField.isSecureTextEntry) {
-      //for case textField that has already been added and securing = true
-      [textField setBackgroundColor: [self colorFromHexString: screenshotColor]];
-      return;
-    }
-    if (textField != nil && !textField.isSecureTextEntry) {
-      //for case textField that has already been added and securing = false
-      [textField setSecureTextEntry: TRUE];
-      [textField setBackgroundColor: [self colorFromHexString: screenshotColor]];
-      return;
-    }
-  
     if (textField == nil) {
-      textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height)];
-      textField.translatesAutoresizingMaskIntoConstraints = NO;
-      [textField setTextAlignment:NSTextAlignmentCenter];
+      [self initTextField:view];
     }
-    
     [textField setSecureTextEntry: TRUE];
-  
-    [textField setUserInteractionEnabled: NO];
-      
-    [view addSubview:textField];
+    [textField setBackgroundColor: [self colorFromHexString: color]];
+  } else return;
+}
+
+- (void)secureViewWithBlurView: (UIView*)view withBorderRadius:(nonnull NSNumber *)radius {
+  if (@available(iOS 13.0, *)) {
+    if (textField == nil) {
+      [self initTextField:view];
+    }
+    [textField setBackgroundColor: [UIColor clearColor]];
+    [textField setSecureTextEntry: TRUE];
+    UIImage *imageView = [self convertViewToImage:view];
+    CIImage *inputImage = [CIImage imageWithCGImage:imageView.CGImage];
     
+    CIContext *context = [CIContext contextWithOptions:nil];
+    
+    // Apply the blur filter
+    CIFilter *blurFilter = [CIFilter filterWithName:@"CIGaussianBlur"];
+    [blurFilter setValue:inputImage forKey:kCIInputImageKey];
+    [blurFilter setValue:radius forKey:kCIInputRadiusKey];
+          
+    CIImage *outputImage = [blurFilter valueForKey:kCIOutputImageKey];
+          
+    CGImageRef cgImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
+    
+    // Convert the CGImageRef to UIImage
+    UIImage *blurredImage = [UIImage imageWithCGImage:cgImage];
+          
+    // Release the CGImageRef
+    CGImageRelease(cgImage);
+      
+    [textField setBackground: blurredImage];
+    
+  } else return;
+}
+
+- (void) initTextField: (UIView*)view {
+    textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height)];
+    textField.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [textField setTextAlignment:NSTextAlignmentCenter];
+    [textField setSecureTextEntry: TRUE];
+    [textField setUserInteractionEnabled: NO];
+        
+    [view addSubview:textField];
     [view sendSubviewToBack:textField];
-  
+    
     [textField.centerXAnchor constraintEqualToAnchor:view.centerXAnchor].active = YES;
     [textField.centerYAnchor constraintEqualToAnchor:view.centerYAnchor].active = YES;
     [textField.widthAnchor constraintEqualToAnchor:view.widthAnchor].active = YES;
     [textField.heightAnchor constraintEqualToAnchor:view.heightAnchor].active = YES;
-    
-    
+      
     [view.layer.superlayer addSublayer:textField.layer];
-    [textField setBackgroundColor: [self colorFromHexString: screenshotColor]];
     if(textField.layer.sublayers.firstObject) {
       [textField.layer.sublayers.firstObject addSublayer:view.layer];
     }
-  } else return;
 }
 
 - (void)removeScreenShot {
-  if (textField != nil && textField.isSecureTextEntry) {
+  if (textField != nil) {
     [textField setSecureTextEntry: FALSE];
-    [textField setBackgroundColor: [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
+    [textField setBackgroundColor: [UIColor clearColor]];
+    [textField setBackground: nil];
   }
 }
 
@@ -74,6 +97,14 @@ static UITextField *textField;
     [scanner setScanLocation:1]; // bypass '#' character
     [scanner scanHexInt:&rgbValue];
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+}
+
+- (UIImage *)convertViewToImage:(UIView *)view {
+    UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.opaque, 0.0);
+    [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
 }
 
 RCT_EXPORT_METHOD(listenEvent) {
@@ -96,7 +127,7 @@ RCT_EXPORT_METHOD(activateShield: (NSString *)screenshotBackgroundColor) {
   NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
   dispatch_async(dispatch_get_main_queue(), ^{
     UIViewController *presentedViewController = RCTPresentedViewController();
-    [self secureView: presentedViewController.view.superview screenShotBackgroundColor: screenshotBackgroundColor];
+    [self secureViewWithBackgroundColor: presentedViewController.view.superview withScreenShotBackgroundColor: screenshotBackgroundColor];
   });
 
   [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
@@ -115,8 +146,28 @@ RCT_EXPORT_METHOD(activateWithoutShield) {
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
   NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
   dispatch_async(dispatch_get_main_queue(), ^{
-      [self removeScreenShot];
-    });
+    [self removeScreenShot];
+  });
+  [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
+  [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
+                      object:nil
+                       queue:mainQueue
+                  usingBlock:^(NSNotification *notification) {
+    
+    if (hasListeners) {
+      [self emit:@"onSnapper" body:nil];
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSNumber *)borderRadius) {
+  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+  NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIViewController *presentedViewController = RCTPresentedViewController();
+    [self secureViewWithBlurView: presentedViewController.view.superview withBorderRadius: borderRadius];
+  });
+
   [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
   [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
                       object:nil
