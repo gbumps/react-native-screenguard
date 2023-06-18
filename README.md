@@ -8,7 +8,9 @@
 
 A Native library for blocking screenshot for react-native developer, with background color screenshot customizable.
 
-https://streamable.com/e/avnzod
+
+https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3-4d5b-8ad5-93525fb90a72
+
 
 # Get started
 
@@ -124,6 +126,10 @@ ScreenGuardModule.registerWithBlurView(
 ```
 
  `Explain`: Set blur radius smaller than 15 won't help much, as content still look very clear and easy to read. Same with bigger than 50 but content will be shrinked and vanished inside the view, blurring is meaningless. So, between 15 and 50 is enough.
+
+
+https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4-4d5b-aa6c-82616ec8d1c5
+
 
 #### `4. ScreenGuardModule.unregister (v0.0.2+)`
 
