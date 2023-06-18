@@ -67,7 +67,7 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 ## Usage
 
-#### `1. ScreenGuardModule.register`
+#### 1. ScreenGuardModule.register
 
 - (iOS + Android) : Activate the screenguard.
 
@@ -95,7 +95,7 @@ ScreenGuardModule.register(
 https://github.com/gbumps/react-native-screenguard/assets/16846439/fd4b3662-6e3b-4428-a927-23ee2068c22a
 
 
-#### `2. ScreenGuardModule.registerWithoutScreenguard (v0.0.6+)`
+#### 2. ScreenGuardModule.registerWithoutScreenguard (v0.0.6+)
 
 - (iOS + Android) Activate without screenguard, if you just want to detect and receive event callback only.
 
@@ -108,7 +108,7 @@ ScreenGuardModule.registerWithoutScreenguard(
 });
 ```
 
-#### `3. ScreenGuardModule.registerWithBlurView (v0.1.2+)`
+#### 3. ScreenGuardModule.registerWithBlurView (v0.1.2+)
 
 - (iOS only) Activate screenguard with a blurred effect view after captured.
 
@@ -131,7 +131,7 @@ ScreenGuardModule.registerWithBlurView(
 https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4-4d5b-aa6c-82616ec8d1c5
 
 
-#### `4. ScreenGuardModule.unregister (v0.0.2+)`
+#### 4. ScreenGuardModule.unregister (v0.0.2+)
 
 - (iOS + Android) Deactivate the screenguard.
 
