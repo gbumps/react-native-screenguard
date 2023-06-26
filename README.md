@@ -67,7 +67,7 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 #### Post-installation setting for Android
 
-On Android, from `v1.0.4`, remember to add a little more options as it won't work as expected.
+On Android, from `v0.1.4+`, remember to add a little more options as it won't work as expected.
 
 1. Open up `[your_project_path]/android/app/src/main/AndroidManifest.xml` and add activity `com.screenguard.ScreenGuardColorActivity` like below
 
