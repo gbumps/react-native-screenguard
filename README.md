@@ -79,7 +79,7 @@ On Android, from `v1.0.4`, remember to add a little more options as it won't wor
       	  ..........
       	</activity>
 
-		<activity android:name="com.screenguard.ScreenGuardColorActivity"
+	<activity android:name="com.screenguard.ScreenGuardColorActivity"
             android:theme="@style/Theme.AppCompat.Translucent"
         />
     </application>
