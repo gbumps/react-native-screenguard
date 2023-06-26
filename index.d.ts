@@ -14,11 +14,12 @@ declare const _default: {
    */
   registerWithoutScreenguard(callback: (arg0: any) => void): void;
   /**
-   * (iOS only) activate screenshot blocking with a blur effect after captured (iOS 13+, Android 5+)
-   * @param radius? (iOS only) blur radius for the view
+   * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 5+)
    * accepted a value in between 15 and 50, throws warning if bigger than 50 or smaller than 15.
    * throws exception when smaller than 1 or not a number
+   * Android not yet supported, as fallback automatically to register
    * @param void callback callback after a screenshot or a video capture has been taken
+   * @param radius? (iOS only) blur radius for the view
    * @throws Error when radius smaller than 1 or type != number
    */
   registerWithBlurView(radius: number, callback: (arg0: any) => void): void;
