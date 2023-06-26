@@ -125,7 +125,7 @@ ScreenGuardModule.register(
 ```
 iOS | Android
 :-: | :-:
-https://github.com/gbumps/react-native-screenguard/assets/16846439/fd4b3662-6e3b-4428-a927-23ee2068c22a | 
+https://github.com/gbumps/react-native-screenguard/assets/16846439/fd4b3662-6e3b-4428-a927-23ee2068c22a | https://github.com/gbumps/react-native-screenguard/assets/16846439/da99c58c-fb79-4885-b496-ecb242bd4cf8
 
 
 #### 2. ScreenGuardModule.registerWithoutScreenguard (v0.0.6+)
