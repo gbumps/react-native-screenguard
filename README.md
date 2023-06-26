@@ -65,21 +65,53 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 	https://docs.expo.dev/workflow/prebuild/
 
+#### Post-installation setting for Android
+
+On Android, from `v1.0.4`, remember to add a little more options as it won't work as expected.
+
+1. Open up `[your_project_path]/android/app/src/main/AndroidManifest.xml` and add activity `com.screenguard.ScreenGuardColorActivity` like below
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application ......>
+      	<activity
+      	  android:name=".MainActivity" .........>
+      	  ..........
+      	</activity>
+
+		<activity android:name="com.screenguard.ScreenGuardColorActivity"
+            android:theme="@style/Theme.AppCompat.Translucent"
+        />
+    </application>
+</manifest>
+```
+
+2. Open up `[your_project_path]/android/app/src/main/res/values/styles.xml` and add style `Theme.AppCompat.Translucent` like below
+
+
+```xml
+<resource>
+
+<style name="AppTheme">your current app style theme.............</style>
+
+<style name="Theme.AppCompat.Translucent">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+</resource>
+```
+
 ## Usage
 
 #### 1. ScreenGuardModule.register
 
-- (iOS + Android) : Activate the screenguard.
+- (iOS + Android) : Activate the screenguard with your custom background color layout. 
 
-```js
-import ScreenGuardModule from 'react-native-screenguard';
-
-ScreenGuardModule.register('', (_) => {
-	.....do anything you want after the screenshot 
-});
-```
-
-- (iOS only) Activate the screenguard with your custom background color layout. 
+- Android will receive the background color when app in background or inactive state.
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
@@ -92,7 +124,13 @@ ScreenGuardModule.register(
 });
 ```
 
-https://github.com/gbumps/react-native-screenguard/assets/16846439/fd4b3662-6e3b-4428-a927-23ee2068c22a
+iOS
+
+https://github.com/gbumps/react-native-screenguard/assets/16846439/fd4b3662-6e3b-4428-a927-23ee2068c22a 
+
+Android
+
+https://github.com/gbumps/react-native-screenguard/assets/16846439/da99c58c-fb79-4885-b496-ecb242bd4cf8
 
 
 #### 2. ScreenGuardModule.registerWithoutScreenguard (v0.0.6+)
@@ -144,11 +182,8 @@ ScreenGuardModule.unregister();
 
 - This library support blocking screenshot for iOS 13+ only.
 
-- `register` supports background color and event callback for iOS only.
-
 - `registerWithBlurView` supports blur view for iOS only.
 
-- You can use `registerWithBlurView` with `register` to add custom background color. However, please be aware that blur effect may not works properly if background color and your current view background color are the same. Use as your own risk.
 
 - On Android, if you want to use callback, consider using `registerWithoutScreenguard` instead, as you might not receive any event after a screenshot has been triggered if using with `register`.
 

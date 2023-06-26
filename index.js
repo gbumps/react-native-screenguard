@@ -7,22 +7,19 @@ const REGEX = /[!@#$%^&*(),.?":{}|<>]/;
 export default {
   /**
    * activate screenshot blocking (iOS 13+, Android 5+)
-   * @param String? capturedBackgroundColor (iOS only) background color layout after taking a screenshot
+   * Android will receive background color as app state fallback to inactive or background.
+   * @param String? capturedBackgroundColor background color layout after taking a screenshot
    * @param void callback callback after a screenshot or a video capture has been taken
    */
   register(capturedBackgroundColor, callback) {
-    if (Platform.OS === 'ios') {
-      let currentColor =
-        capturedBackgroundColor == null ||
-        capturedBackgroundColor.trim().length === 0 ||
-        !capturedBackgroundColor.trim().startsWith('#') ||
-        REGEX.test(capturedBackgroundColor.trim().substring(1))
-          ? BLACK_COLOR
-          : capturedBackgroundColor;
-      ScreenGuard.activateShield(currentColor);
-    } else {
-      ScreenGuard.activateShield();
-    }
+    let currentColor =
+      capturedBackgroundColor == null ||
+      capturedBackgroundColor.trim().length === 0 ||
+      !capturedBackgroundColor.trim().startsWith('#') ||
+      REGEX.test(capturedBackgroundColor.trim().substring(1))
+        ? BLACK_COLOR
+        : capturedBackgroundColor;
+    ScreenGuard.activateShield(currentColor);
     if (screenGuardEmitter == null) {
       screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
     }
@@ -35,11 +32,12 @@ export default {
     }
   },
   /**
-   * (iOS only) activate screenshot blocking with a blur effect after captured (iOS 13+, Android 5+)
-   * @param radius? (iOS only) blur radius for the view
+   * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 5+)
    * accepted a value in between 15 and 50, throws warning if bigger than 50 or smaller than 15.
    * throws exception when smaller than 1 or not a number
+   * Android not yet supported, as fallback automatically to register
    * @param void callback callback after a screenshot or a video capture has been taken
+   * @param radius? (iOS only) blur radius for the view
    * @throws Error when radius smaller than 1 or type != number
    */
   registerWithBlurView(radius, callback) {
@@ -62,7 +60,7 @@ export default {
       }
       ScreenGuard.activateShieldWithBlurView(radius);
     } else {
-      ScreenGuard.activateShield();
+      ScreenGuard.activateShield(BLACK_COLOR);
     }
     if (screenGuardEmitter == null) {
       screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
