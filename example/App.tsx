@@ -64,7 +64,7 @@ function Section({children, title}: SectionProps): JSX.Element {
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const [currentState, setCurrentState] = React.useState('');
-  const [color, setColor] = React.useState('#0F9D58');
+  const [color, _] = React.useState('#0F9D58');
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -148,7 +148,7 @@ function App(): JSX.Element {
           <View style={{height: 72}} />
           <Pressable
             onPress={() => {
-              ScreenGuardModule.registerWithBlurView(10, _ => {
+              ScreenGuardModule.registerWithBlurView(10, 2000, _ => {
                 Alert.alert('register with blur radius 35');
               });
               setCurrentState(() => '4');
@@ -163,10 +163,10 @@ function App(): JSX.Element {
           <View style={{height: 72}} />
           <Pressable
             onPress={() => {
-              ScreenGuardModule.registerFlagSecureOnly(_ => {
-                Alert.alert('register without screenguard');
-              });
-              setCurrentState('6');
+              // ScreenGuardModule.registerFlagSecureOnly(_ => {
+              //   Alert.alert('register without screenguard');
+              // });
+              // setCurrentState('6');
             }}>
             <Text
               style={{

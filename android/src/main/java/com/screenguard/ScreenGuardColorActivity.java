@@ -4,18 +4,34 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.ViewGroup;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.facebook.react.ReactActivity;
+
+import java.io.File;
+
+import jp.wasabeef.blurry.Blurry;
+
 
 public class ScreenGuardColorActivity extends ReactActivity {
 
     private String backgroundColor = "#000000";
 
+    private int radius;
+
+    private Bitmap blurredBitmap;
+
+    private ScreenGuardActionEnum currentActionType;
+
+    private static Handler handlerStopBlur;
 
     private static final int COLOR_TRANS = 0x00000004;
 
@@ -33,24 +49,37 @@ public class ScreenGuardColorActivity extends ReactActivity {
         setContentView(R.layout.activity_screen_guard_color);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-
-        // Set the overlay activity as invisible but still taking up space
-        getWindow().getDecorView().setBackgroundColor(COLOR_TRANS);
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
         getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         Intent intent = getIntent();
 
         if (intent != null) {
-            String colorHex = intent.getStringExtra("background");
-            if (colorHex != null && !colorHex.isEmpty()) {
-                backgroundColor = colorHex;
+            String actionType = intent.getStringExtra("actionType");
+            currentActionType = ScreenGuardActionEnum.valueOf(actionType);
+            switch (ScreenGuardActionEnum.valueOf(actionType)) {
+                case color:
+                    String colorHex = intent.getStringExtra("background");
+                    if (colorHex != null && !colorHex.isEmpty()) {
+                        backgroundColor = colorHex;
+                    }
+                    break;
+                case blur:
+                    radius = intent.getIntExtra("radius", 10);
+                    break;
+                case image:
+                    break;
             }
+
+            String imagePath = intent.getStringExtra("imagePath");
+
+            blurredBitmap = getBitmapFromFile(imagePath);
+
         }
+        overridePendingTransition(0, 0);
         IntentFilter intentFilter = new IntentFilter("com.screenguard.ScreenGuardColorActivity.close");
         registerReceiver(closeReceiver, intentFilter);
     }
+
 
     @Override
     protected void onDestroy() {
@@ -60,24 +89,40 @@ public class ScreenGuardColorActivity extends ReactActivity {
 
     @Override
     protected void onPause() {
-        getWindow().getDecorView().setBackgroundColor(Color.parseColor(backgroundColor));
+        doCoverByAction();
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        getWindow().getDecorView().setBackgroundColor(COLOR_TRANS);
         super.onResume();
     }
 
     @Override
     protected void onStart() {
-        getWindow().getDecorView().setBackgroundColor(COLOR_TRANS);
+        doResumeByAction();
         super.onStart();
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestart() {
+        doResumeByAction();
+        super.onRestart();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+    }
+
+    @Override
     public void onBackPressed() {
+        doCoverByAction();
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -86,7 +131,57 @@ public class ScreenGuardColorActivity extends ReactActivity {
 
     @Override
     protected void onStop() {
-        getWindow().getDecorView().setBackgroundColor(Color.parseColor(backgroundColor));
+        doCoverByAction();
         super.onStop();
+    }
+
+    private Bitmap getBitmapFromFile(String filePath) {
+        try {
+            File imageFile = new File(filePath);
+            if (imageFile.exists()) {
+                return BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void doResumeByAction() {
+        switch (currentActionType) {
+            case blur:
+                ImageView imageView = findViewById(R.id.imageView);
+                handlerStopBlur = new Handler(Looper.getMainLooper());
+                Runnable delayedFunction = () -> {
+                        imageView.setImageBitmap(null);
+                    };
+
+                handlerStopBlur.postDelayed(delayedFunction, 1000);
+                break;
+            case color:
+                getWindow().getDecorView().setBackgroundColor(COLOR_TRANS);
+                break;
+        }
+    }
+
+    private void doCoverByAction() {
+        switch (currentActionType) {
+            case blur:
+                ImageView imageView = findViewById(R.id.imageView);
+                if (imageView != null) {
+                    Blurry.with(this)
+                            .radius(radius)
+                            .sampling(2)
+                            .async()
+                            .from(blurredBitmap)
+                            .into(imageView);
+                }
+                break;
+            case color:
+                getWindow().getDecorView().setBackgroundColor(
+                        Color.parseColor(backgroundColor)
+                );
+                break;
+        }
     }
 }

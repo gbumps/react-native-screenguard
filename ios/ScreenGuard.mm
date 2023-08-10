@@ -1,11 +1,15 @@
 #import "ScreenGuard.h"
+#import <SDWebImage/SDWebImage.h>
+#import <React/RCTComponent.h>
 
 
 @implementation ScreenGuard
 RCT_EXPORT_MODULE(ScreenGuard)
 
 bool hasListeners;
-static UITextField *textField;
+
+UITextField *textField;
+UIImageView *imageView;
 
 - (NSArray<NSString *> *)supportedEvents {
   return @[@"onSnapper"];
@@ -34,6 +38,7 @@ static UITextField *textField;
     if (textField == nil) {
       [self initTextField:view];
     }
+      
     [textField setBackgroundColor: [UIColor clearColor]];
     [textField setSecureTextEntry: TRUE];
     UIImage *imageView = [self convertViewToImage:view];
@@ -41,7 +46,6 @@ static UITextField *textField;
     
     CIContext *context = [CIContext contextWithOptions:nil];
     
-    // Apply the blur filter
     CIFilter *blurFilter = [CIFilter filterWithName:@"CIGaussianBlur"];
     [blurFilter setValue:inputImage forKey:kCIInputImageKey];
     [blurFilter setValue:radius forKey:kCIInputRadiusKey];
@@ -50,16 +54,89 @@ static UITextField *textField;
           
     CGImageRef cgImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
     
-    // Convert the CGImageRef to UIImage
     UIImage *blurredImage = [UIImage imageWithCGImage:cgImage];
           
-    // Release the CGImageRef
     CGImageRelease(cgImage);
       
     [textField setBackground: blurredImage];
     
   } else return;
 }
+
+- (void)secureViewWithImage: (UIView*)view
+                    withUri: (nonnull NSString *) uriImage
+                  withWidth: (nonnull NSNumber *) width
+                 withHeight: (nonnull NSNumber *) height
+              withAlignment: (Alignment) alignment
+        withBackgroundColor: (nonnull NSString *) backgroundColor {
+    
+  if (@available(iOS 13.0, *)) {
+    if (textField == nil) {
+      [self initTextField:view];
+    }
+      
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    [textField setSecureTextEntry: TRUE];
+    [textField setContentMode: UIViewContentModeCenter];
+      
+    imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, screenRect.size.width, screenRect.size.height)];
+      
+    imageView.translatesAutoresizingMaskIntoConstraints = NO;
+    [imageView setClipsToBounds:TRUE];
+    
+    SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
+
+      [imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
+                   placeholderImage: nil
+                            options: downloaderOptions
+                          completed: ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+        if (error) {
+            NSLog(@"Error loading image: %@", error);
+            return;
+        }
+        if (image) {
+           UIImage *resizedImage = [image sd_resizedImageWithSize: CGSizeMake([width doubleValue], [height doubleValue])
+                                                        scaleMode: SDImageScaleModeFill];
+           [imageView setImage: resizedImage];
+            switch (alignment) {
+                case AlignmentTopLeft:
+                    [imageView setContentMode: UIViewContentModeTopLeft];
+                    break;
+                case AlignmentTopCenter:
+                    [imageView setContentMode: UIViewContentModeTop];
+                    break;
+                case AlignmentTopRight:
+                    [imageView setContentMode: UIViewContentModeTopRight];
+                    break;
+                case AlignmentCenterLeft:
+                    [imageView setContentMode: UIViewContentModeLeft];
+                    break;
+                case AlignmentCenter:
+                    [imageView setContentMode: UIViewContentModeCenter];
+                    break;
+                case AlignmentCenterRight:
+                    [imageView setContentMode: UIViewContentModeRight];
+                    break;
+                case AlignmentBottomLeft:
+                    [imageView setContentMode: UIViewContentModeBottomLeft];
+                    break;
+                case AlignmentBottomCenter:
+                    [imageView setContentMode: UIViewContentModeBottom];
+                    break;
+                case AlignmentBottomRight:
+                    [imageView setContentMode: UIViewContentModeBottomRight];
+                    break;
+            }
+           [textField addSubview: imageView];
+        } else {
+          NSLog(@"No image data found.");
+          return;
+        }
+    }];
+    [textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
+  } else return;
+}
+
 
 - (void) initTextField: (UIView*)view {
     textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height)];
@@ -83,8 +160,13 @@ static UITextField *textField;
     }
 }
 
+
 - (void)removeScreenShot {
   if (textField != nil) {
+      if (imageView != nil) {
+          [imageView setImage: nil];
+          [imageView removeFromSuperview];
+      }
     [textField setSecureTextEntry: FALSE];
     [textField setBackgroundColor: [UIColor clearColor]];
     [textField setBackground: nil];
@@ -166,6 +248,43 @@ RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSNumber *)borderRadius) 
   dispatch_async(dispatch_get_main_queue(), ^{
     UIViewController *presentedViewController = RCTPresentedViewController();
     [self secureViewWithBlurView: presentedViewController.view.superview withBorderRadius: borderRadius];
+  });
+
+  [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
+  [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
+                      object:nil
+                       queue:mainQueue
+                  usingBlock:^(NSNotification *notification) {
+    
+    if (hasListeners) {
+      [self emit:@"onSnapper" body:nil];
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
+  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+  NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+  if (![data isKindOfClass:[NSDictionary class]]) {
+    //RCTLog(@"Error: Data parameter must be a dictionary.");
+    return;
+  }
+    
+  NSString *uri = data[@"uri"];
+  NSNumber *width = data[@"width"];
+  NSNumber *height = data[@"height"];
+  NSString *backgroundColor = data[@"backgroundColor"];
+  NSInteger alignment = [data[@"alignment"] integerValue];
+  Alignment dataAlignment = (Alignment)alignment;
+    
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIViewController *presentedViewController = RCTPresentedViewController();
+    [self secureViewWithImage: presentedViewController.view.superview
+                      withUri: uri
+                    withWidth: width
+                   withHeight: height
+                withAlignment: dataAlignment
+          withBackgroundColor: backgroundColor];
   });
 
   [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
