@@ -71,16 +71,18 @@ static UITextField *textField;
         
     [view addSubview:textField];
     [view sendSubviewToBack:textField];
+
+    [view.layer.superlayer addSublayer:textField.layer];
     
+    if(textField.layer.sublayers.firstObject) {
+      [textField.layer.sublayers.firstObject addSublayer:view.layer];
+    }
+
     [textField.centerXAnchor constraintEqualToAnchor:view.centerXAnchor].active = YES;
     [textField.centerYAnchor constraintEqualToAnchor:view.centerYAnchor].active = YES;
     [textField.widthAnchor constraintEqualToAnchor:view.widthAnchor].active = YES;
     [textField.heightAnchor constraintEqualToAnchor:view.heightAnchor].active = YES;
       
-    [view.layer.superlayer addSublayer:textField.layer];
-    if(textField.layer.sublayers.firstObject) {
-      [textField.layer.sublayers.firstObject addSublayer:view.layer];
-    }
 }
 
 - (void)removeScreenShot {
