@@ -12,9 +12,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.facebook.react.ReactActivity;
+import com.screenguard.model.ScreenGuardActionEnum;
+import com.screenguard.model.ScreenGuardBlurData;
+import com.screenguard.model.ScreenGuardColorData;
+import com.screenguard.model.ScreenGuardImageData;
 
 import java.io.File;
 
@@ -23,15 +29,15 @@ import jp.wasabeef.blurry.Blurry;
 
 public class ScreenGuardColorActivity extends ReactActivity {
 
-    private String backgroundColor = "#000000";
+    private ScreenGuardBlurData screenGuardBlurData;
 
-    private int radius;
+    private ScreenGuardColorData screenGuardColorData;
+
+    private ScreenGuardImageData screenGuardImageData;
 
     private Bitmap blurredBitmap;
 
     private ScreenGuardActionEnum currentActionType;
-
-    private static Handler handlerStopBlur;
 
     private static final int COLOR_TRANS = 0x00000004;
 
@@ -54,26 +60,20 @@ public class ScreenGuardColorActivity extends ReactActivity {
         Intent intent = getIntent();
 
         if (intent != null) {
-            String actionType = intent.getStringExtra("actionType");
-            currentActionType = ScreenGuardActionEnum.valueOf(actionType);
-            switch (ScreenGuardActionEnum.valueOf(actionType)) {
-                case color:
-                    String colorHex = intent.getStringExtra("background");
-                    if (colorHex != null && !colorHex.isEmpty()) {
-                        backgroundColor = colorHex;
-                    }
-                    break;
-                case blur:
-                    radius = intent.getIntExtra("radius", 10);
-                    break;
-                case image:
-                    break;
+            ScreenGuardBlurData dataBlur = intent.getParcelableExtra(ScreenGuardBlurData.class.getName());
+            ScreenGuardImageData dataImage = intent.getParcelableExtra(ScreenGuardImageData.class.getName());
+            ScreenGuardColorData dataColor = intent.getParcelableExtra(ScreenGuardColorData.class.getName());
+            if (dataBlur != null) {
+                screenGuardBlurData = dataBlur;
+                currentActionType = ScreenGuardActionEnum.blur;
+                blurredBitmap = getBitmapFromFile(screenGuardBlurData.bitmapPath);
+            } else if (dataColor != null) {
+                screenGuardColorData = dataColor;
+                currentActionType = ScreenGuardActionEnum.color;
+            } else if (dataImage != null) {
+                screenGuardImageData = dataImage;
+                currentActionType = ScreenGuardActionEnum.image;
             }
-
-            String imagePath = intent.getStringExtra("imagePath");
-
-            blurredBitmap = getBitmapFromFile(imagePath);
-
         }
         overridePendingTransition(0, 0);
         IntentFilter intentFilter = new IntentFilter("com.screenguard.ScreenGuardColorActivity.close");
@@ -95,6 +95,7 @@ public class ScreenGuardColorActivity extends ReactActivity {
 
     @Override
     protected void onResume() {
+        doResumeByAction();
         super.onResume();
     }
 
@@ -109,11 +110,10 @@ public class ScreenGuardColorActivity extends ReactActivity {
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    protected void onRestart() {
-        doResumeByAction();
-        super.onRestart();
-    }
+//    @Override
+//    protected void onRestart() {
+//        super.onRestart();
+//    }
 
     @Override
     protected void onPostResume() {
@@ -150,13 +150,12 @@ public class ScreenGuardColorActivity extends ReactActivity {
     private void doResumeByAction() {
         switch (currentActionType) {
             case blur:
+            case image:
                 ImageView imageView = findViewById(R.id.imageView);
-                handlerStopBlur = new Handler(Looper.getMainLooper());
-                Runnable delayedFunction = () -> {
-                        imageView.setImageBitmap(null);
-                    };
+                Handler handlerStopBlur = new Handler(Looper.getMainLooper());
+                Runnable delayedFunction = () -> imageView.setImageBitmap(null);
 
-                handlerStopBlur.postDelayed(delayedFunction, 1000);
+                handlerStopBlur.postDelayed(delayedFunction, screenGuardBlurData.timeAfterSync);
                 break;
             case color:
                 getWindow().getDecorView().setBackgroundColor(COLOR_TRANS);
@@ -170,7 +169,7 @@ public class ScreenGuardColorActivity extends ReactActivity {
                 ImageView imageView = findViewById(R.id.imageView);
                 if (imageView != null) {
                     Blurry.with(this)
-                            .radius(radius)
+                            .radius((int) Math.round(screenGuardBlurData.radius))
                             .sampling(2)
                             .async()
                             .from(blurredBitmap)
@@ -179,9 +178,16 @@ public class ScreenGuardColorActivity extends ReactActivity {
                 break;
             case color:
                 getWindow().getDecorView().setBackgroundColor(
-                        Color.parseColor(backgroundColor)
+                    Color.parseColor(screenGuardColorData.backgroundColor)
                 );
                 break;
-        }
+            case image:
+                ImageView imgView = findViewById(R.id.imageView);
+                FrameLayout frameLayout = findViewById(R.id.frameLayout); // Replace with your ImageView's ID
+                frameLayout.setBackgroundColor(Color.parseColor(screenGuardImageData.backgroundColor));
+                Glide.with(this)
+                        .load(screenGuardImageData.imageUrl).override((int) Math.round(screenGuardImageData.width), (int) Math.round(screenGuardImageData.height))
+                        .into(imgView);
+            }
     }
 }

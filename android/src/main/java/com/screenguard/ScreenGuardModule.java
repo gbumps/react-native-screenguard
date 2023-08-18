@@ -18,6 +18,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.RootView;
+import com.screenguard.model.ScreenGuardBlurData;
+import com.screenguard.model.ScreenGuardColorData;
+import com.screenguard.model.ScreenGuardImageData;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -76,6 +79,14 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             if (mHandlerBlockScreenShot == null) {
                 mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
             }
+            final Activity activity = currentReactContext.getCurrentActivity();
+
+            if (activity == null) {
+                return;
+            }
+            if (activity.getClass() == ScreenGuardColorActivity.class) {
+                deactivateShield();
+            }
             mHandlerBlockScreenShot.post(() -> Objects.requireNonNull(
                     currentReactContext.getCurrentActivity()
             ).getWindow().setFlags(
@@ -86,8 +97,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
                 currentReactContext.getCurrentActivity(), 
                 ScreenGuardColorActivity.class
             );
-            intent.putExtra("background", hexColor);
-            intent.putExtra("actionType", ScreenGuardActionEnum.color.toString());
+            intent.putExtra(ScreenGuardColorData.class.getName(), new ScreenGuardColorData(hexColor));
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             Objects.requireNonNull(
                      currentReactContext.getCurrentActivity()).startActivity(intent);
@@ -97,17 +107,21 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void activateShieldWithBlurView(double radius) {
+    public void activateShieldWithBlurView(ReadableMap data) {
         try {
             if (mHandlerBlockScreenShot == null) {
                 mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
             }
-            final Activity activity = getCurrentActivity();
+            final Activity activity = currentReactContext.getCurrentActivity();
+
             if (activity == null) {
                 return;
             }
+            if (activity.getClass() == ScreenGuardColorActivity.class) {
+                deactivateShield();
+            }
             final View currentView =
-                    getCurrentActivity().getWindow().getDecorView().getRootView();
+                    Objects.requireNonNull(getCurrentActivity()).getWindow().getDecorView().getRootView();
             currentView.setDrawingCacheEnabled(true);
             Bitmap bitmap = captureReactView(currentView);
             String localPath = saveBitmapToFile(bitmap);
@@ -115,9 +129,11 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
                 currentReactContext.getCurrentActivity(),
                     ScreenGuardColorActivity.class
                 );
-            intent.putExtra("radius", radius);
-            intent.putExtra("imagePath", localPath);
-            intent.putExtra("actionType", ScreenGuardActionEnum.blur.toString());
+            intent.putExtra(ScreenGuardBlurData.class.getName(), new ScreenGuardBlurData(
+                    data.getDouble("radius"),
+                    localPath,
+                    data.getInt("timeAfterResume")
+            ));
             Objects.requireNonNull(
                     currentReactContext.getCurrentActivity()).startActivity(intent);
             if (mHandlerBlockScreenShot != null) {
@@ -141,6 +157,15 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             if (mHandlerBlockScreenShot == null) {
                 mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
             }
+
+            final Activity activity = currentReactContext.getCurrentActivity();
+
+            if (activity == null) {
+                return;
+            }
+            if (activity.getClass() == ScreenGuardColorActivity.class) {
+                deactivateShield();
+            }
             Intent intent = new Intent(
                 currentReactContext.getCurrentActivity(),
                 ScreenGuardColorActivity.class
@@ -151,10 +176,18 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             double width = data.getDouble("width");
             double height = data.getDouble("height");
             int alignment = data.getInt("alignment");
+            int timeAfterResume = data.getInt("timeAfterResume");
+
+            intent.putExtra(ScreenGuardImageData.class.getName(), new ScreenGuardImageData(
+                    backgroundColor,
+                    uriImage,
+                    width,
+                    height,
+                    alignment,
+                    timeAfterResume
+            ));
 
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            intent.putExtra("uri", uriImage);
-            intent.putExtra("background", backgroundColor);
 
             Objects.requireNonNull(
                     currentReactContext.getCurrentActivity()).startActivity(intent);

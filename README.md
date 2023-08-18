@@ -14,6 +14,21 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
 
 # Get started
 
+<!--ts-->
+   * [Installation](#installation)
+      * [ios](#ios)
+      * [android](#android)
+   * [Usage](#usage)
+      * [register](#1-register)
+      * [registerWithoutScreenguard](#2-registerwithoutscreenguard)
+      * [registerWithBlurView](#3-registerwithblurview)
+      * [registerWithImage](#4-registerwithimage)
+      * [unregister](#5-unregister)
+   * [Limitation](#limitation)
+   * [Contributing](#contributing)
+   * [License](#license)
+<!--te-->
+
 ## Installation
 
 1. Install the dependency
@@ -107,7 +122,7 @@ On Android, from `v0.1.4+`, remember to add a little more options as it won't wo
 
 ## Usage
 
-#### 1. ScreenGuardModule.register
+#### 1. register
 
 - (iOS + Android) : Activate the screenguard with your custom background color layout. 
 
@@ -133,7 +148,7 @@ Android
 https://github.com/gbumps/react-native-screenguard/assets/16846439/da99c58c-fb79-4885-b496-ecb242bd4cf8
 
 
-#### 2. ScreenGuardModule.registerWithoutScreenguard (v0.0.6+)
+#### 2. registerWithoutScreenguard
 
 - (iOS + Android) Activate without screenguard, if you just want to detect and receive event callback only.
 
@@ -146,18 +161,25 @@ ScreenGuardModule.registerWithoutScreenguard(
 });
 ```
 
-#### 3. ScreenGuardModule.registerWithBlurView (v0.1.2+)
+#### 3. registerWithBlurView
 
-- (iOS only) Activate screenguard with a blurred effect view after captured.
+- Activate screenguard with a blurred effect view after captured.
 
-- Accepted a blur `radius` value number in between `[15, 50]` (Explain below) , throws warning if smaller than 15 or bigger than 50, exception if smaller than 1 or not a number.
+- Accepted a JS object with following parameters:
+
+  * `radius`: blur radius value number in between `[15, 50]` (Explain below) , throws warning if smaller than 15 or bigger than 50, exception if smaller than 1 or not a number.
+
+  * `timeAfterResume` (Android only): A small amount of time (in milliseconds) for the blur view to disappear before jumping back to the main view, default 1000ms
+
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
 
 //register with a blur radius of 35
-ScreenGuardModule.registerWithBlurView(
-	35
+ScreenGuardModule.registerWithBlurView({
+ radius: 35,
+ timeAfterResume: 2000,
+}
 	(_) => {
 	.....do anything you want after the screenshot 
 });
@@ -168,8 +190,36 @@ ScreenGuardModule.registerWithBlurView(
 
 https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4-4d5b-aa6c-82616ec8d1c5
 
+#### 4. registerWithImage
 
-#### 4. ScreenGuardModule.unregister (v0.0.2+)
+- Activate screenguard with a custom image view.
+
+- Accepted a JS object with following parameters:
+
+  * `width`: width of the image
+
+  * `height`: blur radius value number in between `[15, 50]` (Explain below) , throws warning if smaller than 15 or bigger than 50, exception if smaller than 1 or not a number.
+
+  * `uri` <b>(required)</b>: uri of the image, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
+
+  * `backgroundColor`: background color behind the image, just like `register`.
+
+  * `timeAfterResume` (Android only): A small amount of time (in milliseconds) for the blur view to disappear before jumping back to the main view, default 1000ms
+
+```js
+import ScreenGuardModule from 'react-native-screenguard';
+
+//register with a blur radius of 35
+ScreenGuardModule.registerWithImage(
+	35
+	(_) => {
+	.....do anything you want after the screenshot 
+});
+```
+
+`Warning`: This feature is still in experimental on Android, so please use with caution as some unexpected behaviour might occurs.
+
+#### 5. unregister
 
 - (iOS + Android) Deactivate the screenguard.
 

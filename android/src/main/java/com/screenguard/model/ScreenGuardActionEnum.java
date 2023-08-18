@@ -1,7 +1,8 @@
-package com.screenguard;
+package com.screenguard.model;
 
 public enum ScreenGuardActionEnum {
     color,
     blur,
     image,
 }
+
