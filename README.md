@@ -14,6 +14,20 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
 
 # Get started
 
+<!--ts-->
+   * [Installation](#installation)
+      * [ios](#ios)
+      * [android](#android)
+   * [Usage](#usage)
+      * [register](#1-register)
+      * [registerWithoutScreenguard](#2-registerwithoutscreenguard)
+      * [registerWithBlurView](#3-registerwithblurview)
+      * [unregister](#4-unregister)
+   * [Limitation](#limitation)
+   * [Contributing](#contributing)
+   * [License](#license)
+<!--te-->
+
 ## Installation
 
 1. Install the dependency
@@ -65,7 +79,7 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 	https://docs.expo.dev/workflow/prebuild/
 
-#### Post-installation setting for Android
+#### Post-installation setting for Android (important *)
 
 On Android, from `v0.1.4+`, remember to add a little more options as it won't work as expected.
 
@@ -107,7 +121,7 @@ On Android, from `v0.1.4+`, remember to add a little more options as it won't wo
 
 ## Usage
 
-#### 1. ScreenGuardModule.register
+#### 1. register
 
 - (iOS + Android) : Activate the screenguard with your custom background color layout. 
 
@@ -133,7 +147,7 @@ Android
 https://github.com/gbumps/react-native-screenguard/assets/16846439/da99c58c-fb79-4885-b496-ecb242bd4cf8
 
 
-#### 2. ScreenGuardModule.registerWithoutScreenguard (v0.0.6+)
+#### 2. registerWithoutScreenguard
 
 - (iOS + Android) Activate without screenguard, if you just want to detect and receive event callback only.
 
@@ -146,7 +160,7 @@ ScreenGuardModule.registerWithoutScreenguard(
 });
 ```
 
-#### 3. ScreenGuardModule.registerWithBlurView (v0.1.2+)
+#### 3. registerWithBlurView
 
 - (iOS only) Activate screenguard with a blurred effect view after captured.
 
@@ -169,7 +183,7 @@ ScreenGuardModule.registerWithBlurView(
 https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4-4d5b-aa6c-82616ec8d1c5
 
 
-#### 4. ScreenGuardModule.unregister (v0.0.2+)
+#### 4. unregister
 
 - (iOS + Android) Deactivate the screenguard.
 
