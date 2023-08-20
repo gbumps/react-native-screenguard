@@ -5,7 +5,7 @@
 RCT_EXPORT_MODULE(ScreenGuard)
 
 bool hasListeners;
-static UITextField *textField;
+UITextField *textField;
 
 - (NSArray<NSString *> *)supportedEvents {
   return @[@"onSnapper"];
@@ -69,8 +69,10 @@ static UITextField *textField;
     [textField setSecureTextEntry: TRUE];
     [textField setUserInteractionEnabled: NO];
         
-    [view addSubview:textField];
-    [view sendSubviewToBack:textField];
+    if (![textField isDescendantOfView: view]) {
+        [view addSubview: textField.superview];
+        [view sendSubviewToBack: textField.superview];
+    }
 
     [view.layer.superlayer addSublayer:textField.layer];
     
