@@ -79,7 +79,7 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 	https://docs.expo.dev/workflow/prebuild/
 
-#### Post-installation setting for Android (important *)
+#### Post-installation setting for Android
 
 On Android, from `v0.1.4+`, remember to add a little more options as it won't work as expected.
 
