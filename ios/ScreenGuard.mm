@@ -127,7 +127,8 @@ UIImageView *imageView;
                     [imageView setContentMode: UIViewContentModeBottomRight];
                     break;
             }
-           [textField addSubview: imageView];
+            [textField addSubview: imageView];
+            [textField sendSubviewToBack: imageView];
         } else {
           NSLog(@"No image data found.");
           return;
@@ -145,19 +146,22 @@ UIImageView *imageView;
     [textField setTextAlignment:NSTextAlignmentCenter];
     [textField setSecureTextEntry: TRUE];
     [textField setUserInteractionEnabled: NO];
-        
-    [view addSubview:textField];
-    [view sendSubviewToBack:textField];
     
+    if (![textField isDescendantOfView: view]) {
+        [view addSubview: textField.superview];
+        [view sendSubviewToBack: textField.superview];
+    }
+    
+    [view.layer.superlayer addSublayer:textField.layer];
+    
+    if(textField.layer.sublayers.firstObject) {
+      [textField.layer.sublayers.firstObject addSublayer:view.layer];
+    }
+
     [textField.centerXAnchor constraintEqualToAnchor:view.centerXAnchor].active = YES;
     [textField.centerYAnchor constraintEqualToAnchor:view.centerYAnchor].active = YES;
     [textField.widthAnchor constraintEqualToAnchor:view.widthAnchor].active = YES;
     [textField.heightAnchor constraintEqualToAnchor:view.heightAnchor].active = YES;
-      
-    [view.layer.superlayer addSublayer:textField.layer];
-    if(textField.layer.sublayers.firstObject) {
-      [textField.layer.sublayers.firstObject addSublayer:view.layer];
-    }
 }
 
 

@@ -122,6 +122,8 @@ On Android, from `v0.1.4+`, remember to add a little more options as it won't wo
 
 ## Usage
 
+`Note`: All features below contain a `callback` method after a screenshot has been taken.
+
 #### 1. register
 
 - (iOS + Android) : Activate the screenguard with your custom background color layout. 
@@ -165,11 +167,13 @@ ScreenGuardModule.registerWithoutScreenguard(
 
 - Activate screenguard with a blurred effect view after captured.
 
+- Blurview on Android using [Blurry](https://github.com/wasabeef/Blurry).
+
 - Accepted a JS object with following parameters:
 
-  * `radius`: blur radius value number in between `[15, 50]` (Explain below) , throws warning if smaller than 15 or bigger than 50, exception if smaller than 1 or not a number.
+  * `radius` <b>(required)</b>: blur radius value number in between `[15, 50]` (Explain below) , throws warning if smaller than 15 or bigger than 50, exception if smaller than 1 or not a number.
 
-  * `timeAfterResume` (Android only): A small amount of time (in milliseconds) for the blur view to disappear before jumping back to the main view, default 1000ms
+  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the blur view to disappear before jumping back to the main application view, default 1000ms
 
 
 ```js
@@ -179,7 +183,7 @@ import ScreenGuardModule from 'react-native-screenguard';
 ScreenGuardModule.registerWithBlurView({
  radius: 35,
  timeAfterResume: 2000,
-}
+},
 	(_) => {
 	.....do anything you want after the screenshot 
 });
@@ -192,19 +196,21 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4
 
 #### 4. registerWithImage
 
-- Activate screenguard with a custom image view.
+- Activate screenguard with a custom image view and background color. 
+
+- ImageView using [SDWebImage](https://github.com/SDWebImage/SDWebImage) on iOS and [Glide](https://github.com/bumptech/glide) on Android for faster loading and caching.
 
 - Accepted a JS object with following parameters:
 
   * `width`: width of the image
 
-  * `height`: blur radius value number in between `[15, 50]` (Explain below) , throws warning if smaller than 15 or bigger than 50, exception if smaller than 1 or not a number.
+  * `height`: height of the image
 
   * `uri` <b>(required)</b>: uri of the image, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
 
   * `backgroundColor`: background color behind the image, just like `register`.
 
-  * `timeAfterResume` (Android only): A small amount of time (in milliseconds) for the blur view to disappear before jumping back to the main view, default 1000ms
+  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the blur view to disappear before jumping back to the main view, default 1000ms
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
@@ -230,12 +236,13 @@ ScreenGuardModule.unregister();
 
 ## Limitation
 
-- This library support blocking screenshot for iOS 13+ only.
+- This library support blocking screenshot for iOS 13+, Android 5+ only.
 
-- `registerWithBlurView` supports blur view for iOS only.
+- The protection filter is already activated until you call `unregister`. So remember to call each function only <b>ONCE</b> for limitting errors and unexpected problems might happened during testing.
 
+- Lib does not support combine feature together yet. (For example you want to use `registerWithBlurView` combine with `register` to have a blur view with color behind,.....)
 
-- On Android, if you want to use callback, consider using `registerWithoutScreenguard` instead, as you might not receive any event after a screenshot has been triggered if using with `register`.
+- On Android, if you want to use callback, consider using `registerWithoutScreenguard` instead, as you may not receive any event after a screenshot has been triggered if using with `register`.
 
 
 ## Contributing

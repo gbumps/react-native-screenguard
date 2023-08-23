@@ -5,13 +5,13 @@ import android.os.Parcelable;
 
 public class ScreenGuardBlurData extends ScreenGuardData implements Parcelable {
 
-    public double radius;
+    public int radius;
 
     public String bitmapPath;
 
     public int timeAfterSync;
 
-    public ScreenGuardBlurData(double radius, String bitmapPath, int timeAfterSync) {
+    public ScreenGuardBlurData(int radius, String bitmapPath, int timeAfterSync) {
         this.action = ScreenGuardActionEnum.blur;
         this.radius = radius;
         this.bitmapPath = bitmapPath;
@@ -20,14 +20,14 @@ public class ScreenGuardBlurData extends ScreenGuardData implements Parcelable {
 
     protected ScreenGuardBlurData(Parcel in) {
         action = ScreenGuardActionEnum.blur;
-        radius = in.readDouble();
+        radius = in.readInt();
         bitmapPath = in.readString();
         timeAfterSync = in.readInt();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeDouble(radius);
+        dest.writeInt(radius);
         dest.writeString(bitmapPath);
         dest.writeInt(timeAfterSync);
     }
@@ -53,7 +53,7 @@ public class ScreenGuardBlurData extends ScreenGuardData implements Parcelable {
         return radius;
     }
 
-    public void setRadius(double radius) {
+    public void setRadius(int radius) {
         this.radius = radius;
     }
 

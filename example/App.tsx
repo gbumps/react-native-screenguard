@@ -148,7 +148,8 @@ function App(): JSX.Element {
           <View style={{height: 72}} />
           <Pressable
             onPress={() => {
-              ScreenGuardModule.registerWithBlurView(10, 2000, _ => {
+              ScreenGuardModule.registerWithBlurView({
+              }, _ => {
                 Alert.alert('register with blur radius 35');
               });
               setCurrentState(() => '4');

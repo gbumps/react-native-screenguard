@@ -15,12 +15,15 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+
 import com.bumptech.glide.Glide;
 import com.facebook.react.ReactActivity;
 import com.screenguard.model.ScreenGuardActionEnum;
 import com.screenguard.model.ScreenGuardBlurData;
 import com.screenguard.model.ScreenGuardColorData;
 import com.screenguard.model.ScreenGuardImageData;
+import com.screenguard.model.ScreenGuardImagePosition;
 
 import java.io.File;
 
@@ -83,8 +86,9 @@ public class ScreenGuardColorActivity extends ReactActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         unregisterReceiver(closeReceiver);
+        doResumeByAction();
+        super.onDestroy();
     }
 
     @Override
@@ -106,14 +110,9 @@ public class ScreenGuardColorActivity extends ReactActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
     }
-
-//    @Override
-//    protected void onRestart() {
-//        super.onRestart();
-//    }
 
     @Override
     protected void onPostResume() {
@@ -148,28 +147,32 @@ public class ScreenGuardColorActivity extends ReactActivity {
     }
 
     private void doResumeByAction() {
+        FrameLayout frameLayout = findViewById(R.id.frameLayout); // Replace with your ImageView's ID
+        ImageView imageView = findViewById(R.id.imageView);
+        Handler handlerStopBlur = new Handler(Looper.getMainLooper());
+        Runnable delayedFunction = () -> imageView.setImageBitmap(null);
         switch (currentActionType) {
             case blur:
-            case image:
-                ImageView imageView = findViewById(R.id.imageView);
-                Handler handlerStopBlur = new Handler(Looper.getMainLooper());
-                Runnable delayedFunction = () -> imageView.setImageBitmap(null);
-
                 handlerStopBlur.postDelayed(delayedFunction, screenGuardBlurData.timeAfterSync);
                 break;
+            case image:
+                handlerStopBlur.postDelayed(delayedFunction, screenGuardImageData.timeAfterSync);
+                frameLayout.setBackgroundColor(COLOR_TRANS);
+                break;
             case color:
-                getWindow().getDecorView().setBackgroundColor(COLOR_TRANS);
+                frameLayout.setBackgroundColor(COLOR_TRANS);
                 break;
         }
     }
 
     private void doCoverByAction() {
+        FrameLayout frameLayout = findViewById(R.id.frameLayout);
         switch (currentActionType) {
             case blur:
                 ImageView imageView = findViewById(R.id.imageView);
                 if (imageView != null) {
                     Blurry.with(this)
-                            .radius((int) Math.round(screenGuardBlurData.radius))
+                            .radius(screenGuardBlurData.radius)
                             .sampling(2)
                             .async()
                             .from(blurredBitmap)
@@ -177,16 +180,18 @@ public class ScreenGuardColorActivity extends ReactActivity {
                 }
                 break;
             case color:
-                getWindow().getDecorView().setBackgroundColor(
-                    Color.parseColor(screenGuardColorData.backgroundColor)
-                );
+                frameLayout.setBackgroundColor(Color.parseColor(screenGuardColorData.backgroundColor));
                 break;
             case image:
-                ImageView imgView = findViewById(R.id.imageView);
-                FrameLayout frameLayout = findViewById(R.id.frameLayout); // Replace with your ImageView's ID
                 frameLayout.setBackgroundColor(Color.parseColor(screenGuardImageData.backgroundColor));
+                ImageView imgView = findViewById(R.id.imageView);
+                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) imgView.getLayoutParams();
+                layoutParams.gravity = ScreenGuardImagePosition.getGravity(screenGuardImageData.position);
+                imgView.setLayoutParams(layoutParams);
                 Glide.with(this)
-                        .load(screenGuardImageData.imageUrl).override((int) Math.round(screenGuardImageData.width), (int) Math.round(screenGuardImageData.height))
+                        .load(screenGuardImageData.imageUrl).override(
+                                (int) Math.round(screenGuardImageData.width),
+                                (int) Math.round(screenGuardImageData.height))
                         .into(imgView);
             }
     }

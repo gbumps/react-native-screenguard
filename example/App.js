@@ -80,7 +80,7 @@ function App() {
                 React.createElement(TextInput, { style: { borderColor: Colors.white, borderWidth: 1 } }),
                 React.createElement(View, { style: { height: 72 } }),
                 React.createElement(Pressable, { onPress: () => {
-                        ScreenGuardModule.registerWithBlurView(10, 2000, _ => {
+                        ScreenGuardModule.registerWithBlurView({}, _ => {
                             Alert.alert('register with blur radius 35');
                         });
                         setCurrentState(() => '4');
