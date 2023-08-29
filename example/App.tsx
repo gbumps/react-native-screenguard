@@ -30,6 +30,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import ScreenGuardModule from 'react-native-screenguard';
+import { Alignment } from 'constant';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -164,10 +165,15 @@ function App(): JSX.Element {
           <View style={{height: 72}} />
           <Pressable
             onPress={() => {
-              // ScreenGuardModule.registerFlagSecureOnly(_ => {
-              //   Alert.alert('register without screenguard');
-              // });
-              // setCurrentState('6');
+              ScreenGuardModule.registerWithImage({
+                uri: '',
+                width: 200,
+                height: 100,
+                alignment: Alignment.bottomCenter,
+              },_ => {
+                Alert.alert('register without screenguard');
+              });
+              setCurrentState('6');
             }}>
             <Text
               style={{

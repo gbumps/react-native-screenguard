@@ -9,6 +9,7 @@ import * as React from 'react';
 import { Alert, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View, TextInput, } from 'react-native';
 import { Colors, DebugInstructions, Header, LearnMoreLinks, ReloadInstructions, } from 'react-native/Libraries/NewAppScreen';
 import ScreenGuardModule from 'react-native-screenguard';
+import { Alignment } from 'constant';
 function Section({ children, title }) {
     const isDarkMode = useColorScheme() === 'dark';
     return (React.createElement(View, { style: styles.sectionContainer },
@@ -90,10 +91,15 @@ function App() {
                         } }, "Turn on screenguard with blur radius = 35")),
                 React.createElement(View, { style: { height: 72 } }),
                 React.createElement(Pressable, { onPress: () => {
-                        // ScreenGuardModule.registerFlagSecureOnly(_ => {
-                        //   Alert.alert('register without screenguard');
-                        // });
-                        // setCurrentState('6');
+                        ScreenGuardModule.registerWithImage({
+                            uri: '',
+                            width: 200,
+                            height: 100,
+                            alignment: Alignment.bottomCenter,
+                        }, _ => {
+                            Alert.alert('register without screenguard');
+                        });
+                        setCurrentState('6');
                     } },
                     React.createElement(Text, { style: {
                             color: currentState === '6' ? '#00FF00' : Colors.white,

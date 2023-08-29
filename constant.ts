@@ -1,7 +1,7 @@
 const EVENT_NAME = 'onSnapper';
 const BLACK_COLOR = '#000000';
 const REGEX = /[!@#$%^&*(),.?":{}|<>]/;
-const IMAGE_REGEX = /\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i;
+const IMAGE_REGEX = /\.(jpg|jpeg|png|gif|bmp|webp|svg|tiff|heic|svg)$/i;
 const RADIUS_DEFAULT = 15;
 const TIME_DELAYED = 1000;
 

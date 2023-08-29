@@ -17,7 +17,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.uimanager.RootView;
 import com.screenguard.model.ScreenGuardBlurData;
 import com.screenguard.model.ScreenGuardColorData;
 import com.screenguard.model.ScreenGuardImageData;
@@ -32,24 +31,20 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
 
     public static final String NAME = "ScreenGuard";
 
-    private static final String PREFS_NAME = "MyPrefs";
-    private static final String BITMAP_PATH_KEY = "bitmapPath";
-
-    private static RootView rootView;
     private static Handler mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
 
     private ReactApplicationContext currentReactContext;
     private ScreenGuard mScreenGuard;
 
     public ScreenGuardModule(ReactApplicationContext reactContext) {
-      super(reactContext);
-      currentReactContext = reactContext;
+        super(reactContext);
+        currentReactContext = reactContext;
     }
 
     @Override
     @NonNull
     public String getName() {
-      return NAME;
+        return NAME;
     }
 
     @ReactMethod
@@ -90,17 +85,17 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             mHandlerBlockScreenShot.post(() -> Objects.requireNonNull(
                     currentReactContext.getCurrentActivity()
             ).getWindow().setFlags(
-                    WindowManager.LayoutParams.FLAG_SECURE, 
+                    WindowManager.LayoutParams.FLAG_SECURE,
                     WindowManager.LayoutParams.FLAG_SECURE
             ));
             Intent intent = new Intent(
-                currentReactContext.getCurrentActivity(), 
-                ScreenGuardColorActivity.class
+                    currentReactContext.getCurrentActivity(),
+                    ScreenGuardColorActivity.class
             );
             intent.putExtra(ScreenGuardColorData.class.getName(), new ScreenGuardColorData(hexColor));
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             Objects.requireNonNull(
-                     currentReactContext.getCurrentActivity()).startActivity(intent);
+                    currentReactContext.getCurrentActivity()).startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -126,11 +121,11 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             Bitmap bitmap = captureReactView(currentView);
             String localPath = saveBitmapToFile(bitmap);
             Intent intent = new Intent(
-                currentReactContext.getCurrentActivity(),
+                    currentReactContext.getCurrentActivity(),
                     ScreenGuardColorActivity.class
-                );
+            );
             intent.putExtra(ScreenGuardBlurData.class.getName(), new ScreenGuardBlurData(
-                    data.getDouble("radius"),
+                    data.getInt("radius"),
                     localPath,
                     data.getInt("timeAfterResume")
             ));
@@ -139,11 +134,11 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             if (mHandlerBlockScreenShot != null) {
                 mHandlerBlockScreenShot.post(() ->
                         Objects.requireNonNull(
-                    currentReactContext.getCurrentActivity()
-            ).getWindow().setFlags(
-                    WindowManager.LayoutParams.FLAG_SECURE,
-                    WindowManager.LayoutParams.FLAG_SECURE
-            ));
+                                currentReactContext.getCurrentActivity()
+                        ).getWindow().setFlags(
+                                WindowManager.LayoutParams.FLAG_SECURE,
+                                WindowManager.LayoutParams.FLAG_SECURE
+                        ));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -167,12 +162,12 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
                 deactivateShield();
             }
             Intent intent = new Intent(
-                currentReactContext.getCurrentActivity(),
-                ScreenGuardColorActivity.class
+                    currentReactContext.getCurrentActivity(),
+                    ScreenGuardColorActivity.class
             );
 
             String uriImage = data.getString("uri");
-            String backgroundColor = data.getString("background");
+            String backgroundColor = data.getString("backgroundColor");
             double width = data.getDouble("width");
             double height = data.getDouble("height");
             int alignment = data.getInt("alignment");

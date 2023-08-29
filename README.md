@@ -179,12 +179,13 @@ ScreenGuardModule.registerWithoutScreenguard(
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
 
-//register with a blur radius of 35
-ScreenGuardModule.registerWithBlurView({
+const data = {
  radius: 35,
  timeAfterResume: 2000,
-},
-	(_) => {
+};
+
+//register with a blur radius of 35
+ScreenGuardModule.registerWithBlurView(data, (_) => {
 	.....do anything you want after the screenshot 
 });
 ```
@@ -215,9 +216,16 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
 
-//register with a blur radius of 35
+const data = {
+  height: 150,
+  width: 200,
+  uri: 'https://www.icegif.com/wp-content/uploads/2022/09/icegif-386.gif',
+  backgroundColor: color,
+  alignment: 5 // Alignment.centerRight
+},
+//register with an image
 ScreenGuardModule.registerWithImage(
-	35
+  data,
 	(_) => {
 	.....do anything you want after the screenshot 
 });
@@ -238,7 +246,7 @@ ScreenGuardModule.unregister();
 
 - This library support blocking screenshot for iOS 13+, Android 5+ only.
 
-- The protection filter is already activated until you call `unregister`. So remember to call each function only <b>ONCE</b> for limitting errors and unexpected problems might happened during testing.
+- The protection filter is already activated until you call `unregister`. So remember to call a function only <b>ONCE</b> for limitting errors and unexpected problems might happened during testing.
 
 - Lib does not support combine feature together yet. (For example you want to use `registerWithBlurView` combine with `register` to have a blur view with color behind,.....)
 

@@ -12,6 +12,7 @@ export default {
    * activate screenshot blocking (iOS 13+, Android 5+)
    * @param capturedBackgroundColor background color layout after taking a screenshot
    * @param callback void callback after a screenshot or a video capture has been taken
+   * @version v0.0.2+
    */
   register(
     capturedBackgroundColor: String | null,
@@ -48,7 +49,8 @@ export default {
    * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
    * @param data ScreenGuardBlurDataObject data object
    * @param callback void callback after a screenshot or a video capture has been taken
-   * @throws Error when radius smaller than 1 or type != number
+   * @version v0.1.2+ (iOS)
+   * @version v1.0.0+ (Android)
    */
   registerWithBlurView(data: ScreenGuardBlurDataObject, callback) {
     const {
@@ -71,10 +73,16 @@ export default {
         'Consider a radius value in between 15 and 50, as blur contents may vanish inside the view!'
       );
     }
-    if (Platform.OS === 'android' && timeAfterResume > 4000) {
+    if (Platform.OS === 'android' && timeAfterResume > 3000) {
       console.warn(
         'Consider a number in between 1000 and 3000 for better user experience!'
       );
+    }
+    if (
+      Platform.OS === 'android' &&
+      (timeAfterResume < 0 || isNaN(timeAfterResume))
+    ) {
+      throw new Error('timeAfterResume must be > 0!');
     }
     if (Platform.OS === 'ios') {
       ScreenGuard.activateShieldWithBlurView(radius);
@@ -102,6 +110,7 @@ export default {
    * activate without blocking screenshot (iOS 10+, Android 5+ )
    * For screenshot detector only, this will fit your need.
    * @param void callback callback after a screenshot or a video screen capture has been taken
+   * @version v0.0.6+
    */
   registerWithoutScreenguard(callback: (arg: any) => void) {
     ScreenGuard.activateWithoutShield();
@@ -123,9 +132,10 @@ export default {
   },
 
   /**
-   * activate shield with an Image uri (iOS 13+, Android 5+)
+   * activate with an Image uri (iOS 13+, Android 8+)
    * @param data ScreenGuardImageDataObject data object,
    * @param callback void callback after a screenshot or a video screen capture has been taken
+   * @version v1.0.0+
    */
   registerWithImage(
     data: ScreenGuardImageDataObject,
@@ -137,6 +147,7 @@ export default {
       height,
       backgroundColor = ScreenGuardConstants.BLACK_COLOR,
       alignment = ScreenGuardConstants.Alignment.center,
+      timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
     } = data;
 
     if (uri.length === 0) {
@@ -165,6 +176,7 @@ export default {
       height,
       alignment,
       backgroundColor,
+      timeAfterResume,
     });
     if (screenGuardEmitter == null) {
       screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
@@ -185,7 +197,8 @@ export default {
 
   /**
    * Deactivate screenguard
-   * both with and without screenguard can use this
+   * Clear all screen protector and event listening
+   * @version v0.0.2+
    */
   unregister() {
     // screenGuardEmitter.removeListener(EVENT_NAME);
