@@ -1,11 +1,16 @@
 buildscript {
-  repositories {
-    google()
-    mavenCentral()
-  }
+  // The Android Gradle plugin is only required when opening the Android folder stand-alone.
+  // This avoids unnecessary downloads and potential conflicts when the library is included as a
+  // module dependency in an application project.
+  if (project == rootProject) {
+    repositories {
+      google()
+      mavenCentral()
+    }
 
-  dependencies {
-    classpath "com.android.tools.build:gradle:7.2.1"
+    dependencies {
+      classpath "com.android.tools.build:gradle:7.2.1"
+    }
   }
 }
 
@@ -32,6 +37,13 @@ def getExtOrIntegerDefault(name) {
 
 android {
   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+
+  //Get Android Gradle Plugin version
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  //Apply namespace only if Android Gradle Plugin version equal or greater than 7
+  if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+    namespace "com.screenguard"
+  }
 
   defaultConfig {
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")

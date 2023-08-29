@@ -46,31 +46,31 @@ $ yarn add react-native-screenguard
 
 - React-native 0.59 and lower: Please do manual installation as follow
 
-#### iOS
+  #### iOS
 
-1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
+    1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
 
-2. Go to `node_modules` ➜ `react-native-screenguard` and add `ScreenGuard.xcodeproj`
+    2. Go to `node_modules` ➜ `react-native-screenguard` and add `ScreenGuard.xcodeproj`
 
-3. In XCode, in the project navigator, select your project. Add `libScreenguard.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
+    3. In XCode, in the project navigator, select your project. Add `libScreenguard.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
 
 
-#### Android
+  #### Android
 
-1. Open up `android/app/src/main/java/[...]/MainActivity.java`
+    1. Open up `android/app/src/main/java/[...]/MainActivity.java`
 
-  - Add `import com.screenguard.ScreenGuardPackage;` to the imports at the top of the file
+     - Add `import com.screenguard.ScreenGuardPackage;` to the imports at the top of the file
 
-  - Add `new ScreenGuardPackage()` to the list returned by the `getPackages()` method
+     - Add `new ScreenGuardPackage()` to the list returned by the `getPackages()` method
 
-2. Append the following lines to `android/settings.gradle`:
+    2. Append the following lines to `android/settings.gradle`:
 
   	```
   	include ':react-native-screenguard'
   	project(':react-native-screenguard').projectDir = new File(rootProject.projectDir,'../node_modules/react-native-screenguard/android')
   	```
 
-3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
+    3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
 
   	```
       compile project(':react-native-screenguard')
@@ -80,7 +80,7 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 	https://docs.expo.dev/workflow/prebuild/
 
-#### Post-installation setting for Android
+#### Post-installation setting for Android `important`
 
 On Android, from `v0.1.4+`, remember to add a little more options as it won't work as expected.
 
