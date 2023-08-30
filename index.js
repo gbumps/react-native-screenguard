@@ -1,5 +1,5 @@
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
-import * as ScreenGuardConstants from 'constant';
+import * as ScreenGuardConstants from './constant';
 const { ScreenGuard } = NativeModules;
 var screenGuardEmitter = null;
 export default {
@@ -133,6 +133,7 @@ export default {
       height,
       backgroundColor = ScreenGuardConstants.BLACK_COLOR,
       alignment = ScreenGuardConstants.Alignment.center,
+      timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
     } = data;
     if (uri.length === 0) {
       throw new Error('uri must not be empty!');
@@ -159,6 +160,7 @@ export default {
       height,
       alignment,
       backgroundColor,
+      timeAfterResume,
     });
     if (screenGuardEmitter == null) {
       screenGuardEmitter = new NativeEventEmitter(ScreenGuard);

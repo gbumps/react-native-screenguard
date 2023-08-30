@@ -1,7 +1,7 @@
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 
-import * as ScreenGuardConstants from 'constant';
-import { ScreenGuardBlurDataObject, ScreenGuardImageDataObject } from 'data';
+import * as ScreenGuardConstants from './constant';
+import { ScreenGuardBlurDataObject, ScreenGuardImageDataObject } from './data';
 
 const { ScreenGuard } = NativeModules;
 

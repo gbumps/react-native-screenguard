@@ -64,6 +64,19 @@ export interface ScreenGuardImageDataObject {
    *
    */
   backgroundColor?: string | '#000000';
+  /**
+   * (Android only) Time delayed for the view to stop displaying when going back
+   * to the application (in milliseconds)
+   *
+   * @warning when bigger than 3000ms means users have to wait for the application
+   * to turn off the filter before going back to the main view, which is a very bad user
+   * experiences.
+   *
+   * @exception when < 0 or not a number
+   *
+   * @defaultValue `1000`
+   */
+  timeAfterResume?: number | 1000;
 }
 export interface ScreenGuardBlurDataObject {
   /**
