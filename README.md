@@ -16,8 +16,6 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
 
 <!--ts-->
    * [Installation](#installation)
-      * [ios](#ios)
-      * [android](#android)
    * [Usage](#usage)
       * [register](#1-register)
       * [registerWithoutScreenguard](#2-registerwithoutscreenguard)
