@@ -179,17 +179,6 @@ export default {
     }
   },
   /**
-   * activate with an Image uri (iOS 13+, Android 8+)
-   * @param data ScreenGuardImageDataObject data object,
-   * @param callback void callback after a screenshot or a video screen capture has been taken
-   * @version v1.0.2-beta+
-   */
-  registerWithImage(data, callback) {
-    console.warn(
-      'Install the beta version to continue. Head over to README.md -> Install -> Beta section for how to install'
-    );
-  },
-  /**
    * Deactivate screenguard
    * Clear all screen protector and event listening
    * @version v0.0.2+
