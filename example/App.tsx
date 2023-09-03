@@ -136,10 +136,8 @@ function App(): JSX.Element {
           <View style={{height: 72}} />
           <Pressable
             onPress={() => {
-              //CaptureProtection.allowScreenRecord();
               ScreenGuardModule.unregister();
               setCurrentState('3');
-              // textInputRef.current?.focus();
             }}>
             <Text
               style={{

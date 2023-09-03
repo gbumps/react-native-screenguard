@@ -217,6 +217,7 @@ ScreenGuardModule.registerWithBlurView(data, (_) => {
 
  `Explain`: Set blur radius smaller than 15 won't help much, as content still look very clear and easy to read. Same with bigger than 50 but content will be shrinked and vanished inside the view, blurring is meaningless. So, between 15 and 50 is enough.
 
+iOS
 
 https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4-4d5b-aa6c-82616ec8d1c5
 
@@ -259,6 +260,14 @@ ScreenGuardModule.registerWithImage(
 ```
 
 `Warning`: This feature is still in experimental on Android, so please use with caution as some unexpected behaviour might occurs.
+
+iOS
+
+https://github.com/gbumps/react-native-screenguard/assets/16846439/087dd9d5-b64f-4daf-a804-acc9a3cb4cc2
+
+Android
+
+https://github.com/gbumps/react-native-screenguard/assets/16846439/dd2d8191-555f-4f84-abf5-6cbcf67dc84b
 
 #### 5. unregister
 
