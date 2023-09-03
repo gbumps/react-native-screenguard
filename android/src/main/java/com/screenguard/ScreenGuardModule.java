@@ -84,7 +84,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
                         currentReactContext.getCurrentActivity(),
                         ScreenGuardColorActivity.class
                 );
-                intent.putExtra(ScreenGuardColorData.class.getName(), new ScreenGuardColorData(hexColor));
+                intent.putExtra("background", hexColor);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 Objects.requireNonNull(
                         currentReactContext.getCurrentActivity()).startActivity(intent);
