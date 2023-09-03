@@ -1,32 +1,45 @@
+import { ScreenGuardBlurDataObject, ScreenGuardImageDataObject } from './data';
 declare const _default: {
   /**
-   * activate screenshot blocking (iOS13+, Android 5+)
-   * @param string capturedBackgroundColor (iOS only) background color layout after taking a screenshot
-   * @param void callback callback after a screenshot has been taken
+   * activate screenshot blocking (iOS 13+, Android 5+)
+   * @param capturedBackgroundColor background color layout after taking a screenshot
+   * @param callback void callback after a screenshot or a video capture has been taken
+   * @version v0.0.2+
    */
   register(
     capturedBackgroundColor: String | null,
-    callback: (arg0: any) => void
+    callback: (arg: any) => void
   ): void;
   /**
+   * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
+   * @param data ScreenGuardBlurDataObject data object
+   * @param callback void callback after a screenshot or a video capture has been taken
+   * @version v0.1.2+ (iOS)
+   * @version v1.0.0+ (Android)
+   */
+  registerWithBlurView(data: ScreenGuardBlurDataObject, callback: any): void;
+  /**
    * activate without blocking screenshot (iOS 10+, Android 5+ )
-   * @param void callback callback after a screenshot has been taken
+   * For screenshot detector only, this will fit your need.
+   * @param void callback callback after a screenshot or a video screen capture has been taken
+   * @version v0.0.6+
    */
-  registerWithoutScreenguard(callback: (arg0: any) => void): void;
+  registerWithoutScreenguard(callback: (arg: any) => void): void;
   /**
-   * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 5+)
-   * accepted a value in between 15 and 50, throws warning if bigger than 50 or smaller than 15.
-   * throws exception when smaller than 1 or not a number
-   * Android not yet supported, as fallback automatically to register
-   * @param void callback callback after a screenshot or a video capture has been taken
-   * @param radius? (iOS only) blur radius for the view
-   * @throws Error when radius smaller than 1 or type != number
+   * activate with an Image uri (iOS 13+, Android 8+)
+   * @param data ScreenGuardImageDataObject data object,
+   * @param callback void callback after a screenshot or a video screen capture has been taken
+   * @version v1.0.0+
    */
-  registerWithBlurView(radius: number, callback: (arg0: any) => void): void;
+  registerWithImage(
+    data: ScreenGuardImageDataObject,
+    callback: (arg: any) => void
+  ): void;
   /**
-   * Deactivate screenshot
+   * Deactivate screenguard
+   * Clear all screen protector and event listening
+   * @version v0.0.2+
    */
   unregister(): void;
 };
 export default _default;
-//# sourceMappingURL=index.d.ts.map
