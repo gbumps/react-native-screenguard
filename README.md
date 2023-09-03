@@ -15,29 +15,55 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
 # Get started
 
 <!--ts-->
-   * [Installation](#installation)
-   * [Usage](#usage)
-      * [register](#1-register)
-      * [registerWithoutScreenguard](#2-registerwithoutscreenguard)
-      * [registerWithBlurView](#3-registerwithblurview)
-      * [unregister](#4-unregister)
-   * [Limitation](#limitation)
-   * [Contributing](#contributing)
-   * [License](#license)
+  * [Installation](#installation)
+    * [1.Install](#1-install)
+      * [stable](#stable)
+      * [beta](#beta)
+    * [2.Linking](#2-linking)
+  * [Usage](#usage)
+     * [register](#1-register)
+     * [registerWithoutScreenguard](#2-registerwithoutscreenguard)
+     * [registerWithBlurView (beta)](#3-registerwithblurview)
+     * [registerWithImage (beta)](#4-registerwithimage)
+     * [unregister](#5-unregister)
+  * [Limitation](#limitation)
+  * [Contributing](#contributing)
+  * [License](#license)
 <!--te-->
 
 ## Installation
 
-1. Install the dependency
+  ## 1. Install
+
+  #### Stable
+
+- For protecting from being screenshoted and screen recording captured only, stable version is enough.
 
 ```sh
 $ npm install react-native-screenguard --save
 ```
+
 ```sh
 $ yarn add react-native-screenguard
 ```
 
-2. Linking:
+  #### Beta
+
+- If you want more customization over the screen protector filter like `registerWithBlurView` and `registerWithImage`, install this version.
+
+```sh
+$ npm install react-native-screenguard@beta --save
+
+```
+
+```sh
+$ yarn add react-native-screenguard@beta
+```
+
+`Note`: Remember to `pod install` on ios and `gradle build` on Android again to take effect.
+
+
+## 2. Linking
 
 - React-native 0.60 and higher: just `cd ios && pod install`, no additional requirements.
 
@@ -119,6 +145,8 @@ On Android, from `v0.1.4+`, remember to add a little more options as it won't wo
 
 ## Usage
 
+`Note`: All features below contain a `callback` method after a screenshot or screen recording has been taken.
+
 #### 1. register
 
 - (iOS + Android) : Activate the screenguard with your custom background color layout. 
@@ -160,17 +188,29 @@ ScreenGuardModule.registerWithoutScreenguard(
 
 #### 3. registerWithBlurView
 
-- (iOS only) Activate screenguard with a blurred effect view after captured.
+- Beta version only. See how to install [here](#beta)
 
-- Accepted a blur `radius` value number in between `[15, 50]` (Explain below) , throws warning if smaller than 15 or bigger than 50, exception if smaller than 1 or not a number.
+- Activate screenguard with a blurred effect view after captured.
+
+- Blurview on Android using [Blurry](https://github.com/wasabeef/Blurry).
+
+- Accepted a JS object with following parameters:
+
+  * `radius` <b>(required)</b>: blur radius value number in between `[15, 50]` (Explain below) , throws warning if smaller than 15 or bigger than 50, exception if smaller than 1 or not a number.
+
+  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the blur view to disappear before jumping back to the main application view, default 1000ms
+
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
 
+const data = {
+ radius: 35,
+ timeAfterResume: 2000,
+};
+
 //register with a blur radius of 35
-ScreenGuardModule.registerWithBlurView(
-	35
-	(_) => {
+ScreenGuardModule.registerWithBlurView(data, (_) => {
 	.....do anything you want after the screenshot 
 });
 ```
@@ -180,8 +220,47 @@ ScreenGuardModule.registerWithBlurView(
 
 https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4-4d5b-aa6c-82616ec8d1c5
 
+#### 4. registerWithImage
 
-#### 4. unregister
+- Beta version only. See how to install [here](#beta)
+
+- Activate screenguard with a custom image view and background color. 
+
+- ImageView using [SDWebImage](https://github.com/SDWebImage/SDWebImage) on iOS and [Glide](https://github.com/bumptech/glide) on Android for faster loading and caching.
+
+- Accepted a JS object with following parameters:
+
+  * `width`: width of the image
+
+  * `height`: height of the image
+
+  * `uri` <b>(required)</b>: uri of the image, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
+
+  * `backgroundColor`: background color behind the image, just like `register`.
+
+  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the blur view to disappear before jumping back to the main view, default 1000ms
+
+```js
+import ScreenGuardModule from 'react-native-screenguard';
+
+const data = {
+  height: 150,
+  width: 200,
+  uri: 'https://www.icegif.com/wp-content/uploads/2022/09/icegif-386.gif',
+  backgroundColor: color,
+  alignment: 5 // Alignment.centerRight
+},
+//register with an image
+ScreenGuardModule.registerWithImage(
+  data,
+	(_) => {
+	.....do anything you want after the screenshot 
+});
+```
+
+`Warning`: This feature is still in experimental on Android, so please use with caution as some unexpected behaviour might occurs.
+
+#### 5. unregister
 
 - (iOS + Android) Deactivate the screenguard.
 
@@ -192,12 +271,13 @@ ScreenGuardModule.unregister();
 
 ## Limitation
 
-- This library support blocking screenshot for iOS 13+ only.
+- This library support blocking screenshot for iOS 13+, Android 5+ only.
 
-- `registerWithBlurView` supports blur view for iOS only.
+- The protection filter is already activated until you call `unregister`. So remember to call a function only <b>ONCE</b> for limitting errors and unexpected problems might happened during testing.
 
+- Lib does not support combine feature together yet. (For example you want to use `registerWithBlurView` combine with `register` to have a blur view with color behind,.....)
 
-- On Android, if you want to use callback, consider using `registerWithoutScreenguard` instead, as you might not receive any event after a screenshot has been triggered if using with `register`.
+- On Android, if you want to use callback, consider using `registerWithoutScreenguard` instead, as you may not receive any event after a screenshot has been triggered if using with `register`.
 
 
 ## Contributing
