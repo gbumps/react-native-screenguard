@@ -42,7 +42,8 @@ UIImageView *imageView;
       
     [textField setBackgroundColor: [UIColor clearColor]];
     [textField setSecureTextEntry: TRUE];
-    UIImage *imageView = [self convertViewToImage:view];
+    UIViewController *presentedViewController = RCTPresentedViewController();
+    UIImage *imageView = [self convertViewToImage:presentedViewController.view.superview];
     CIImage *inputImage = [CIImage imageWithCGImage:imageView.CGImage];
     
     CIContext *context = [CIContext contextWithOptions:nil];
@@ -140,7 +141,8 @@ UIImageView *imageView;
 
 
 - (void) initTextField {
-    textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height)];
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, screenRect.size.width, screenRect.size.height)];
     textField.translatesAutoresizingMaskIntoConstraints = NO;
     
     [textField setTextAlignment:NSTextAlignmentCenter];
@@ -241,7 +243,7 @@ RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSNumber *)borderRadius) 
   NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
   dispatch_async(dispatch_get_main_queue(), ^{
     UIViewController *presentedViewController = RCTPresentedViewController();
-    [self secureViewWithBlurView: presentedViewController.view.superview withBorderRadius: borderRadius];
+    [self secureViewWithBlurView: borderRadius];
   });
 
   [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
