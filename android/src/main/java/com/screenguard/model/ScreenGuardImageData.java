@@ -5,6 +5,9 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.screenguard.enums.ScreenGuardActionEnum;
+import com.screenguard.enums.ScreenGuardImagePositionEnum;
+
 public class ScreenGuardImageData extends ScreenGuardData implements Parcelable {
 
     public double width;

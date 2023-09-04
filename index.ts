@@ -135,7 +135,7 @@ export default {
    * activate with an Image uri (iOS 13+, Android 8+)
    * @param data ScreenGuardImageDataObject data object,
    * @param callback void callback after a screenshot or a video screen capture has been taken
-   * @version v1.0.0+
+   * @version v1.0.2+
    */
   registerWithImage(
     data: ScreenGuardImageDataObject,

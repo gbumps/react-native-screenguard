@@ -19,7 +19,7 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.facebook.react.ReactActivity;
-import com.screenguard.model.ScreenGuardActionEnum;
+import com.screenguard.enums.ScreenGuardActionEnum;
 import com.screenguard.model.ScreenGuardBlurData;
 import com.screenguard.model.ScreenGuardColorData;
 import com.screenguard.model.ScreenGuardImageData;

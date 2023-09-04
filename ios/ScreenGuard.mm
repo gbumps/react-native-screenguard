@@ -64,8 +64,7 @@ UIImageView *imageView;
   } else return;
 }
 
-- (void)secureViewWithImage: (UIView*)view
-                    withUri: (nonnull NSString *) uriImage
+- (void)secureViewWithImage: (nonnull NSString *) uriImage
                   withWidth: (nonnull NSNumber *) width
                  withHeight: (nonnull NSNumber *) height
               withAlignment: (Alignment) alignment
@@ -274,8 +273,7 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
     
   dispatch_async(dispatch_get_main_queue(), ^{
     UIViewController *presentedViewController = RCTPresentedViewController();
-    [self secureViewWithImage: presentedViewController.view.superview
-                      withUri: uri
+    [self secureViewWithImage: uri
                     withWidth: width
                    withHeight: height
                 withAlignment: dataAlignment
