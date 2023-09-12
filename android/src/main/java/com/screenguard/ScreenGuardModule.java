@@ -79,16 +79,16 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             //TODO: Build another approach for Android 12+, as system blocks behaviour of activity which 
             //contains flag FLAG_NOT_TOUCHABLE, that mean keyboard or other gestures on main React Native
             //app will not work correctly.
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
-                Intent intent = new Intent(
-                        currentReactContext.getCurrentActivity(),
-                        ScreenGuardColorActivity.class
-                );
-                intent.putExtra("background", hexColor);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                Objects.requireNonNull(
-                        currentReactContext.getCurrentActivity()).startActivity(intent);
-            }
+            // if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+            //     Intent intent = new Intent(
+            //             currentReactContext.getCurrentActivity(),
+            //             ScreenGuardColorActivity.class
+            //     );
+            //     intent.putExtra("background", hexColor);
+            //     intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            //     Objects.requireNonNull(
+            //             currentReactContext.getCurrentActivity()).startActivity(intent);
+            // }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,11 +109,11 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void deactivateShield() {
         try {
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
-                currentReactContext.sendBroadcast(
-                        new Intent("com.screenguard.ScreenGuardColorActivity.close")
-                );
-            }
+            // if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+            //     currentReactContext.sendBroadcast(
+            //             new Intent("com.screenguard.ScreenGuardColorActivity.close")
+            //     );
+            // }
             Handler handler = new Handler();
             Runnable delayedFunction = () -> {
                 if (mHandlerBlockScreenShot != null) {
