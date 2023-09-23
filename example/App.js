@@ -72,10 +72,8 @@ function App() {
                         } }, "Turn on without screenguard")),
                 React.createElement(View, { style: { height: 72 } }),
                 React.createElement(Pressable, { onPress: () => {
-                        //CaptureProtection.allowScreenRecord();
                         ScreenGuardModule.unregister();
                         setCurrentState('3');
-                        // textInputRef.current?.focus();
                     } },
                     React.createElement(Text, { style: {
                             color: currentState === '3' ? '#00FF00' : Colors.white,
