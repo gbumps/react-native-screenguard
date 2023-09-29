@@ -52,10 +52,10 @@ UITextField *textField;
 - (void)removeScreenShot {
   UIWindow *window = [UIApplication sharedApplication].keyWindow;
   if (textField != nil) {
-      if (imageView != nil) {
-          [imageView setImage: nil];
-          [imageView removeFromSuperview];
-      }
+      // if (imageView != nil) {
+      //     [imageView setImage: nil];
+      //     [imageView removeFromSuperview];
+      // }
     [textField setSecureTextEntry: FALSE];
     [textField setBackgroundColor: [UIColor clearColor]];
     [textField setBackground: nil];
