@@ -37,7 +37,7 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
 
   #### Stable
 
-- For protecting from being screenshoted and screen recording captured only, stable version is enough.
+- For protecting app from screenshot and screen recording captured, install stable version is enough.
 
 ```sh
 $ npm install react-native-screenguard --save
@@ -46,6 +46,7 @@ $ npm install react-native-screenguard --save
 ```sh
 $ yarn add react-native-screenguard
 ```
+Source code on `master` branch.
 
   #### Beta
 
@@ -61,6 +62,8 @@ $ yarn add react-native-screenguard@beta
 ```
 
 `Note`: Remember to `pod install` on ios and `gradle build` on Android again to take effect.
+
+Source code on `beta` branch.
 
 
 ## 2. Linking
