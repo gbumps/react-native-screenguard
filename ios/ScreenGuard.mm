@@ -1,5 +1,4 @@
 #import "ScreenGuard.h"
-#import <SDWebImage/SDWebImage.h>
 #import <React/RCTRootView.h>
 
 @implementation ScreenGuard
@@ -52,10 +51,6 @@ UITextField *textField;
 - (void)removeScreenShot {
   UIWindow *window = [UIApplication sharedApplication].keyWindow;
   if (textField != nil) {
-      // if (imageView != nil) {
-      //     [imageView setImage: nil];
-      //     [imageView removeFromSuperview];
-      // }
     [textField setSecureTextEntry: FALSE];
     [textField setBackgroundColor: [UIColor clearColor]];
     [textField setBackground: nil];
