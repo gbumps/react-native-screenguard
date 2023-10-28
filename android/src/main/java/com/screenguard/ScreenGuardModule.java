@@ -70,13 +70,16 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             if (mHandlerBlockScreenShot == null) {
                 mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
             }
-            mHandlerBlockScreenShot.post(() -> Objects.requireNonNull(
-                getReactApplicationContext().getCurrentActivity()
-            ).getWindow().setFlags(
-                    WindowManager.LayoutParams.FLAG_SECURE, 
-                    WindowManager.LayoutParams.FLAG_SECURE
-            ));
-        
+            if (
+                getReactApplicationContext().getCurrentActivity() != null
+            ) {
+                mHandlerBlockScreenShot.post(() -> Objects.requireNonNull(
+                    getReactApplicationContext().getCurrentActivity()
+                ).getWindow().setFlags(
+                        WindowManager.LayoutParams.FLAG_SECURE, 
+                        WindowManager.LayoutParams.FLAG_SECURE
+                ));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,10 +101,14 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
     public void deactivateShield() {
         try {
             if (mHandlerBlockScreenShot != null) {
+                if (
+                   getReactApplicationContext().getCurrentActivity() != null
+                ) {
                    mHandlerBlockScreenShot.post(() -> Objects.requireNonNull(
                           getReactApplicationContext().getCurrentActivity()
                      ).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE));
                     mHandlerBlockScreenShot = null;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
