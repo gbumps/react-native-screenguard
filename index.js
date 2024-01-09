@@ -1,7 +1,11 @@
-import { NativeModules, NativeEventEmitter } from 'react-native';
+import { NativeModules, NativeEventEmitter, Alert } from 'react-native';
+import { LogBox } from 'react-native';
 import * as ScreenGuardConstants from './constant';
 const { ScreenGuard } = NativeModules;
 var screenGuardEmitter = null;
+LogBox.ignoreLogs([
+  'new NativeEventEmitter() was called with a non-null argument',
+]);
 export default {
   /**
    * activate screenshot blocking (iOS 13+, Android 5+)
@@ -43,6 +47,7 @@ export default {
    * @version v1.0.2-beta+
    */
   registerWithBlurView(data, callback) {
+    Alert.alert('');
     console.warn(
       'Install the beta version to continue. Head over to README.md -> Install -> Beta section for how to install'
     );
