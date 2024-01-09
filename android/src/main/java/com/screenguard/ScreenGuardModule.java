@@ -97,19 +97,46 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
         }
     }
 
-   @ReactMethod
+    @ReactMethod
+    public void activateShield(String hexColor) {
+        try {
+            if (mHandlerBlockScreenShot == null) {
+                mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
+            }
+            if (currentReactContext == null) {
+                currentReactContext = getReactApplicationContext();
+            }
+            Activity currentActivity = currentReactContext.getCurrentActivity();
+            if (currentActivity != null) {
+                mHandlerBlockScreenShot.post(() ->
+                                currentActivity.getWindow().setFlags(
+                        WindowManager.LayoutParams.FLAG_SECURE, 
+                        WindowManager.LayoutParams.FLAG_SECURE
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @ReactMethod
     public void deactivateShield() {
         try {
-            if (mHandlerBlockScreenShot != null) {
-                if (
-                   getReactApplicationContext().getCurrentActivity() != null
-                ) {
-                   mHandlerBlockScreenShot.post(() -> Objects.requireNonNull(
-                          getReactApplicationContext().getCurrentActivity()
-                     ).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE));
-                    mHandlerBlockScreenShot = null;
-                }
+            if (mHandlerBlockScreenShot == null) {
+                mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
             }
+            if (currentReactContext == null) {
+                currentReactContext = getReactApplicationContext();
+            }
+            Activity currentActivity = currentReactContext.getCurrentActivity();
+                if (currentActivity != null) {
+                   mHandlerBlockScreenShot.post(() ->
+                           currentActivity
+                     .getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE));
+                    mHandlerBlockScreenShot = null;
+                } else {
+                    Log.w("ACTIVITY_SCREENSHOT", "handler is null");
+                }
         } catch (Exception e) {
             e.printStackTrace();
         }
