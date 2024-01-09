@@ -1,11 +1,7 @@
 import { NativeModules, NativeEventEmitter, Alert } from 'react-native';
-import { LogBox } from 'react-native';
 import * as ScreenGuardConstants from './constant';
 const { ScreenGuard } = NativeModules;
 var screenGuardEmitter = null;
-LogBox.ignoreLogs([
-  'new NativeEventEmitter() was called with a non-null argument',
-]);
 export default {
   /**
    * activate screenshot blocking (iOS 13+, Android 5+)

@@ -1,18 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NativeModules, NativeEventEmitter, Alert } from 'react-native';
 
-import { LogBox } from 'react-native';
-
 import * as ScreenGuardConstants from './constant';
 import { ScreenGuardBlurDataObject, ScreenGuardImageDataObject } from './data';
 
 const { ScreenGuard } = NativeModules;
 
 var screenGuardEmitter: NativeEventEmitter | null = null;
-
-LogBox.ignoreLogs([
-  'new NativeEventEmitter() was called with a non-null argument',
-]);
 
 export default {
   /**
