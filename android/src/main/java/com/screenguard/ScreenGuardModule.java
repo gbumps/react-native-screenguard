@@ -57,43 +57,28 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeEvent() {
-        if (mScreenGuard != null) {
-            mScreenGuard.unregister();
-            mScreenGuard = null;
-        }
-    }
-
-    @ReactMethod
     public void addListener(String eventName) {
+        if (mScreenGuard == null) {
+            mScreenGuard = new ScreenGuard(
+                    currentReactContext,
+                    (url) -> currentReactContext.getJSModule(
+                            DeviceEventManagerModule.RCTDeviceEventEmitter.class
+                    ).emit(eventName, url)
+            );
+        }
+        mScreenGuard.register();
         // Keep: Required for RN built in Event Emitter Calls.
     }
 
     @ReactMethod
     public void removeListeners(Integer count) {
         // Keep: Required for RN built in Event Emitter Calls.
-    }
-
-    @ReactMethod
-    public void activateShield(String hexColor) {
-        try {
-            if (mHandlerBlockScreenShot == null) {
-                mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
-            }
-            if (
-                getReactApplicationContext().getCurrentActivity() != null
-            ) {
-                mHandlerBlockScreenShot.post(() -> Objects.requireNonNull(
-                    getReactApplicationContext().getCurrentActivity()
-                ).getWindow().setFlags(
-                        WindowManager.LayoutParams.FLAG_SECURE, 
-                        WindowManager.LayoutParams.FLAG_SECURE
-                ));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (mScreenGuard != null) {
+            mScreenGuard.unregister();
+            mScreenGuard = null;
         }
     }
+
 
     @ReactMethod
     public void activateWithoutShield() {
