@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { NativeModules, NativeEventEmitter, Alert } from 'react-native';
+import { NativeModules, NativeEventEmitter } from 'react-native';
 
 import * as ScreenGuardConstants from './constant';
 import { ScreenGuardBlurDataObject, ScreenGuardImageDataObject } from './data';
@@ -53,7 +53,6 @@ export default {
    * @version v1.0.2-beta+
    */
   registerWithBlurView(data: ScreenGuardBlurDataObject, callback) {
-    Alert.alert('');
     console.warn(
       'Install the beta version to continue. Head over to README.md -> Install -> Beta section for how to install'
     );
