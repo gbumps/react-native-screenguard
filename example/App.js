@@ -41,9 +41,7 @@ function App() {
                     backgroundColor: Colors.black,
                 } },
                 React.createElement(Pressable, { onPress: () => {
-                        ScreenGuardModule.register(color, _ => {
-                            Alert.alert('register with color ' + color);
-                        });
+                        ScreenGuardModule.register(color);
                         setCurrentState('1');
                     } },
                     React.createElement(Text, { style: {
