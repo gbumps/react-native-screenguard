@@ -22,10 +22,12 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
     * [2.Linking](#2-linking)
   * [Usage](#usage)
      * [register](#1-register)
-     * [registerWithoutScreenguard](#2-registerwithoutscreenguard)
-     * [registerWithBlurView (beta)](#3-registerwithblurview)
-     * [registerWithImage (beta)](#4-registerwithimage)
-     * [unregister](#5-unregister)
+     * [registerWithoutScreenguard](#2-registerwithoutscreenguarddeprecated)(Deprecated)
+     * [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew)(New ✨)
+     * [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew)(New ✨)
+     * [registerWithBlurView (beta)](#5-registerwithblurview)
+     * [registerWithImage (beta)](#6-registerwithimage)
+     * [unregister](#7-unregister)
   * [Limitation](#limitation)
   * [Contributing](#contributing)
   * [License](#license)
@@ -108,8 +110,6 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 ## Usage
 
-`Note`: All features below contain a `callback` method after a screenshot or screen recording has been taken.
-
 #### 1. register
 
 - (iOS + Android) : Activate the screenguard with your custom background color layout. 
@@ -140,6 +140,8 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/da99c58c-fb79
 
 - (iOS + Android) Activate without screenguard, if you just want to detect and receive event callback only.
 
+- `Note:` This function is deprecated and will be removed from ver `4.0.0+`, consider using [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew) or [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew) instead.
+
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
 
@@ -149,7 +151,35 @@ ScreenGuardModule.registerWithoutScreenguard(
 });
 ```
 
-#### 3. registerWithBlurView
+#### 3. registerScreenshotEventListener
+
+- (iOS + Android) Activate a screenshot detector and receive an event callback after a screenshot has been triggered successfully.
+
+
+```js
+import ScreenGuardModule from 'react-native-screenguard';
+
+ScreenGuardModule.registerScreenshotEventListener(
+	(_) => {
+	.....do anything you want after the screenshot 
+});
+```
+
+#### 4. registerScreenRecordingEventListener
+
+- (iOS only) Activate a screen recording detector and receive an event callback after a record has done.
+
+
+```js
+import ScreenGuardModule from 'react-native-screenguard';
+
+ScreenGuardModule.registerScreenRecordingEventListener(
+	(_) => {
+	.....do anything you want after the screen record
+});
+```
+
+#### 5. registerWithBlurView
 
 - Beta version only. See how to install [here](#beta)
 
@@ -184,7 +214,7 @@ iOS
 
 https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4-4d5b-aa6c-82616ec8d1c5
 
-#### 4. registerWithImage
+#### 6. registerWithImage
 
 - Beta version only. See how to install [here](#beta)
 
@@ -243,13 +273,15 @@ ScreenGuardModule.unregister();
 
 ## Limitation
 
+- From `v0.3.6` and above, callbacks will not be activated on all register functions. You may have to activate it yourself by using [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew) or [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew) instead.
+
 - This library support blocking screenshot for iOS 13+, Android 5+ only.
 
 - The protection filter is already activated until you call `unregister`. So remember to call a function only <b>ONCE</b> for limitting errors and unexpected problems might happened during testing.
 
-- Lib does not support combine feature together yet. (For example you want to use `registerWithBlurView` combine with `register` to have a blur view with color behind,.....)
+- Lib does not support combine feature together. (For example you want to use `registerWithBlurView` combine with `register` to have a blur view with color behind,.....)
 
-- On Android, if you want to use callback, consider using `registerWithoutScreenguard` instead, as you may not receive any event after a screenshot has been triggered if using with `register`.
+- On Android, if you want to use callback, consider using `registerScreenShotEventListener` instead, as you may not receive any event after a screenshot has been triggered if using with `register`.
 
 
 ## Contributing

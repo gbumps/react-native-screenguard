@@ -89,9 +89,7 @@ function App(): JSX.Element {
           }}>
           <Pressable
             onPress={() => {
-              ScreenGuardModule.register(color, _ => {
-                Alert.alert('register with color ' + color);
-              });
+              ScreenGuardModule.register(color);
               setCurrentState('1');
             }}>
             <Text

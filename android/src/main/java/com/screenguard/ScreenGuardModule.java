@@ -28,6 +28,11 @@ import java.util.Objects;
 public class ScreenGuardModule extends ReactContextBaseJavaModule {
 
     public static final String NAME = "ScreenGuard";
+
+    public static final String SCREENSHOT_EVT = "onScreenShotCaptured";
+
+    public static final String SCREEN_RECORDING_EVT = "onScreenRecordingCaptured";
+
     private static Handler mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
 
     private ReactApplicationContext currentReactContext;
@@ -51,7 +56,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
                     currentReactContext,
                     (url) -> currentReactContext.getJSModule(
                             DeviceEventManagerModule.RCTDeviceEventEmitter.class
-                    ).emit("onSnapper", url)
+                    ).emit(ScreenGuardModule.SCREENSHOT_EVT, url)
             );
         }
         mScreenGuard.register();

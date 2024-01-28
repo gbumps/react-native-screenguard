@@ -4,6 +4,7 @@
     "paths": {
       "react-native-screenguard": ["index"]
     },
+    "declaration": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "esModuleInterop": true,
