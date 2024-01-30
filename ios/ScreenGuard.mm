@@ -1,7 +1,10 @@
 #import "ScreenGuard.h"
-#import <SDWebImage/SDWebImage.h>
 #import <React/RCTRootView.h>
 #import <React/RCTComponent.h>
+
+
+NSString * const SCREENSHOT_EVT = @"onScreenShotCaptured";
+NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 
 
 @implementation ScreenGuard
@@ -12,8 +15,9 @@ bool hasListeners;
 UITextField *textField;
 UIImageView *imageView;
 
+
 - (NSArray<NSString *> *)supportedEvents {
-  return @[@"onSnapper"];
+  return @[SCREENSHOT_EVT, SCREEN_RECORDING_EVT];
 }
 
 - (void)startObserving {
@@ -159,6 +163,7 @@ UIImageView *imageView;
 
 
 - (void)removeScreenShot {
+  UIWindow *window = [UIApplication sharedApplication].keyWindow;
   if (textField != nil) {
       if (imageView != nil) {
           [imageView setImage: nil];
@@ -167,6 +172,10 @@ UIImageView *imageView;
     [textField setSecureTextEntry: FALSE];
     [textField setBackgroundColor: [UIColor clearColor]];
     [textField setBackground: nil];
+    CALayer *textFieldLayer = textField.layer.sublayers.firstObject;
+    if ([window.layer.superlayer.sublayers containsObject:textFieldLayer]) {
+       [textFieldLayer removeFromSuperlayer];
+    }
   }
 }
 
@@ -186,38 +195,11 @@ UIImageView *imageView;
     return image;
 }
 
-RCT_EXPORT_METHOD(listenEvent) {
-  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-  NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
-  [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
-  [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
-                      object:nil
-                       queue:mainQueue
-                  usingBlock:^(NSNotification *notification) {
-    
-    if (hasListeners) {
-      [self emit:@"onSnapper" body:nil];
-    }
-  }];
-}
 
 RCT_EXPORT_METHOD(activateShield: (NSString *)screenshotBackgroundColor) {
-  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-  NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
   dispatch_async(dispatch_get_main_queue(), ^{
       [self secureViewWithBackgroundColor: screenshotBackgroundColor];
   });
-
-  [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
-  [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
-                      object:nil
-                       queue:mainQueue
-                  usingBlock:^(NSNotification *notification) {
-    
-    if (hasListeners) {
-      [self emit:@"onSnapper" body:nil];
-    }
-  }];
 }
 
 RCT_EXPORT_METHOD(activateWithoutShield) {
@@ -227,15 +209,26 @@ RCT_EXPORT_METHOD(activateWithoutShield) {
     [self removeScreenShot];
   });
   [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
+  [center removeObserver:UIScreenCapturedDidChangeNotification];
+  
   [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
                       object:nil
                        queue:mainQueue
                   usingBlock:^(NSNotification *notification) {
     
     if (hasListeners) {
-      [self emit:@"onSnapper" body:nil];
+      [self emit:SCREENSHOT_EVT body:nil];
     }
   }];
+    [center addObserverForName:UIScreenCapturedDidChangeNotification
+                        object:nil
+                         queue:mainQueue
+                    usingBlock:^(NSNotification *notification) {
+      
+      if (hasListeners) {
+        [self emit:SCREEN_RECORDING_EVT body:nil];
+      }
+    }];
 }
 
 RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSNumber *)borderRadius) {
@@ -245,24 +238,12 @@ RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSNumber *)borderRadius) 
     UIViewController *presentedViewController = RCTPresentedViewController();
     [self secureViewWithBlurView: borderRadius];
   });
-
-  [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
-  [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
-                      object:nil
-                       queue:mainQueue
-                  usingBlock:^(NSNotification *notification) {
-    
-    if (hasListeners) {
-      [self emit:@"onSnapper" body:nil];
-    }
-  }];
 }
 
 RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
   NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
   if (![data isKindOfClass:[NSDictionary class]]) {
-    //RCTLog(@"Error: Data parameter must be a dictionary.");
     return;
   }
     
@@ -281,17 +262,6 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
                 withAlignment: dataAlignment
           withBackgroundColor: backgroundColor];
   });
-
-  [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
-  [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
-                      object:nil
-                       queue:mainQueue
-                  usingBlock:^(NSNotification *notification) {
-    
-    if (hasListeners) {
-      [self emit:@"onSnapper" body:nil];
-    }
-  }];
 }
 
 RCT_EXPORT_METHOD(deactivateShield) {
@@ -299,11 +269,55 @@ RCT_EXPORT_METHOD(deactivateShield) {
     [self removeScreenShot];
   });
   [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
+    [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
+
+}
+
+RCT_EXPORT_METHOD(registerScreenShotEventListener) {
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+    [center removeObserver:self
+                      name:UIApplicationUserDidTakeScreenshotNotification
+                    object:nil];
+    [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
+                        object:nil
+                         queue:mainQueue
+                    usingBlock:^(NSNotification *notification) {
+      
+      if (hasListeners) {
+        [self emit:SCREENSHOT_EVT body:nil];
+      }
+    }];
+}
+
+RCT_EXPORT_METHOD(registerScreenRecordingEventListener) {
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+    [center removeObserver:self
+                      name:UIScreenCapturedDidChangeNotification
+                    object:nil];
+    [center addObserverForName:UIScreenCapturedDidChangeNotification
+                        object:nil
+                         queue:mainQueue
+                    usingBlock:^(NSNotification *notification) {
+      
+      if (hasListeners) {
+        [self emit:SCREEN_RECORDING_EVT body:nil];
+      }
+    }];
 }
 
 RCT_EXPORT_METHOD(removeEvent) {
-  [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+    [center removeObserver:self
+                      name:UIApplicationUserDidTakeScreenshotNotification
+                    object:nil];
+    [center removeObserver:self
+                      name:UIScreenCapturedDidChangeNotification
+                    object:nil];
 }
+
 
 @end
 

@@ -22,10 +22,12 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
     * [2.Linking](#2-linking)
   * [Usage](#usage)
      * [register](#1-register)
-     * [registerWithoutScreenguard](#2-registerwithoutscreenguard)
-     * [registerWithBlurView (beta)](#3-registerwithblurview)
-     * [registerWithImage (beta)](#4-registerwithimage)
-     * [unregister](#5-unregister)
+     * [registerWithoutScreenguard](#2-registerwithoutscreenguard)(Deprecated)
+     * [registerScreenshotEventListener](#3-registerscreenshoteventlistener)(New ✨)
+     * [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistener)(New ✨)
+     * [registerWithBlurView](#5-registerwithblurview)(beta)
+     * [registerWithImage](#6-registerwithimage)(beta)
+     * [unregister](#7-unregister)
   * [Limitation](#limitation)
   * [Contributing](#contributing)
   * [License](#license)
@@ -37,7 +39,7 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
 
   #### Stable
 
-- For protecting from being screenshoted and screen recording captured only, stable version is enough.
+- For protecting app from screenshot and screen recording captured, install stable version is enough.
 
 ```sh
 $ npm install react-native-screenguard --save
@@ -46,6 +48,7 @@ $ npm install react-native-screenguard --save
 ```sh
 $ yarn add react-native-screenguard
 ```
+Source code on `master` branch.
 
   #### Beta
 
@@ -61,6 +64,8 @@ $ yarn add react-native-screenguard@beta
 ```
 
 `Note`: Remember to `pod install` on ios and `gradle build` on Android again to take effect.
+
+Source code on `beta` branch.
 
 
 ## 2. Linking
@@ -103,49 +108,7 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 	https://docs.expo.dev/workflow/prebuild/
 
-#### Post-installation setting for Android `important`
-
-On Android, from `v0.1.4+`, remember to add a little more options as it won't work as expected.
-
-1. Open up `[your_project_path]/android/app/src/main/AndroidManifest.xml` and add activity `com.screenguard.ScreenGuardColorActivity` like below
-
-```xml
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application ......>
-      	<activity
-      	  android:name=".MainActivity" .........>
-      	  ..........
-      	</activity>
-
-	<activity android:name="com.screenguard.ScreenGuardColorActivity"
-            android:theme="@style/Theme.AppCompat.Translucent"
-        />
-    </application>
-</manifest>
-```
-
-2. Open up `[your_project_path]/android/app/src/main/res/values/styles.xml` and add style `Theme.AppCompat.Translucent` like below
-
-
-```xml
-<resource>
-
-<style name="AppTheme">your current app style theme.............</style>
-
-<style name="Theme.AppCompat.Translucent">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowAnimationStyle">@null</item>
-        <item name="android:windowSoftInputMode">adjustResize</item>
-    </style>
-</resource>
-```
-
 ## Usage
-
-`Note`: All features below contain a `callback` method after a screenshot or screen recording has been taken.
 
 #### 1. register
 
@@ -177,6 +140,8 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/da99c58c-fb79
 
 - (iOS + Android) Activate without screenguard, if you just want to detect and receive event callback only.
 
+- `Note:` This function is deprecated and will be removed from ver `4.0.0+`, consider using [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew) or [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew) instead.
+
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
 
@@ -186,7 +151,35 @@ ScreenGuardModule.registerWithoutScreenguard(
 });
 ```
 
-#### 3. registerWithBlurView
+#### 3. registerScreenshotEventListener
+
+- (iOS + Android) Activate a screenshot detector and receive an event callback after a screenshot has been triggered successfully.
+
+
+```js
+import ScreenGuardModule from 'react-native-screenguard';
+
+ScreenGuardModule.registerScreenshotEventListener(
+	(_) => {
+	.....do anything you want after the screenshot 
+});
+```
+
+#### 4. registerScreenRecordingEventListener
+
+- (iOS only) Activate a screen recording detector and receive an event callback after a record has done.
+
+
+```js
+import ScreenGuardModule from 'react-native-screenguard';
+
+ScreenGuardModule.registerScreenRecordingEventListener(
+	(_) => {
+	.....do anything you want after the screen record
+});
+```
+
+#### 5. registerWithBlurView
 
 - Beta version only. See how to install [here](#beta)
 
@@ -221,7 +214,7 @@ iOS
 
 https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4-4d5b-aa6c-82616ec8d1c5
 
-#### 4. registerWithImage
+#### 6. registerWithImage
 
 - Beta version only. See how to install [here](#beta)
 
@@ -280,13 +273,15 @@ ScreenGuardModule.unregister();
 
 ## Limitation
 
+- From `v0.3.6` and above, callbacks will not be activated on all register functions. You may have to activate it yourself by using [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew) or [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew) instead.
+
 - This library support blocking screenshot for iOS 13+, Android 5+ only.
 
 - The protection filter is already activated until you call `unregister`. So remember to call a function only <b>ONCE</b> for limitting errors and unexpected problems might happened during testing.
 
-- Lib does not support combine feature together yet. (For example you want to use `registerWithBlurView` combine with `register` to have a blur view with color behind,.....)
+- Lib does not support combine feature together. (For example you want to use `registerWithBlurView` combine with `register` to have a blur view with color behind,.....)
 
-- On Android, if you want to use callback, consider using `registerWithoutScreenguard` instead, as you may not receive any event after a screenshot has been triggered if using with `register`.
+- On Android, if you want to use callback, consider using `registerScreenShotEventListener` instead, as you may not receive any event after a screenshot has been triggered if using with `register`.
 
 
 ## Contributing

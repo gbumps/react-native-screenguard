@@ -1,6 +1,6 @@
 {
   "name": "react-native-screenguard",
-  "version": "1.0.4-beta",
+  "version": "1.0.6-beta",
   "private": false,
   "description": "A Native screenshot blocking library for React-Native developer, with background customizable after captured. Screenshot detector are also supported.",
   "main": "index",
@@ -80,9 +80,12 @@
   "keywords": [
     "react",
     "native",
+    "capture",
+    "protection",
     "screen-capture",
     "prevent",
     "screenshot",
+    "capture-protection",
     "ios",
     "android"
   ],

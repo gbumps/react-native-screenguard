@@ -1,23 +1,23 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+import { ScreenGuardBlurDataObject, ScreenGuardImageDataObject } from './data';
 
 import * as ScreenGuardConstants from './constant';
-import { ScreenGuardBlurDataObject, ScreenGuardImageDataObject } from './data';
 
 const { ScreenGuard } = NativeModules;
 
-var screenGuardEmitter: NativeEventEmitter | null = null;
+var screenShotEmitter: NativeEventEmitter | null = null;
+
+var screenRecordingEmitter: NativeEventEmitter | null = null;
 
 export default {
   /**
    * activate screenshot blocking (iOS 13+, Android 5+)
    * @param capturedBackgroundColor background color layout after taking a screenshot
-   * @param callback void callback after a screenshot or a video capture has been taken
    * @version v0.0.2+
    */
-  register(
-    capturedBackgroundColor: String | null,
-    callback: (arg: any) => void
-  ) {
+  register(capturedBackgroundColor: String | null) {
     let currentColor =
       capturedBackgroundColor == null ||
       capturedBackgroundColor.trim().length === 0 ||
@@ -28,21 +28,6 @@ export default {
         ? ScreenGuardConstants.BLACK_COLOR
         : capturedBackgroundColor;
     ScreenGuard.activateShield(currentColor);
-    if (screenGuardEmitter == null) {
-      screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
-    }
-    const _callback = (res) => {
-      callback(res);
-    };
-    const listenerCount = screenGuardEmitter.listenerCount(
-      ScreenGuardConstants.EVENT_NAME
-    );
-    if (!listenerCount) {
-      screenGuardEmitter.addListener(
-        ScreenGuardConstants.EVENT_NAME,
-        _callback
-      );
-    }
   },
 
   /**
@@ -89,43 +74,34 @@ export default {
     } else {
       ScreenGuard.activateShieldWithBlurView({ radius, timeAfterResume });
     }
-    if (screenGuardEmitter == null) {
-      screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
-    }
-    const _callback = (res) => {
-      callback(res);
-    };
-    const listenerCount = screenGuardEmitter.listenerCount(
-      ScreenGuardConstants.EVENT_NAME
-    );
-    if (!listenerCount) {
-      screenGuardEmitter.addListener(
-        ScreenGuardConstants.EVENT_NAME,
-        _callback
-      );
-    }
   },
 
   /**
    * activate without blocking screenshot (iOS 10+, Android 5+ )
    * For screenshot detector only, this will fit your need.
+   * @deprecated this function is deprecated and will be removed at least from ver 4.0.0+ or in the near future
+   * consider using registerScreenRecordingEventListener and registerScreenshotEventListener instead
    * @param void callback callback after a screenshot or a video screen capture has been taken
    * @version v0.0.6+
    */
   registerWithoutScreenguard(callback: (arg: any) => void) {
+    console.warn(
+      'This function is deprecated and will be removed at least from ver 4.0.0+',
+      'consider switching to registerScreenshotEventListener or registerScreenRecordingEventListener instead'
+    );
     ScreenGuard.activateWithoutShield();
-    if (screenGuardEmitter == null) {
-      screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
+    if (screenShotEmitter == null) {
+      screenShotEmitter = new NativeEventEmitter(ScreenGuard);
     }
     const _callback = (res) => {
       callback(res);
     };
-    const listenerCount = screenGuardEmitter.listenerCount(
-      ScreenGuardConstants.EVENT_NAME
+    const listenerCount = screenShotEmitter.listenerCount(
+      ScreenGuardConstants.SCREENSHOT_EVT
     );
     if (!listenerCount) {
-      screenGuardEmitter.addListener(
-        ScreenGuardConstants.EVENT_NAME,
+      screenShotEmitter.addListener(
+        ScreenGuardConstants.SCREENSHOT_EVT,
         _callback
       );
     }
@@ -178,21 +154,6 @@ export default {
       backgroundColor,
       timeAfterResume,
     });
-    if (screenGuardEmitter == null) {
-      screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
-    }
-    const _callback = (res) => {
-      callback(res);
-    };
-    const listenerCount = screenGuardEmitter.listenerCount(
-      ScreenGuardConstants.EVENT_NAME
-    );
-    if (!listenerCount) {
-      screenGuardEmitter.addListener(
-        ScreenGuardConstants.EVENT_NAME,
-        _callback
-      );
-    }
   },
 
   /**
@@ -201,11 +162,69 @@ export default {
    * @version v0.0.2+
    */
   unregister() {
-    // screenGuardEmitter.removeListener(EVENT_NAME);
     ScreenGuard.deactivateShield();
-    if (screenGuardEmitter != null) {
-      screenGuardEmitter.removeAllListeners(ScreenGuardConstants.EVENT_NAME);
-      screenGuardEmitter = null;
+    if (screenShotEmitter != null) {
+      screenShotEmitter.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
+      screenShotEmitter = null;
+    }
+    if (screenRecordingEmitter != null) {
+      screenRecordingEmitter.removeAllListeners(
+        ScreenGuardConstants.SCREEN_RECORDING_EVT
+      );
+      screenRecordingEmitter = null;
+    }
+  },
+
+  /**
+   * Screenshot event listener
+   * Register for screenshot event listener
+   * @version v0.3.6+
+   */
+  registerScreenshotEventListener(callback: (arg: any) => void) {
+    if (Platform.OS === 'ios') {
+      ScreenGuard.registerScreenShotEventListener();
+    }
+    if (screenShotEmitter == null) {
+      screenShotEmitter = new NativeEventEmitter(ScreenGuard);
+    }
+
+    const _onScreenCapture = (res) => {
+      callback(res);
+    };
+    const listenerCount = screenShotEmitter.listenerCount(
+      ScreenGuardConstants.SCREENSHOT_EVT
+    );
+    if (!listenerCount) {
+      screenShotEmitter.addListener(
+        ScreenGuardConstants.SCREENSHOT_EVT,
+        _onScreenCapture
+      );
+    }
+  },
+
+  /**
+   * Screen recording event listener (iOS only)
+   * Register for screen recording event listener
+   * @version v0.3.6+
+   */
+  registerScreenRecordingEventListener(callback: (arg: any) => void) {
+    if (Platform.OS === 'ios') {
+      ScreenGuard.registerScreenRecordingEventListener();
+      if (screenRecordingEmitter == null) {
+        screenRecordingEmitter = new NativeEventEmitter(ScreenGuard);
+      }
+      const _onScreenRecording = (res) => {
+        callback(res);
+      };
+      const listenerCount = screenRecordingEmitter.listenerCount(
+        ScreenGuardConstants.SCREEN_RECORDING_EVT
+      );
+      if (!listenerCount) {
+        screenRecordingEmitter.addListener(
+          ScreenGuardConstants.SCREEN_RECORDING_EVT,
+          _onScreenRecording
+        );
+      }
     }
   },
 };

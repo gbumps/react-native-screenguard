@@ -1,4 +1,5 @@
-declare const EVENT_NAME = 'onSnapper';
+declare const SCREENSHOT_EVT = 'onScreenShotCaptured';
+declare const SCREEN_RECORDING_EVT = 'onScreenRecordingCaptured';
 declare const BLACK_COLOR = '#000000';
 declare const REGEX: RegExp;
 declare const IMAGE_REGEX: RegExp;
@@ -16,7 +17,8 @@ declare const Alignment: {
   bottomRight: number;
 };
 export {
-  EVENT_NAME,
+  SCREENSHOT_EVT,
+  SCREEN_RECORDING_EVT,
   BLACK_COLOR,
   REGEX,
   IMAGE_REGEX,
