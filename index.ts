@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
-import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+import {
+  NativeModules,
+  NativeEventEmitter,
+  Platform,
+  Image,
+} from 'react-native';
 import { ScreenGuardBlurDataObject, ScreenGuardImageDataObject } from './data';
 
 import * as ScreenGuardConstants from './constant';
@@ -117,8 +121,27 @@ export default {
     data: ScreenGuardImageDataObject,
     callback: (arg: any) => void
   ) {
+    const resolveDefaultSource = (defaultSource) => {
+      if (!defaultSource) {
+        return null;
+      }
+
+      if (Platform.OS === 'android') {
+        // Android receives a URI string, and resolves into a Drawable using RN's methods.
+        const resolved = Image.resolveAssetSource(defaultSource);
+
+        if (resolved) {
+          return resolved.uri;
+        }
+
+        return null;
+      } // iOS or other number mapped assets
+      // In iOS the number is passed, and bridged automatically into a UIImage
+
+      return defaultSource;
+    };
+
     const {
-      source,
       width,
       height,
       backgroundColor = ScreenGuardConstants.BLACK_COLOR,
@@ -126,8 +149,10 @@ export default {
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
     } = data;
 
-    if (typeof source === 'object' && 'uri' in source) {
-      if (source.uri.length === 0) {
+    let currentSource = data.source;
+
+    if (typeof currentSource === 'object' && 'uri' in currentSource) {
+      if (currentSource.uri.length === 0) {
         throw new Error('uri must not be empty!');
       }
       if (width < 1) {
@@ -136,7 +161,7 @@ export default {
       if (height < 1) {
         throw new Error('height of image must bigger than 0!');
       }
-      if (!ScreenGuardConstants.IMAGE_REGEX.test(source.uri)) {
+      if (!ScreenGuardConstants.IMAGE_REGEX.test(currentSource.uri)) {
         console.warn(
           'Looks like the uri is not an image uri. Try to provide a correct image uri for better result!'
         );
@@ -146,10 +171,12 @@ export default {
       throw new Error(
         'alignment must be in range from 0 -> 8 only, values: \n topLeft: 0; \n topCenter: 1; \n topRight: 2; \n centerLeft: 3; \n Center: 4; \n centerRight: 5; \n bottomLeft: 6; \n bottomCenter: 7;\n bottomRight: 8; \n If you want to center the image, leave null instead!'
       );
+    } else if (typeof currentSource === 'number') {
+      currentSource = resolveDefaultSource(data.source);
     }
 
     ScreenGuard.activateShieldWithImage({
-      source,
+      source: currentSource,
       width,
       height,
       alignment,

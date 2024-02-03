@@ -1,4 +1,5 @@
 #import "ScreenGuard.h"
+#import "SDWebImage/SDWebImage.h"
 #import <React/RCTRootView.h>
 #import <React/RCTComponent.h>
 #import <React/RCTImageLoader.h>
@@ -69,7 +70,7 @@ UIImageView *imageView;
   } else return;
 }
 
-- (void)secureViewWithImage: (nonnull NSDictionary *) source 
+- (void)secureViewWithImage: (id) source
                   withWidth: (nonnull NSNumber *) width
                  withHeight: (nonnull NSNumber *) height
               withAlignment: (Alignment) alignment
@@ -88,68 +89,67 @@ UIImageView *imageView;
       
     imageView.translatesAutoresizingMaskIntoConstraints = NO;
     [imageView setClipsToBounds:TRUE];
-
-    NSString *uriImage = "";
-
-    if (source[@"uri"]) {
-      uriImage = source[@"uri"];
-    } else {
-      RCTImageLoader *imageLoader = [self.bridge moduleForClass:[RCTImageLoader class]];
-      NSURLRequest *request = [RCTConvert NSURLRequest:source];
-      NSURL *url = request.URL;
-      uriImage = url.absoluteString;
-    }
-    
-    SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
-
-      [imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
-                   placeholderImage: nil
-                            options: downloaderOptions
-                          completed: ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-        if (error) {
-            NSLog(@"Error loading image: %@", error);
-            return;
-        }
-        if (image) {
-           UIImage *resizedImage = [image sd_resizedImageWithSize: CGSizeMake([width doubleValue], [height doubleValue])
-                                                        scaleMode: SDImageScaleModeFill];
-           [imageView setImage: resizedImage];
-            switch (alignment) {
-                case AlignmentTopLeft:
-                    [imageView setContentMode: UIViewContentModeTopLeft];
-                    break;
-                case AlignmentTopCenter:
-                    [imageView setContentMode: UIViewContentModeTop];
-                    break;
-                case AlignmentTopRight:
-                    [imageView setContentMode: UIViewContentModeTopRight];
-                    break;
-                case AlignmentCenterLeft:
-                    [imageView setContentMode: UIViewContentModeLeft];
-                    break;
-                case AlignmentCenter:
-                    [imageView setContentMode: UIViewContentModeCenter];
-                    break;
-                case AlignmentCenterRight:
-                    [imageView setContentMode: UIViewContentModeRight];
-                    break;
-                case AlignmentBottomLeft:
-                    [imageView setContentMode: UIViewContentModeBottomLeft];
-                    break;
-                case AlignmentBottomCenter:
-                    [imageView setContentMode: UIViewContentModeBottom];
-                    break;
-                case AlignmentBottomRight:
-                    [imageView setContentMode: UIViewContentModeBottomRight];
-                    break;
+      
+  
+    if ([source isKindOfClass:[NSDictionary class]] && source[@"uri"]) {
+        //from an image uri
+        NSString *uriImage = source[@"uri"];
+        SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
+        [imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
+                     placeholderImage: nil
+                              options: downloaderOptions
+                            completed: ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            if (error) {
+                NSLog(@"Error loading image: %@", error);
+                return;
             }
-            [textField addSubview: imageView];
-            [textField sendSubviewToBack: imageView];
-        } else {
-          NSLog(@"No image data found.");
-          return;
-        }
-    }];
+            if (image) {
+               UIImage *resizedImage = [image sd_resizedImageWithSize: CGSizeMake([width doubleValue], [height doubleValue])
+                                                            scaleMode: SDImageScaleModeFill];
+               [imageView setImage: resizedImage];
+                switch (alignment) {
+                    case AlignmentTopLeft:
+                        [imageView setContentMode: UIViewContentModeTopLeft];
+                        break;
+                    case AlignmentTopCenter:
+                        [imageView setContentMode: UIViewContentModeTop];
+                        break;
+                    case AlignmentTopRight:
+                        [imageView setContentMode: UIViewContentModeTopRight];
+                        break;
+                    case AlignmentCenterLeft:
+                        [imageView setContentMode: UIViewContentModeLeft];
+                        break;
+                    case AlignmentCenter:
+                        [imageView setContentMode: UIViewContentModeCenter];
+                        break;
+                    case AlignmentCenterRight:
+                        [imageView setContentMode: UIViewContentModeRight];
+                        break;
+                    case AlignmentBottomLeft:
+                        [imageView setContentMode: UIViewContentModeBottomLeft];
+                        break;
+                    case AlignmentBottomCenter:
+                        [imageView setContentMode: UIViewContentModeBottom];
+                        break;
+                    case AlignmentBottomRight:
+                        [imageView setContentMode: UIViewContentModeBottomRight];
+                        break;
+                }
+            } else {
+              NSLog(@"No image data found.");
+              return;
+            }
+        }];
+    } else if ([source isKindOfClass:[NSData class]]) {
+        //from local React Native directory (usually require('./XXX.png'))
+        UIImage *resizedImage = [[UIImage imageWithData:source] sd_resizedImageWithSize: CGSizeMake([width doubleValue], [height doubleValue])
+                                                      scaleMode: SDImageScaleModeFill];
+        [imageView setImage: resizedImage];
+    }
+      
+    [textField addSubview: imageView];
+    [textField sendSubviewToBack: imageView];
     [textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
   } else return;
 }
@@ -258,7 +258,7 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
     return;
   }
     
-  NSDictionary *source = data[@"source"];
+  id source = data[@"source"];
   NSNumber *width = data[@"width"];
   NSNumber *height = data[@"height"];
   NSString *backgroundColor = data[@"backgroundColor"];
@@ -267,7 +267,7 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
     
   dispatch_async(dispatch_get_main_queue(), ^{
     UIViewController *presentedViewController = RCTPresentedViewController();
-    [self secureViewWithImage: uri
+    [self secureViewWithImage: source
                     withWidth: width
                    withHeight: height
                 withAlignment: dataAlignment
