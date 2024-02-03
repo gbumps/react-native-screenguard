@@ -147,7 +147,7 @@ public class ScreenGuardColorActivity extends ReactActivity {
     }
 
     private void doResumeByAction() {
-        FrameLayout frameLayout = findViewById(R.id.frameLayout); // Replace with your ImageView's ID
+        FrameLayout frameLayout = findViewById(R.id.frameLayout);
         ImageView imageView = findViewById(R.id.imageView);
         Handler handlerStopBlur = new Handler(Looper.getMainLooper());
         Runnable delayedFunction = () -> imageView.setImageBitmap(null);

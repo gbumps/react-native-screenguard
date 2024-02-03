@@ -172,9 +172,9 @@ function App(): JSX.Element {
             onPress={() => {
               ScreenGuardModule.registerWithImage(
                 {
+                  source: require('./69bd42d799ab4fe1e0bbb4ee01d36be0.JPG'),
                   height: 150,
                   width: 200,
-                  uri: 'https://www.icegif.com/wp-content/uploads/2022/09/icegif-386.gif',
                   backgroundColor: color,
                 },
                 _ => {

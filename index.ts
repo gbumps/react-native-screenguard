@@ -118,7 +118,7 @@ export default {
     callback: (arg: any) => void
   ) {
     const {
-      uri,
+      source,
       width,
       height,
       backgroundColor = ScreenGuardConstants.BLACK_COLOR,
@@ -126,19 +126,21 @@ export default {
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
     } = data;
 
-    if (uri.length === 0) {
-      throw new Error('uri must not be empty!');
-    }
-    if (width < 1) {
-      throw new Error('width of image must bigger than 0!');
-    }
-    if (height < 1) {
-      throw new Error('height of image must bigger than 0!');
-    }
-    if (!ScreenGuardConstants.IMAGE_REGEX.test(data.uri)) {
-      console.warn(
-        'Looks like the uri is not an image uri. Try to provide a correct image uri for better result!'
-      );
+    if (typeof source === 'object' && 'uri' in source) {
+      if (source.uri.length === 0) {
+        throw new Error('uri must not be empty!');
+      }
+      if (width < 1) {
+        throw new Error('width of image must bigger than 0!');
+      }
+      if (height < 1) {
+        throw new Error('height of image must bigger than 0!');
+      }
+      if (!ScreenGuardConstants.IMAGE_REGEX.test(source.uri)) {
+        console.warn(
+          'Looks like the uri is not an image uri. Try to provide a correct image uri for better result!'
+        );
+      }
     }
     if (alignment != null && (alignment > 8 || alignment < 0)) {
       throw new Error(
@@ -147,7 +149,7 @@ export default {
     }
 
     ScreenGuard.activateShieldWithImage({
-      uri,
+      source,
       width,
       height,
       alignment,

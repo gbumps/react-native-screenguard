@@ -29,7 +29,7 @@ NSString* _Nullable NSStringFromAlignment(Alignment alignment);
 - (void)initTextField: (UIView*_Nonnull)view;
 - (void)secureViewWithBackgroundColor: (NSString *_Nonnull)color;
 - (void)secureViewWithBlurView: (nonnull NSNumber *)radius;
-- (void)secureViewWithImage: (nonnull NSString *) uriImage
+- (void)secureViewWithImage: (nonnull NSDictionary *) source 
                   withWidth: (nonnull NSNumber *) width
                  withHeight: (nonnull NSNumber *) height
               withAlignment: (Alignment) alignment

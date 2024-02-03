@@ -1,7 +1,7 @@
 #import "ScreenGuard.h"
 #import <React/RCTRootView.h>
 #import <React/RCTComponent.h>
-
+#import <React/RCTImageLoader.h>
 
 NSString * const SCREENSHOT_EVT = @"onScreenShotCaptured";
 NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
@@ -69,7 +69,7 @@ UIImageView *imageView;
   } else return;
 }
 
-- (void)secureViewWithImage: (nonnull NSString *) uriImage
+- (void)secureViewWithImage: (nonnull NSDictionary *) source 
                   withWidth: (nonnull NSNumber *) width
                  withHeight: (nonnull NSNumber *) height
               withAlignment: (Alignment) alignment
@@ -88,6 +88,17 @@ UIImageView *imageView;
       
     imageView.translatesAutoresizingMaskIntoConstraints = NO;
     [imageView setClipsToBounds:TRUE];
+
+    NSString *uriImage = "";
+
+    if (source[@"uri"]) {
+      uriImage = source[@"uri"];
+    } else {
+      RCTImageLoader *imageLoader = [self.bridge moduleForClass:[RCTImageLoader class]];
+      NSURLRequest *request = [RCTConvert NSURLRequest:source];
+      NSURL *url = request.URL;
+      uriImage = url.absoluteString;
+    }
     
     SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
 
@@ -247,7 +258,7 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
     return;
   }
     
-  NSString *uri = data[@"uri"];
+  NSDictionary *source = data[@"source"];
   NSNumber *width = data[@"width"];
   NSNumber *height = data[@"height"];
   NSString *backgroundColor = data[@"backgroundColor"];

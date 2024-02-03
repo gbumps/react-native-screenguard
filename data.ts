@@ -1,6 +1,6 @@
 export interface ScreenGuardImageDataObject {
   /**
-   * uri of image which you want to show.
+   * uri of network image which you want to show, or from your project local image source
    *
    * on iOS, accepted jpg | jpeg | png | gif | bmp | webp | svg | tiff | ico | heif (ios 11+)
    *
@@ -11,7 +11,7 @@ export interface ScreenGuardImageDataObject {
    * @warning when uri is not an image uri or empty
    *
    */
-  uri: string;
+  source: { uri: string } | number;
   /**
    * width of the image
    *
