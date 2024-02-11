@@ -140,7 +140,7 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/da99c58c-fb79
 
 - (iOS + Android) Activate without screenguard, if you just want to detect and receive event callback only.
 
-- `Note:` This function is deprecated and will be removed from ver `4.0.0+`, consider using [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew) or [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew) instead.
+- `Note:` This function is deprecated and will be removed from ver `0.4.0+`, consider using [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew) or [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew) instead.
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
