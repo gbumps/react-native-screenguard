@@ -1,5 +1,6 @@
 package com.screenguard;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,7 +31,10 @@ import java.io.File;
 import jp.wasabeef.blurry.Blurry;
 
 
-public class ScreenGuardColorActivity extends ReactActivity {
+public class ScreenGuardColorActivity extends ReactActivity  {
+
+    public static final String SCREENGUARD_COLOR_ACTIVITY_CLOSE = 
+            "com.screenguard.ScreenGuardColorActivity.close";
 
     private ScreenGuardBlurData screenGuardBlurData;
 
@@ -51,6 +55,7 @@ public class ScreenGuardColorActivity extends ReactActivity {
         }
     };
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +84,7 @@ public class ScreenGuardColorActivity extends ReactActivity {
             }
         }
         overridePendingTransition(0, 0);
-        IntentFilter intentFilter = new IntentFilter("com.screenguard.ScreenGuardColorActivity.close");
+        IntentFilter intentFilter = new IntentFilter(SCREENGUARD_COLOR_ACTIVITY_CLOSE);
         registerReceiver(closeReceiver, intentFilter);
     }
 
@@ -193,6 +198,6 @@ public class ScreenGuardColorActivity extends ReactActivity {
                                 (int) Math.round(screenGuardImageData.width),
                                 (int) Math.round(screenGuardImageData.height))
                         .into(imgView);
-            }
+        }
     }
 }
