@@ -228,7 +228,9 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4
 
   * `height`: height of the image
 
-  * `uri` <b>(required)</b>: uri of the image, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
+  * `source` <b>(required)</b>: uri from network image or from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
+
+  * `defaultSource`: default source if network image uri failed to load, from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg);
 
   * `backgroundColor`: background color behind the image, just like `register`.
 
@@ -240,7 +242,10 @@ import ScreenGuardModule from 'react-native-screenguard';
 const data = {
   height: 150,
   width: 200,
-  uri: 'https://www.icegif.com/wp-content/uploads/2022/09/icegif-386.gif',
+  source: {
+    uri: 'https://www.icegif.com/wp-content/uploads/2022/09/icegif-386.gif',
+  },
+  defaultSource: require('./images/test.png'),
   backgroundColor: color,
   alignment: 5 // Alignment.centerRight
 },

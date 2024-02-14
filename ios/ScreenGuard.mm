@@ -70,7 +70,8 @@ UIImageView *imageView;
   } else return;
 }
 
-- (void)secureViewWithImage: (id) source
+- (void)secureViewWithImage: (nonnull NSDictionary *) source
+          withDefaultSource: (nullable NSDictionary *) defaultSource
                   withWidth: (nonnull NSNumber *) width
                  withHeight: (nonnull NSNumber *) height
               withAlignment: (Alignment) alignment
@@ -90,62 +91,61 @@ UIImageView *imageView;
     imageView.translatesAutoresizingMaskIntoConstraints = NO;
     [imageView setClipsToBounds:TRUE];
       
-  
-    if ([source isKindOfClass:[NSDictionary class]] && source[@"uri"]) {
-        //from an image uri
+    if (source[@"uri"] != nil) {
         NSString *uriImage = source[@"uri"];
+        NSString *uriDefaultSource = defaultSource[@"uri"];
+        
+        NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
+        
         SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
+        
+        UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
+        
         [imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
-                     placeholderImage: nil
+                     placeholderImage: thumbnailImage
                               options: downloaderOptions
                             completed: ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-            if (error) {
+            UIImage *resizedImage;
+            if (error || image == nil) {
                 NSLog(@"Error loading image: %@", error);
-                return;
+                resizedImage = [thumbnailImage sd_resizedImageWithSize: CGSizeMake([width doubleValue], [height doubleValue])
+                            scaleMode: SDImageScaleModeFill];
             }
-            if (image) {
-               UIImage *resizedImage = [image sd_resizedImageWithSize: CGSizeMake([width doubleValue], [height doubleValue])
-                                                            scaleMode: SDImageScaleModeFill];
-               [imageView setImage: resizedImage];
-                switch (alignment) {
-                    case AlignmentTopLeft:
-                        [imageView setContentMode: UIViewContentModeTopLeft];
-                        break;
-                    case AlignmentTopCenter:
-                        [imageView setContentMode: UIViewContentModeTop];
-                        break;
-                    case AlignmentTopRight:
-                        [imageView setContentMode: UIViewContentModeTopRight];
-                        break;
-                    case AlignmentCenterLeft:
-                        [imageView setContentMode: UIViewContentModeLeft];
-                        break;
-                    case AlignmentCenter:
-                        [imageView setContentMode: UIViewContentModeCenter];
-                        break;
-                    case AlignmentCenterRight:
-                        [imageView setContentMode: UIViewContentModeRight];
-                        break;
-                    case AlignmentBottomLeft:
-                        [imageView setContentMode: UIViewContentModeBottomLeft];
-                        break;
-                    case AlignmentBottomCenter:
-                        [imageView setContentMode: UIViewContentModeBottom];
-                        break;
-                    case AlignmentBottomRight:
-                        [imageView setContentMode: UIViewContentModeBottomRight];
-                        break;
-                }
-            } else {
-              NSLog(@"No image data found.");
-              return;
+            else if (image != nil) {
+               resizedImage = [image sd_resizedImageWithSize: CGSizeMake([width doubleValue], [height doubleValue])
+                                     scaleMode: SDImageScaleModeFill];
             }
+            [imageView setImage: resizedImage];
+             switch (alignment) {
+                 case AlignmentTopLeft:
+                     [imageView setContentMode: UIViewContentModeTopLeft];
+                     break;
+                 case AlignmentTopCenter:
+                     [imageView setContentMode: UIViewContentModeTop];
+                     break;
+                 case AlignmentTopRight:
+                     [imageView setContentMode: UIViewContentModeTopRight];
+                     break;
+                 case AlignmentCenterLeft:
+                     [imageView setContentMode: UIViewContentModeLeft];
+                     break;
+                 case AlignmentCenter:
+                     [imageView setContentMode: UIViewContentModeCenter];
+                     break;
+                 case AlignmentCenterRight:
+                     [imageView setContentMode: UIViewContentModeRight];
+                     break;
+                 case AlignmentBottomLeft:
+                     [imageView setContentMode: UIViewContentModeBottomLeft];
+                     break;
+                 case AlignmentBottomCenter:
+                     [imageView setContentMode: UIViewContentModeBottom];
+                     break;
+                 case AlignmentBottomRight:
+                     [imageView setContentMode: UIViewContentModeBottomRight];
+                     break;
+             }
         }];
-    } else if ([source isKindOfClass:[NSData class]]) {
-        //from local React Native directory (usually require('./XXX.png'))
-        UIImage *resizedImage = [[UIImage imageWithData:source] sd_resizedImageWithSize: CGSizeMake([width doubleValue], [height doubleValue])
-                                                      scaleMode: SDImageScaleModeFill];
-        [imageView setImage: resizedImage];
     }
       
     [textField addSubview: imageView];
@@ -213,6 +213,7 @@ RCT_EXPORT_METHOD(activateShield: (NSString *)screenshotBackgroundColor) {
   });
 }
 
+// deprecated
 RCT_EXPORT_METHOD(activateWithoutShield) {
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
   NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
@@ -258,7 +259,8 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
     return;
   }
     
-  id source = data[@"source"];
+  NSDictionary *source = data[@"source"];
+  NSDictionary *defaultSource = data[@"defaultSource"];
   NSNumber *width = data[@"width"];
   NSNumber *height = data[@"height"];
   NSString *backgroundColor = data[@"backgroundColor"];
@@ -268,6 +270,7 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
   dispatch_async(dispatch_get_main_queue(), ^{
     UIViewController *presentedViewController = RCTPresentedViewController();
     [self secureViewWithImage: source
+            withDefaultSource: defaultSource
                     withWidth: width
                    withHeight: height
                 withAlignment: dataAlignment

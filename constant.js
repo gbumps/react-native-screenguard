@@ -1,3 +1,4 @@
+import { Image } from 'react-native';
 const SCREENSHOT_EVT = 'onScreenShotCaptured';
 const SCREEN_RECORDING_EVT = 'onScreenRecordingCaptured';
 const BLACK_COLOR = '#000000';
@@ -16,6 +17,16 @@ const Alignment = {
   bottomCenter: 7,
   bottomRight: 8,
 };
+const resolveAssetSource = (defaultSource) => {
+  if (!defaultSource) {
+    return null;
+  }
+  const resolved = Image.resolveAssetSource(defaultSource);
+  if (resolved) {
+    return resolved.uri;
+  }
+  return defaultSource;
+};
 export {
   SCREENSHOT_EVT,
   SCREEN_RECORDING_EVT,
@@ -25,4 +36,5 @@ export {
   Alignment,
   RADIUS_DEFAULT,
   TIME_DELAYED,
+  resolveAssetSource,
 };

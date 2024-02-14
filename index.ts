@@ -1,10 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  NativeModules,
-  NativeEventEmitter,
-  Platform,
-  Image,
-} from 'react-native';
+import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import { ScreenGuardBlurDataObject, ScreenGuardImageDataObject } from './data';
 
 import * as ScreenGuardConstants from './constant';
@@ -41,7 +35,7 @@ export default {
    * @version v0.1.2+ (iOS)
    * @version v1.0.0+ (Android)
    */
-  registerWithBlurView(data: ScreenGuardBlurDataObject, callback) {
+  registerWithBlurView(data: ScreenGuardBlurDataObject) {
     const {
       radius = ScreenGuardConstants.RADIUS_DEFAULT,
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
@@ -83,7 +77,7 @@ export default {
   /**
    * activate without blocking screenshot (iOS 10+, Android 5+ )
    * For screenshot detector only, this will fit your need.
-   * @deprecated this function is deprecated and will be removed at least from ver 4.0.0+ or in the near future
+   * @deprecated this function is deprecated and will be removed at least from ver 0.4.0+ or in the near future
    * consider using registerScreenRecordingEventListener and registerScreenshotEventListener instead
    * @param void callback callback after a screenshot or a video screen capture has been taken
    * @version v0.0.6+
@@ -117,66 +111,56 @@ export default {
    * @param callback void callback after a screenshot or a video screen capture has been taken
    * @version v1.0.2+
    */
-  registerWithImage(
-    data: ScreenGuardImageDataObject,
-    callback: (arg: any) => void
-  ) {
-    const resolveDefaultSource = (defaultSource) => {
-      if (!defaultSource) {
-        return null;
-      }
-
-      if (Platform.OS === 'android') {
-        // Android receives a URI string, and resolves into a Drawable using RN's methods.
-        const resolved = Image.resolveAssetSource(defaultSource);
-
-        if (resolved) {
-          return resolved.uri;
-        }
-
-        return null;
-      } // iOS or other number mapped assets
-      // In iOS the number is passed, and bridged automatically into a UIImage
-
-      return defaultSource;
-    };
-
-    const {
+  registerWithImage(data: ScreenGuardImageDataObject) {
+    let {
+      source,
       width,
       height,
       backgroundColor = ScreenGuardConstants.BLACK_COLOR,
       alignment = ScreenGuardConstants.Alignment.center,
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
+      defaultSource,
     } = data;
 
-    let currentSource = data.source;
+    let newDefaultSource: { uri: string } | null = null;
 
-    if (typeof currentSource === 'object' && 'uri' in currentSource) {
-      if (currentSource.uri.length === 0) {
+    if (typeof source === 'object' && 'uri' in source) {
+      if (source.uri.length === 0) {
         throw new Error('uri must not be empty!');
       }
-      if (width < 1) {
+      if (width < 1 || isNaN(width)) {
         throw new Error('width of image must bigger than 0!');
       }
-      if (height < 1) {
+      if (height < 1 || isNaN(height)) {
         throw new Error('height of image must bigger than 0!');
       }
-      if (!ScreenGuardConstants.IMAGE_REGEX.test(currentSource.uri)) {
+      if (!ScreenGuardConstants.IMAGE_REGEX.test(source.uri)) {
         console.warn(
           'Looks like the uri is not an image uri. Try to provide a correct image uri for better result!'
         );
       }
+      if (defaultSource == null) {
+        console.warn(
+          'Consider adding a default source to display image that cannot be loaded from uri!'
+        );
+      } else {
+        newDefaultSource = {
+          uri: ScreenGuardConstants.resolveAssetSource(data.source),
+        };
+      }
+    } else if (typeof source === 'number') {
+      source = { uri: ScreenGuardConstants.resolveAssetSource(data.source) };
     }
+
     if (alignment != null && (alignment > 8 || alignment < 0)) {
       throw new Error(
         'alignment must be in range from 0 -> 8 only, values: \n topLeft: 0; \n topCenter: 1; \n topRight: 2; \n centerLeft: 3; \n Center: 4; \n centerRight: 5; \n bottomLeft: 6; \n bottomCenter: 7;\n bottomRight: 8; \n If you want to center the image, leave null instead!'
       );
-    } else if (typeof currentSource === 'number') {
-      currentSource = resolveDefaultSource(data.source);
     }
 
     ScreenGuard.activateShieldWithImage({
-      source: currentSource,
+      source,
+      defaultSource: newDefaultSource,
       width,
       height,
       alignment,

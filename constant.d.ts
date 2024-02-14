@@ -16,6 +16,7 @@ declare const Alignment: {
   bottomCenter: number;
   bottomRight: number;
 };
+declare const resolveAssetSource: (defaultSource: any) => any;
 export {
   SCREENSHOT_EVT,
   SCREEN_RECORDING_EVT,
@@ -25,4 +26,5 @@ export {
   Alignment,
   RADIUS_DEFAULT,
   TIME_DELAYED,
+  resolveAssetSource,
 };

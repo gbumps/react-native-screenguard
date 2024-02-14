@@ -17,6 +17,15 @@ export interface ScreenGuardImageDataObject {
       }
     | number;
   /**
+   * default source image from your local project directory,
+   *
+   * useful when the current source image uri cannot be loaded or error
+   *
+   * @warning when source is uri image and default source == null
+   *
+   */
+  defaultSource?: number;
+  /**
    * width of the image
    *
    * @required

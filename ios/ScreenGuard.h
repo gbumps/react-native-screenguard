@@ -9,7 +9,6 @@
 #import <React/RCTConvert.h>
 
 
-
 typedef NS_ENUM(NSInteger, Alignment) {
     AlignmentTopLeft,
     AlignmentTopCenter,
@@ -25,11 +24,10 @@ typedef NS_ENUM(NSInteger, Alignment) {
 NSString* _Nullable NSStringFromAlignment(Alignment alignment);
 
 @interface ScreenGuard : EventEmitter
-- (void)unregister;
-- (void)initTextField: (UIView*_Nonnull)view;
 - (void)secureViewWithBackgroundColor: (NSString *_Nonnull)color;
 - (void)secureViewWithBlurView: (nonnull NSNumber *)radius;
-- (void)secureViewWithImage: (nonnull NSDictionary *) source 
+- (void)secureViewWithImage: (nonnull NSDictionary *) source
+          withDefaultSource: (nullable NSDictionary *) defaultSource
                   withWidth: (nonnull NSNumber *) width
                  withHeight: (nonnull NSNumber *) height
               withAlignment: (Alignment) alignment
