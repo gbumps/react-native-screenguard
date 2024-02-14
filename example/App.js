@@ -83,7 +83,7 @@ function App() {
                             radius: 34,
                             timeAfterResume: 1000,
                         };
-                        ScreenGuardModule.registerWithBlurView(data, (_) => Alert.alert('register with blur radius 35'));
+                        ScreenGuardModule.registerWithBlurView(data);
                         setCurrentState(() => '4');
                     } },
                     React.createElement(Text, { style: {
@@ -96,8 +96,6 @@ function App() {
                             height: 150,
                             width: 200,
                             backgroundColor: color,
-                        }, _ => {
-                            Alert.alert('register without screenguard');
                         });
                         setCurrentState('6');
                     } },

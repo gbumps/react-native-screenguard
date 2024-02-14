@@ -155,9 +155,7 @@ function App(): JSX.Element {
                 radius: 34,
                 timeAfterResume: 1000,
               };
-              ScreenGuardModule.registerWithBlurView(data, (_: any) =>
-                Alert.alert('register with blur radius 35'),
-              );
+              ScreenGuardModule.registerWithBlurView(data);
               setCurrentState(() => '4');
             }}>
             <Text
@@ -176,10 +174,7 @@ function App(): JSX.Element {
                   height: 150,
                   width: 200,
                   backgroundColor: color,
-                },
-                _ => {
-                  Alert.alert('register without screenguard');
-                },
+                }
               );
               setCurrentState('6');
             }}>
