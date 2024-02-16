@@ -37,6 +37,8 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
 
   ## 1. Install
 
+This library is separated into 2 version: `stable` and `beta` versions for different purpose.  
+
   #### Stable
 
 - For protecting app from screenshot and screen recording captured, install stable version is enough.
@@ -224,9 +226,9 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4
 
   * `height`: height of the image
 
-  * `source` <b>(required)</b>: uri from network image or from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
+  * `source` <b>(required)</b>: uri from network image or from local project `require`, accept all kinds of images (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
 
-  * `defaultSource`: default source if network image uri failed to load, from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg);
+  * `defaultSource`: default source if network image uri failed to load, from local project `require`, accept all kinds of images;
 
   * `backgroundColor`: background color behind the image, just like `register`.
 
