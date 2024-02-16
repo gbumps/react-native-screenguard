@@ -122,9 +122,7 @@ import ScreenGuardModule from 'react-native-screenguard';
 ScreenGuardModule.register(
 	//insert any hex color you want here, default black if null or empty
 	'#0F9D58',
-	(_) => {
-	.....do anything you want after the screenshot 
-});
+);
 ```
 
 iOS
@@ -203,9 +201,7 @@ const data = {
 };
 
 //register with a blur radius of 35
-ScreenGuardModule.registerWithBlurView(data, (_) => {
-	.....do anything you want after the screenshot 
-});
+ScreenGuardModule.registerWithBlurView(data);
 ```
 
  `Explain`: Set blur radius smaller than 15 won't help much, as content still look very clear and easy to read. Same with bigger than 50 but content will be shrinked and vanished inside the view, blurring is meaningless. So, between 15 and 50 is enough.
@@ -228,7 +224,9 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4
 
   * `height`: height of the image
 
-  * `uri` <b>(required)</b>: uri of the image, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
+  * `source` <b>(required)</b>: uri from network image or from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
+
+  * `defaultSource`: default source if network image uri failed to load, from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg);
 
   * `backgroundColor`: background color behind the image, just like `register`.
 
@@ -240,16 +238,28 @@ import ScreenGuardModule from 'react-native-screenguard';
 const data = {
   height: 150,
   width: 200,
-  uri: 'https://www.icegif.com/wp-content/uploads/2022/09/icegif-386.gif',
+  source: {
+    uri: 'https://www.icegif.com/wp-content/uploads/2022/09/icegif-386.gif',
+  },
+  defaultSource: require('./images/test.png'),
   backgroundColor: color,
   alignment: 5 // Alignment.centerRight
 },
 //register with an image
-ScreenGuardModule.registerWithImage(
-  data,
-	(_) => {
-	.....do anything you want after the screenshot 
-});
+ScreenGuardModule.registerWithImage(data);
+```
+
+
+```js
+import ScreenGuardModule from 'react-native-screenguard';
+
+const dataRequire = {
+  height: 150,
+  width: 200,
+  source: require('./images/test.png'),
+  backgroundColor: color,
+},
+ScreenGuardModule.registerWithImage(dataRequire);
 ```
 
 `Warning`: This feature is still in experimental on Android, so please use with caution as some unexpected behaviour might occurs.
