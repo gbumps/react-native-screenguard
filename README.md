@@ -69,6 +69,8 @@ $ yarn add react-native-screenguard@beta
 
 Source code on `beta` branch.
 
+If you want to test on iOS simulator, open Simulator, on the top screen, navigate to `Device` -> `Trigger Screenshot`. This is applied to iOS 14+.
+
 
 ## 2. Linking
 
