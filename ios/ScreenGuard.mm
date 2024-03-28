@@ -139,7 +139,25 @@ RCT_EXPORT_METHOD(registerScreenShotEventListener) {
                     usingBlock:^(NSNotification *notification) {
       
       if (hasListeners) {
-        [self emit:SCREENSHOT_EVT body:nil];
+        UIImage *imageView = [self convertViewToImage:presentedViewController.view.superview];
+        NSData *data = UIImagePNGRepresentation(image);
+        if (!data) {
+          // reject(@"error", @"Failed to convert image to PNG", nil);
+          return;
+        }
+
+        NSString *tempDir = NSTemporaryDirectory();
+        NSString *fileName = [[NSUUID UUID] UUIDString];
+        NSString *filePath = [tempDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", fileName]];
+
+        NSError *error = nil;
+        BOOL success = [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
+        if (!success) {
+          [self emit:SCREENSHOT_EVT body:nil];
+        } else {
+          NSDictionary *result = @{@"path": filePath, @"name": fileName};
+          [self emit:SCREENSHOT_EVT body: result];
+        }
       }
     }];
 }
