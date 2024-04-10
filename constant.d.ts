@@ -1,6 +1,6 @@
-declare const SCREENSHOT_EVT = 'onScreenShotCaptured';
-declare const SCREEN_RECORDING_EVT = 'onScreenRecordingCaptured';
-declare const BLACK_COLOR = '#000000';
+declare const SCREENSHOT_EVT = "onScreenShotCaptured";
+declare const SCREEN_RECORDING_EVT = "onScreenRecordingCaptured";
+declare const BLACK_COLOR = "#000000";
 declare const REGEX: RegExp;
 declare const IMAGE_REGEX: RegExp;
 declare const RADIUS_DEFAULT = 15;

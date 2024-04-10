@@ -3,13 +3,12 @@ package com.screenguard;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -19,10 +18,9 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Objects;
+import com.screenguard.helper.ScreenGuardHelper;
+import com.screenguard.model.ScreenGuardBlurData;
+import com.screenguard.model.ScreenGuardImageData;
 
 @ReactModule(name = ScreenGuardModule.NAME)
 public class ScreenGuardModule extends ReactContextBaseJavaModule {
@@ -39,23 +37,24 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
     private ScreenGuard mScreenGuard;
 
     public ScreenGuardModule(ReactApplicationContext reactContext) {
-      super(reactContext);
-      currentReactContext = reactContext;
+        super(reactContext);
+        currentReactContext = reactContext;
     }
 
     @Override
     @NonNull
     public String getName() {
-      return NAME;
+        return NAME;
     }
 
     @ReactMethod
-    public void listenEvent() {
+    public void registerScreenShotEventListener(Boolean isCaptureScreenshotFile) {
         if (mScreenGuard == null) {
             mScreenGuard = new ScreenGuard(
                     currentReactContext,
+                    isCaptureScreenshotFile,
                     (url) -> currentReactContext.getJSModule(
-                            DeviceEventManagerModule.RCTDeviceEventEmitter.class
+                          DeviceEventManagerModule.RCTDeviceEventEmitter.class
                     ).emit(ScreenGuardModule.SCREENSHOT_EVT, url)
             );
         }
@@ -64,20 +63,20 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void addListener(String eventName) {
-        if (mScreenGuard == null) {
-            mScreenGuard = new ScreenGuard(
-                    currentReactContext,
-                    (url) -> currentReactContext.getJSModule(
-                            DeviceEventManagerModule.RCTDeviceEventEmitter.class
-                    ).emit(eventName, url)
-            );
-        }
-        mScreenGuard.register();
+//        if (mScreenGuard == null) {
+//            mScreenGuard = new ScreenGuard(
+//                    currentReactContext,
+//                    (url) -> currentReactContext.getJSModule(
+//                            DeviceEventManagerModule.RCTDeviceEventEmitter.class
+//                    ).emit(eventName, url)
+//            );
+//        }
+//        mScreenGuard.register();
         // Keep: Required for RN built in Event Emitter Calls.
     }
 
     @ReactMethod
-    public void removeListeners(Integer count) {
+    public void removeListeners(int count) {
         // Keep: Required for RN built in Event Emitter Calls.
         if (mScreenGuard != null) {
             mScreenGuard.unregister();
@@ -129,49 +128,22 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             if (currentReactContext == null) {
                 currentReactContext = getReactApplicationContext();
             }
+            currentReactContext.sendBroadcast(
+                new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE)
+            );
             Activity currentActivity = currentReactContext.getCurrentActivity();
-                if (currentActivity != null) {
-                   mHandlerBlockScreenShot.post(() ->
-                           currentActivity
-                     .getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE));
-                    mHandlerBlockScreenShot = null;
-                } else {
-                    Log.w("ACTIVITY_SCREENSHOT", "handler is null");
-                }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Bitmap captureReactView(View view) {
-        Bitmap bitmap = Bitmap.createBitmap(
-                view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
-        return bitmap;
-    }
-
-    private String saveBitmapToFile(Bitmap bitmap) {
-        try {
-            File imagePath = new File(
-                    getReactApplicationContext().getCacheDir(), "screenshot_image");
-            if (!imagePath.exists()) {
-                imagePath.mkdirs();
+            if (currentActivity != null) {
+               mHandlerBlockScreenShot.post(() ->
+                       currentActivity
+                 .getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE));
+                mHandlerBlockScreenShot = null;
+            } else {
+                Log.w("ACTIVITY_SCREENSHOT", "handler is null");
             }
-            Calendar calendar = Calendar.getInstance();
-            long time = calendar.getTimeInMillis();
-
-            File imageFile = new File(imagePath, "screenshot_" + time + ".png");
-
-            FileOutputStream fos = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            fos.flush();
-            fos.close();
-
-            return imageFile.getAbsolutePath();
+            removeListeners(1);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
-    }    
+    }
+
 }

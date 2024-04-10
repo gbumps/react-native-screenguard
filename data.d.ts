@@ -105,3 +105,17 @@ export interface ScreenGuardBlurDataObject {
    */
   timeAfterResume?: number | 1000;
 }
+export interface ScreenGuardScreenShotPathDataObject {
+  /**
+   * Path of the image after captured
+   */
+  path?: string | '';
+  /**
+   * File name of the image after captured
+   */
+  name?: string | '';
+  /**
+   * Type of the file captured
+   */
+  type?: string | '';
+}
