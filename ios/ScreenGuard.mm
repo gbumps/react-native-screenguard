@@ -1,5 +1,8 @@
 #import "ScreenGuard.h"
+#import "SDWebImage/SDWebImage.h"
 #import <React/RCTRootView.h>
+#import <React/RCTComponent.h>
+#import <React/RCTImageLoader.h>
 
 NSString * const SCREENSHOT_EVT = @"onScreenShotCaptured";
 NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
@@ -11,6 +14,7 @@ RCT_EXPORT_MODULE(ScreenGuard)
 bool hasListeners;
 
 UITextField *textField;
+UIImageView *imageView;
 
 
 - (NSArray<NSString *> *)supportedEvents {
@@ -56,6 +60,10 @@ UITextField *textField;
 - (void)removeScreenShot {
   UIWindow *window = [UIApplication sharedApplication].keyWindow;
   if (textField != nil) {
+      if (imageView != nil) {
+          [imageView setImage: nil];
+          [imageView removeFromSuperview];
+      }
     [textField setSecureTextEntry: FALSE];
     [textField setBackgroundColor: [UIColor clearColor]];
     [textField setBackground: nil];
@@ -89,6 +97,7 @@ RCT_EXPORT_METHOD(activateShield: (NSString *)screenshotBackgroundColor) {
   });
 }
 
+// deprecated
 RCT_EXPORT_METHOD(activateWithoutShield) {
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
   NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
@@ -127,7 +136,7 @@ RCT_EXPORT_METHOD(deactivateShield) {
 
 }
 
-RCT_EXPORT_METHOD(registerScreenShotEventListener) {
+RCT_EXPORT_METHOD(registerScreenShotEventListener: (BOOL) getScreenShotPath) {
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
     [center removeObserver:self
@@ -138,26 +147,32 @@ RCT_EXPORT_METHOD(registerScreenShotEventListener) {
                          queue:mainQueue
                     usingBlock:^(NSNotification *notification) {
       
-      if (hasListeners) {
-        UIImage *imageView = [self convertViewToImage:presentedViewController.view.superview];
-        NSData *data = UIImagePNGRepresentation(image);
-        if (!data) {
-          // reject(@"error", @"Failed to convert image to PNG", nil);
-          return;
-        }
+      if (hasListeners && getScreenShotPath) {
+          UIViewController *presentedViewController = RCTPresentedViewController();
 
-        NSString *tempDir = NSTemporaryDirectory();
-        NSString *fileName = [[NSUUID UUID] UUIDString];
-        NSString *filePath = [tempDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", fileName]];
+          UIImage *image = [self convertViewToImage:presentedViewController.view.superview];
+                  NSData *data = UIImagePNGRepresentation(image);
+                  if (!data) {
+                      [self emit:SCREENSHOT_EVT body: nil];
+                    // reject(@"error", @"Failed to convert image to PNG", nil);
+                    return;
+                  }
 
-        NSError *error = nil;
-        BOOL success = [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
-        if (!success) {
-          [self emit:SCREENSHOT_EVT body:nil];
-        } else {
-          NSDictionary *result = @{@"path": filePath, @"name": fileName};
+                  NSString *tempDir = NSTemporaryDirectory();
+                  NSString *fileName = [[NSUUID UUID] UUIDString];
+                  NSString *filePath = [tempDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", fileName]];
+
+                  NSError *error = nil;
+                  NSDictionary *result;
+                  BOOL success = [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
+                  if (!success) {
+                      result = @{@"path": @"Error retrieving file", @"name": @"", @"type": @""};
+                  } else {
+                    result = @{@"path": filePath, @"name": fileName, @"type": @"PNG"};
+                  }
           [self emit:SCREENSHOT_EVT body: result];
-        }
+      } else if (hasListeners) {
+          [self emit:SCREENSHOT_EVT body: nil];
       }
     }];
 }

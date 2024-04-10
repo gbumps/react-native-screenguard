@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NativeModules, NativeEventEmitter } from 'react-native';
-import { ScreenGuardBlurDataObject, ScreenGuardImageDataObject } from './data';
+import { ScreenGuardBlurDataObject, ScreenGuardImageDataObject, ScreenGuardScreenShotPathDataObject } from './data';
 
 import * as ScreenGuardConstants from './constant';
 import { Platform } from 'react-native';
@@ -33,10 +33,9 @@ export default {
   /**
    * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
    * @param data ScreenGuardBlurDataObject data object
-   * @param callback void callback after a screenshot or a video capture has been taken
    * @version v1.0.2-beta+
    */
-  registerWithBlurView(data: ScreenGuardBlurDataObject, callback) {
+  registerWithBlurView(data: ScreenGuardBlurDataObject) {
     console.warn(
       'Install the beta version to continue. Head over to README.md -> Install -> Beta section for how to install'
     );
@@ -76,12 +75,10 @@ export default {
   /**
    * activate with an Image uri (iOS 13+, Android 8+)
    * @param data ScreenGuardImageDataObject data object,
-   * @param callback void callback after a screenshot or a video screen capture has been taken
    * @version v1.0.2-beta+
    */
   registerWithImage(
     data: ScreenGuardImageDataObject,
-    callback: (arg: any) => void
   ) {
     console.warn(
       'Install the beta version to continue. Head over to README.md -> Install -> Beta section for how to install'
@@ -110,12 +107,14 @@ export default {
   /**
    * Screenshot event listener
    * Register for screenshot event listener
+   * @param getScreenShotPath received a data object containing info of an image after captured if true, null if false
    * @version v0.3.6+
    */
-  registerScreenshotEventListener(callback: (arg: any) => void) {
-    if (Platform.OS === 'ios') {
-      ScreenGuard.registerScreenShotEventListener();
-    }
+  registerScreenshotEventListener(
+    getScreenShotPath: boolean, 
+    callback: (arg?: ScreenGuardScreenShotPathDataObject) => void
+  ) {
+    ScreenGuard.registerScreenShotEventListener(getScreenShotPath);
     if (screenShotEmitter == null) {
       screenShotEmitter = new NativeEventEmitter(ScreenGuard);
     }
