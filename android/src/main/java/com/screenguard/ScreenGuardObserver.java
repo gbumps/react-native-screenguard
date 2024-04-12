@@ -19,17 +19,20 @@ public class ScreenGuardObserver extends ContentObserver {
     private ReactApplicationContext mContext;
     private ContentResolver mContentResolver;
     private final ScreenGuard.Listener mListener;
+    private Boolean getScreenShotPath;
 
     public ScreenGuardObserver(
             ReactApplicationContext context, 
             Handler handler, 
             ContentResolver contentResolver, 
-            ScreenGuard.Listener listener
+            ScreenGuard.Listener listener,
+            Boolean isGetScreenShotPath
     ) {
         super(handler);
         mContext = context;
         mContentResolver = contentResolver;
         mListener = listener;
+        getScreenShotPath = isGetScreenShotPath;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class ScreenGuardObserver extends ContentObserver {
                 map.putString("type", fileType);
             }
             map.putString("path", uri.getPath());
-            new Handler(Looper.getMainLooper()).post(() -> mListener.onSnap(url));
+            new Handler(Looper.getMainLooper()).post(() -> mListener.onSnap(map));
         }
     }
 }
