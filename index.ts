@@ -44,21 +44,21 @@ export default {
   /**
    * activate without blocking screenshot (iOS 10+, Android 5+ )
    * For screenshot detector only, this will fit your need.
-   * @deprecated this function is deprecated and will be removed at least from ver 4.0.0+ or in the near future
+   * @deprecated this function is deprecated and will be removed at least from ver 0.4.0+ or in the near future
    * consider using registerScreenRecordingEventListener and registerScreenshotEventListener instead
    * @param void callback callback after a screenshot or a video screen capture has been taken
    * @version v0.0.6+
    */
   registerWithoutScreenguard(callback: (arg: any) => void) {
     console.warn(
-      'This function is deprecated and will be removed at least from ver 4.0.0+',
+      'This function is deprecated and will be removed at least from ver 0.4.0+',
       'consider switching to registerScreenshotEventListener or registerScreenRecordingEventListener instead'
     );
     ScreenGuard.activateWithoutShield();
     if (screenShotEmitter == null) {
       screenShotEmitter = new NativeEventEmitter(ScreenGuard);
     }
-    const _callback = (res) => {
+    const _callback = (res: any) => {
       callback(res);
     };
     const listenerCount = screenShotEmitter.listenerCount(
@@ -107,19 +107,20 @@ export default {
   /**
    * Screenshot event listener
    * Register for screenshot event listener
-   * @param getScreenShotPath received a data object containing info of an image after captured if true, null if false
+   * @param getScreenShotPath if true, callback will return a ScreenGuardScreenShotPathDataObject containing info of an image after captured, null otherwise. Default = false
+   * @param callback callback after a screenshot has been triggered.
    * @version v0.3.6+
    */
   registerScreenshotEventListener(
-    getScreenShotPath: boolean, 
-    callback: (arg?: ScreenGuardScreenShotPathDataObject) => void
+    getScreenShotPath: boolean = false, 
+    callback: (arg?: ScreenGuardScreenShotPathDataObject | null) => void
   ) {
     ScreenGuard.registerScreenShotEventListener(getScreenShotPath);
     if (screenShotEmitter == null) {
       screenShotEmitter = new NativeEventEmitter(ScreenGuard);
     }
 
-    const _onScreenCapture = (res) => {
+    const _onScreenCapture = (res?: ScreenGuardScreenShotPathDataObject | null) => {
       callback(res);
     };
     const listenerCount = screenShotEmitter.listenerCount(
@@ -144,7 +145,7 @@ export default {
       if (screenRecordingEmitter == null) {
         screenRecordingEmitter = new NativeEventEmitter(ScreenGuard);
       }
-      const _onScreenRecording = (res) => {
+      const _onScreenRecording = (res: any) => {
         callback(res);
       };
       const listenerCount = screenRecordingEmitter.listenerCount(
