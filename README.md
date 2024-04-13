@@ -23,8 +23,8 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
   * [Usage](#usage)
      * [register](#1-register)
      * [registerWithoutScreenguard](#2-registerwithoutscreenguard)(Deprecated)
-     * [registerScreenshotEventListener](#3-registerscreenshoteventlistener)(New ✨)
-     * [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistener)(New ✨)
+     * [registerScreenshotEventListener](#3-registerscreenshoteventlistener)
+     * [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistener)
      * [registerWithBlurView](#5-registerwithblurview)(beta)
      * [registerWithImage](#6-registerwithimage)(beta)
      * [unregister](#7-unregister)
@@ -155,15 +155,28 @@ ScreenGuardModule.registerWithoutScreenguard(
 
 #### 3. registerScreenshotEventListener
 
-- (iOS + Android) Activate a screenshot detector and receive an event callback after a screenshot has been triggered successfully.
+- (iOS + Android) Activate a screenshot detector and receive an event callback with screenshot info after a screenshot has been triggered successfully.
 
+- `(v0.3.8+)` Received a boolean param `getScreenShotPath`:
+  
+  - If `true`, callback will return a data object containing info of the previous image screenshot.
+
+  - If `false`, callback will return null.
+
+  - Default is `false`.
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
 
 ScreenGuardModule.registerScreenshotEventListener(
-	(_) => {
-	.....do anything you want after the screenshot 
+  true,
+	(data) => {
+    if (data != null) {
+      console.log('path: ', data.path);
+      console.log('name: ', data.name);
+      console.log('type: ', data.type);
+    }
+    ....other code
 });
 ```
 
