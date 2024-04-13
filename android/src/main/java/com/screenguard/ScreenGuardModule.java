@@ -128,9 +128,9 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             if (currentReactContext == null) {
                 currentReactContext = getReactApplicationContext();
             }
-            currentReactContext.sendBroadcast(
-                new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE)
-            );
+            // currentReactContext.sendBroadcast(
+            //     new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE)
+            // );
             Activity currentActivity = currentReactContext.getCurrentActivity();
             if (currentActivity != null) {
                mHandlerBlockScreenShot.post(() ->
