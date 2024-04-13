@@ -19,8 +19,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.screenguard.helper.ScreenGuardHelper;
-import com.screenguard.model.ScreenGuardBlurData;
-import com.screenguard.model.ScreenGuardImageData;
 
 @ReactModule(name = ScreenGuardModule.NAME)
 public class ScreenGuardModule extends ReactContextBaseJavaModule {
@@ -128,9 +126,6 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             if (currentReactContext == null) {
                 currentReactContext = getReactApplicationContext();
             }
-            // currentReactContext.sendBroadcast(
-            //     new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE)
-            // );
             Activity currentActivity = currentReactContext.getCurrentActivity();
             if (currentActivity != null) {
                mHandlerBlockScreenShot.post(() ->
