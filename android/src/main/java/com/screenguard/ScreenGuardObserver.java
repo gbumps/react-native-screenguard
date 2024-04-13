@@ -48,21 +48,27 @@ public class ScreenGuardObserver extends ContentObserver {
     @Override
     public void onChange(boolean selfChange, Uri uri) {
         super.onChange(selfChange, uri);
+        WritableMap map = Arguments.createMap();
         Activity currentActivity = mContext.getCurrentActivity();
-        if (currentActivity != null) {
+        if (currentActivity != null && getScreenShotPath) {
             final View currentView =
                     currentActivity.getWindow().getDecorView().getRootView();
             Bitmap bitmap = ScreenGuardHelper.captureReactView(currentView);
 
             String url = ScreenGuardHelper.saveBitmapToFile(mContext, bitmap);
-            WritableMap map = Arguments.createMap();
 
             if (url != null && !url.isEmpty()) {
                 String fileType = url.substring(url.lastIndexOf(".") + 1);
+                String name = url.substring(url.lastIndexOf("/") + 1);
                 map.putString("type", fileType);
+                map.putString("name", name);
             }
-            map.putString("path", uri.getPath());
-            new Handler(Looper.getMainLooper()).post(() -> mListener.onSnap(map));
+            map.putString("path", url);
+        } else {
+            map.putString("type", "");
+            map.putString("name", "");
+            map.putString("path", "");
         }
+        new Handler(Looper.getMainLooper()).post(() -> mListener.onSnap(map));
     }
 }
