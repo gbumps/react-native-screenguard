@@ -6,7 +6,7 @@
  * @format
  */
 import * as React from 'react';
-import { Alert, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View, TextInput, } from 'react-native';
+import { Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View, TextInput, } from 'react-native';
 import { Colors, DebugInstructions, Header, LearnMoreLinks, ReloadInstructions, } from 'react-native/Libraries/NewAppScreen';
 import ScreenGuardModule from 'react-native-screenguard';
 function Section({ children, title }) {
@@ -60,10 +60,10 @@ function App() {
                         } })),
                 React.createElement(View, { style: { height: 72 } }),
                 React.createElement(Pressable, { onPress: () => {
-                        ScreenGuardModule.registerWithoutScreenguard(_ => {
-                            Alert.alert('register without screenguard');
-                        });
-                        setCurrentState('2');
+                        // ScreenGuardModule.registerWithoutScreenguard(_ => {
+                        //   Alert.alert('register without screenguard');
+                        // });
+                        // setCurrentState('2');
                     } },
                     React.createElement(Text, { style: {
                             color: currentState === '2' ? '#00FF00' : Colors.white,
