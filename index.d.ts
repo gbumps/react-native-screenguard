@@ -9,30 +9,13 @@ declare const _default: {
   /**
    * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
    * @param data ScreenGuardBlurDataObject data object
-   * @version v1.0.2-beta+
+   * @version v1.0.2+
    */
   registerWithBlurView(data: ScreenGuardBlurDataObject): void;
   /**
-   * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
-   * @param data ScreenGuardBlurDataObject data object
-   * @param callback void callback after a screenshot or a video capture has been taken
-   * @version v0.1.2+ (iOS)
-   * @version v1.0.0+ (Android)
-   */
-  registerWithBlurView(data: ScreenGuardBlurDataObject, callback: any): void;
-  /**
-   * activate without blocking screenshot (iOS 10+, Android 5+ )
-   * For screenshot detector only, this will fit your need.
-   * @deprecated this function is deprecated and will be removed at least from ver 0.4.0+ or in the near future
-   * consider using registerScreenRecordingEventListener and registerScreenshotEventListener instead
-   * @param void callback callback after a screenshot or a video screen capture has been taken
-   * @version v0.0.6+
-   */
-  registerWithoutScreenguard(callback: (arg: any) => void): void;
-  /**
    * activate with an Image uri (iOS 13+, Android 8+)
    * @param data ScreenGuardImageDataObject data object,
-   * @version v1.0.2-beta+
+   * @version v1.0.2+
    */
   registerWithImage(data: ScreenGuardImageDataObject): void;
   /**

@@ -1,5 +1,6 @@
 package com.screenguard;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +20,7 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.facebook.react.ReactActivity;
-import com.screenguard.model.ScreenGuardActionEnum;
+import com.screenguard.enums.ScreenGuardActionEnum;
 import com.screenguard.model.ScreenGuardBlurData;
 import com.screenguard.model.ScreenGuardColorData;
 import com.screenguard.model.ScreenGuardImageData;
@@ -30,7 +31,10 @@ import java.io.File;
 import jp.wasabeef.blurry.Blurry;
 
 
-public class ScreenGuardColorActivity extends ReactActivity {
+public class ScreenGuardColorActivity extends ReactActivity  {
+
+    public static final String SCREENGUARD_COLOR_ACTIVITY_CLOSE = 
+            "com.screenguard.ScreenGuardColorActivity.close";
 
     private ScreenGuardBlurData screenGuardBlurData;
 
@@ -51,6 +55,7 @@ public class ScreenGuardColorActivity extends ReactActivity {
         }
     };
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +87,7 @@ public class ScreenGuardColorActivity extends ReactActivity {
             }
         }
         overridePendingTransition(0, 0);
-        IntentFilter intentFilter = new IntentFilter("com.screenguard.ScreenGuardColorActivity.close");
+        IntentFilter intentFilter = new IntentFilter(SCREENGUARD_COLOR_ACTIVITY_CLOSE);
         registerReceiver(closeReceiver, intentFilter);
     }
 
@@ -150,7 +155,7 @@ public class ScreenGuardColorActivity extends ReactActivity {
     }
 
     private void doResumeByAction() {
-        FrameLayout frameLayout = findViewById(R.id.frameLayout); // Replace with your ImageView's ID
+        FrameLayout frameLayout = findViewById(R.id.frameLayout);
         ImageView imageView = findViewById(R.id.imageView);
         Handler handlerStopBlur = new Handler(Looper.getMainLooper());
         Runnable delayedFunction = () -> imageView.setImageBitmap(null);
@@ -196,6 +201,6 @@ public class ScreenGuardColorActivity extends ReactActivity {
                                 (int) Math.round(screenGuardImageData.width),
                                 (int) Math.round(screenGuardImageData.height))
                         .into(imgView);
-            }
+        }
     }
 }

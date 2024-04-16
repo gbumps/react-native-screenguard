@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.screenguard.enums.ScreenGuardActionEnum;
+
 public class ScreenGuardColorData extends ScreenGuardData implements Parcelable {
 
     public ScreenGuardColorData(String color) {

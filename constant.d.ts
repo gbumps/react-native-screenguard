@@ -1,6 +1,6 @@
-declare const SCREENSHOT_EVT = "onScreenShotCaptured";
-declare const SCREEN_RECORDING_EVT = "onScreenRecordingCaptured";
-declare const BLACK_COLOR = "#000000";
+declare const SCREENSHOT_EVT = 'onScreenShotCaptured';
+declare const SCREEN_RECORDING_EVT = 'onScreenRecordingCaptured';
+declare const BLACK_COLOR = '#000000';
 declare const REGEX: RegExp;
 declare const IMAGE_REGEX: RegExp;
 declare const RADIUS_DEFAULT = 15;
@@ -16,6 +16,7 @@ declare const Alignment: {
   bottomCenter: number;
   bottomRight: number;
 };
+declare const resolveAssetSource: (defaultSource: any) => any;
 export {
   SCREENSHOT_EVT,
   SCREEN_RECORDING_EVT,
@@ -25,4 +26,5 @@ export {
   Alignment,
   RADIUS_DEFAULT,
   TIME_DELAYED,
+  resolveAssetSource,
 };

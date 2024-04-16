@@ -3,6 +3,8 @@ package com.screenguard.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.screenguard.enums.ScreenGuardActionEnum;
+
 public class ScreenGuardBlurData extends ScreenGuardData implements Parcelable {
 
     public int radius;

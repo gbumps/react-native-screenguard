@@ -1,4 +1,4 @@
-package com.screenguard.model;
+package com.screenguard.enums;
 
 public enum ScreenGuardActionEnum {
     color,

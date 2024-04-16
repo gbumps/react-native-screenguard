@@ -114,8 +114,6 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 ## Usage
 
-`Note`: All features below contain a `callback` method after a screenshot has been taken.
-
 #### 1. register
 
 - (iOS + Android) : Activate the screenguard with your custom background color layout. 
@@ -144,7 +142,7 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/da99c58c-fb79
 
 - (iOS + Android) Activate without screenguard, if you just want to detect and receive event callback only.
 
-- `Note:` This function is deprecated and will be removed from ver `0.4.0+`, consider using [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew) or [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew) instead.
+- `Note:` This function is remove from `v.1.0.0`
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
@@ -239,9 +237,9 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4
 
   * `height`: height of the image
 
-  * `source` <b>(required)</b>: uri from network image or from local project `require`, accept all kinds of images (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
+  * `source` <b>(required)</b>: uri from network image or from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
 
-  * `defaultSource`: default source if network image uri failed to load, from local project `require`, accept all kinds of images;
+  * `defaultSource`: default source if network image uri failed to load, from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg);
 
   * `backgroundColor`: background color behind the image, just like `register`.
 

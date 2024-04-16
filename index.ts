@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { NativeModules, NativeEventEmitter } from 'react-native';
+import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import { 
   ScreenGuardBlurDataObject, 
   ScreenGuardImageDataObject, 
@@ -7,7 +7,6 @@ import {
 } from './data';
 
 import * as ScreenGuardConstants from './constant';
-import { Platform } from 'react-native';
 
 const { ScreenGuard } = NativeModules;
 
@@ -82,35 +81,49 @@ export default {
   /**
    * activate with an Image uri (iOS 13+, Android 8+)
    * @param data ScreenGuardImageDataObject data object,
-   * @param callback void callback after a screenshot or a video screen capture has been taken
-   * @version v1.0.0+
+   * @version v1.0.2+
    */
-  registerWithImage(
-    data: ScreenGuardImageDataObject,
-  ) {
-    const {
-      uri,
+  registerWithImage(data: ScreenGuardImageDataObject) {
+    let {
+      source,
       width,
       height,
       backgroundColor = ScreenGuardConstants.BLACK_COLOR,
       alignment = ScreenGuardConstants.Alignment.center,
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
+      defaultSource,
     } = data;
 
-    if (uri.length === 0) {
-      throw new Error('uri must not be empty!');
+    let newDefaultSource: { uri: string } | null = null;
+
+    if (typeof source === 'object' && 'uri' in source) {
+      if (source.uri.length === 0) {
+        throw new Error('uri must not be empty!');
+      }
+      if (width < 1 || isNaN(width)) {
+        throw new Error('width of image must bigger than 0!');
+      }
+      if (height < 1 || isNaN(height)) {
+        throw new Error('height of image must bigger than 0!');
+      }
+      if (!ScreenGuardConstants.IMAGE_REGEX.test(source.uri)) {
+        console.warn(
+          'Looks like the uri is not an image uri. Try to provide a correct image uri for better result!'
+        );
+      }
+      if (defaultSource == null) {
+        console.warn(
+          'Consider adding a default source to display image that cannot be loaded from uri!'
+        );
+      } else {
+        newDefaultSource = {
+          uri: ScreenGuardConstants.resolveAssetSource(data.source),
+        };
+      }
+    } else if (typeof source === 'number') {
+      source = { uri: ScreenGuardConstants.resolveAssetSource(data.source) };
     }
-    if (width < 1) {
-      throw new Error('width of image must bigger than 0!');
-    }
-    if (height < 1) {
-      throw new Error('height of image must bigger than 0!');
-    }
-    if (!ScreenGuardConstants.IMAGE_REGEX.test(data.uri)) {
-      console.warn(
-        'Looks like the uri is not an image uri. Try to provide a correct image uri for better result!'
-      );
-    }
+
     if (alignment != null && (alignment > 8 || alignment < 0)) {
       throw new Error(
         'alignment must be in range from 0 -> 8 only, values: \n topLeft: 0; \n topCenter: 1; \n topRight: 2; \n centerLeft: 3; \n Center: 4; \n centerRight: 5; \n bottomLeft: 6; \n bottomCenter: 7;\n bottomRight: 8; \n If you want to center the image, leave null instead!'
@@ -118,7 +131,8 @@ export default {
     }
 
     ScreenGuard.activateShieldWithImage({
-      uri,
+      source,
+      defaultSource: newDefaultSource,
       width,
       height,
       alignment,
@@ -155,8 +169,13 @@ export default {
    */
   registerScreenshotEventListener(
     getScreenShotPath: boolean = false,
-    callback: (data?: ScreenGuardScreenShotPathDataObject) => void
+    callback: (data?: ScreenGuardScreenShotPathDataObject | null) => void
   ) {
+    ScreenGuard.registerScreenShotEventListener(getScreenShotPath);
+    if (screenShotEmitter == null) {
+      screenShotEmitter = new NativeEventEmitter(ScreenGuard);
+    }
+
     const _onScreenCapture = (res?: ScreenGuardScreenShotPathDataObject | null) => {
       callback(res);
     };
