@@ -1,11 +1,13 @@
 package com.screenguard;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.MediaStore;
+
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.WritableMap;
 
 public class ScreenGuard {
 
@@ -14,12 +16,13 @@ public class ScreenGuard {
     private final ContentResolver mContentResolver;
     private final ContentObserver mContentObserver;
 
-    public ScreenGuard(Context context, Listener listener) {
+    public ScreenGuard(ReactApplicationContext context, Boolean getScreenShot, Listener listener) {
         mHandlerThread = new HandlerThread("ScreenGuard");
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
         mContentResolver = context.getContentResolver();
-        mContentObserver = new ScreenGuardObserver(context, mHandler, mContentResolver, listener);
+        mContentObserver = new ScreenGuardObserver(
+                context, mHandler, mContentResolver, listener, getScreenShot);
     }
 
     public void register() {
@@ -36,6 +39,6 @@ public class ScreenGuard {
     }
 
     public interface Listener {
-        void onSnap(String url);
+        void onSnap(WritableMap map);
     }
 }

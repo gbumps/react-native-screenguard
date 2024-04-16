@@ -1,23 +1,27 @@
-import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { NativeModules, NativeEventEmitter } from 'react-native';
+import { 
+  ScreenGuardBlurDataObject, 
+  ScreenGuardImageDataObject, 
+  ScreenGuardScreenShotPathDataObject 
+} from './data';
 
 import * as ScreenGuardConstants from './constant';
-import { ScreenGuardBlurDataObject, ScreenGuardImageDataObject } from './data';
+import { Platform } from 'react-native';
 
 const { ScreenGuard } = NativeModules;
 
-var screenGuardEmitter: NativeEventEmitter | null = null;
+var screenShotEmitter: NativeEventEmitter | null = null;
+
+var screenRecordingEmitter: NativeEventEmitter | null = null;
 
 export default {
   /**
    * activate screenshot blocking (iOS 13+, Android 5+)
    * @param capturedBackgroundColor background color layout after taking a screenshot
-   * @param callback void callback after a screenshot or a video capture has been taken
    * @version v0.0.2+
    */
-  register(
-    capturedBackgroundColor: String | null,
-    callback: (arg: any) => void
-  ) {
+  register(capturedBackgroundColor: String | null) {
     let currentColor =
       capturedBackgroundColor == null ||
       capturedBackgroundColor.trim().length === 0 ||
@@ -28,31 +32,15 @@ export default {
         ? ScreenGuardConstants.BLACK_COLOR
         : capturedBackgroundColor;
     ScreenGuard.activateShield(currentColor);
-    if (screenGuardEmitter == null) {
-      screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
-    }
-    const _callback = (res) => {
-      callback(res);
-    };
-    const listenerCount = screenGuardEmitter.listenerCount(
-      ScreenGuardConstants.EVENT_NAME
-    );
-    if (!listenerCount) {
-      screenGuardEmitter.addListener(
-        ScreenGuardConstants.EVENT_NAME,
-        _callback
-      );
-    }
   },
 
   /**
    * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
    * @param data ScreenGuardBlurDataObject data object
    * @param callback void callback after a screenshot or a video capture has been taken
-   * @version v0.1.2+ (iOS)
-   * @version v1.0.0+ (Android)
+   * @version v0.1.2+
    */
-  registerWithBlurView(data: ScreenGuardBlurDataObject, callback) {
+  registerWithBlurView(data: ScreenGuardBlurDataObject) {
     const {
       radius = ScreenGuardConstants.RADIUS_DEFAULT,
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
@@ -89,46 +77,6 @@ export default {
     } else {
       ScreenGuard.activateShieldWithBlurView({ radius, timeAfterResume });
     }
-    if (screenGuardEmitter == null) {
-      screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
-    }
-    const _callback = (res) => {
-      callback(res);
-    };
-    const listenerCount = screenGuardEmitter.listenerCount(
-      ScreenGuardConstants.EVENT_NAME
-    );
-    if (!listenerCount) {
-      screenGuardEmitter.addListener(
-        ScreenGuardConstants.EVENT_NAME,
-        _callback
-      );
-    }
-  },
-
-  /**
-   * activate without blocking screenshot (iOS 10+, Android 5+ )
-   * For screenshot detector only, this will fit your need.
-   * @param void callback callback after a screenshot or a video screen capture has been taken
-   * @version v0.0.6+
-   */
-  registerWithoutScreenguard(callback: (arg: any) => void) {
-    ScreenGuard.activateWithoutShield();
-    if (screenGuardEmitter == null) {
-      screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
-    }
-    const _callback = (res) => {
-      callback(res);
-    };
-    const listenerCount = screenGuardEmitter.listenerCount(
-      ScreenGuardConstants.EVENT_NAME
-    );
-    if (!listenerCount) {
-      screenGuardEmitter.addListener(
-        ScreenGuardConstants.EVENT_NAME,
-        _callback
-      );
-    }
   },
 
   /**
@@ -139,7 +87,6 @@ export default {
    */
   registerWithImage(
     data: ScreenGuardImageDataObject,
-    callback: (arg: any) => void
   ) {
     const {
       uri,
@@ -178,21 +125,6 @@ export default {
       backgroundColor,
       timeAfterResume,
     });
-    if (screenGuardEmitter == null) {
-      screenGuardEmitter = new NativeEventEmitter(ScreenGuard);
-    }
-    const _callback = (res) => {
-      callback(res);
-    };
-    const listenerCount = screenGuardEmitter.listenerCount(
-      ScreenGuardConstants.EVENT_NAME
-    );
-    if (!listenerCount) {
-      screenGuardEmitter.addListener(
-        ScreenGuardConstants.EVENT_NAME,
-        _callback
-      );
-    }
   },
 
   /**
@@ -201,11 +133,67 @@ export default {
    * @version v0.0.2+
    */
   unregister() {
-    // screenGuardEmitter.removeListener(EVENT_NAME);
     ScreenGuard.deactivateShield();
-    if (screenGuardEmitter != null) {
-      screenGuardEmitter.removeAllListeners(ScreenGuardConstants.EVENT_NAME);
-      screenGuardEmitter = null;
+    if (screenShotEmitter != null) {
+      screenShotEmitter.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
+      screenShotEmitter = null;
+    }
+    if (screenRecordingEmitter != null) {
+      screenRecordingEmitter.removeAllListeners(
+        ScreenGuardConstants.SCREEN_RECORDING_EVT
+      );
+      screenRecordingEmitter = null;
+    }
+  },
+
+  /**
+   * Screenshot event listener
+   * Register for screenshot event listener
+   * @param getScreenShotPath if true, callback will return a ScreenGuardScreenShotPathDataObject containing info of an image after captured, null otherwise. Default = false
+   * @param callback callback after a screenshot has been triggered.
+   * @version v0.3.6+
+   */
+  registerScreenshotEventListener(
+    getScreenShotPath: boolean = false,
+    callback: (data?: ScreenGuardScreenShotPathDataObject) => void
+  ) {
+    const _onScreenCapture = (res?: ScreenGuardScreenShotPathDataObject | null) => {
+      callback(res);
+    };
+    const listenerCount = screenShotEmitter.listenerCount(
+      ScreenGuardConstants.SCREENSHOT_EVT
+    );
+    if (!listenerCount) {
+      screenShotEmitter.addListener(
+        ScreenGuardConstants.SCREENSHOT_EVT,
+        _onScreenCapture
+      );
+    }
+  },
+
+  /**
+   * Screen recording event listener (iOS only)
+   * Register for screen recording event listener
+   * @version v0.3.6+
+   */
+  registerScreenRecordingEventListener(callback: (arg: any) => void) {
+    if (Platform.OS === 'ios') {
+      ScreenGuard.registerScreenRecordingEventListener();
+      if (screenRecordingEmitter == null) {
+        screenRecordingEmitter = new NativeEventEmitter(ScreenGuard);
+      }
+      const _onScreenRecording = (res: any) => {
+        callback(res);
+      };
+      const listenerCount = screenRecordingEmitter.listenerCount(
+        ScreenGuardConstants.SCREEN_RECORDING_EVT
+      );
+      if (!listenerCount) {
+        screenRecordingEmitter.addListener(
+          ScreenGuardConstants.SCREEN_RECORDING_EVT,
+          _onScreenRecording
+        );
+      }
     }
   },
 };

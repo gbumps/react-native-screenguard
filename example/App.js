@@ -9,7 +9,6 @@ import * as React from 'react';
 import { Alert, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View, TextInput, } from 'react-native';
 import { Colors, DebugInstructions, Header, LearnMoreLinks, ReloadInstructions, } from 'react-native/Libraries/NewAppScreen';
 import ScreenGuardModule from 'react-native-screenguard';
-import { Alignment } from 'constant';
 function Section({ children, title }) {
     const isDarkMode = useColorScheme() === 'dark';
     return (React.createElement(View, { style: styles.sectionContainer },
@@ -29,7 +28,8 @@ function Section({ children, title }) {
 function App() {
     const isDarkMode = useColorScheme() === 'dark';
     const [currentState, setCurrentState] = React.useState('');
-    const [color, _] = React.useState('#0F9D58');
+    const textInputRef = React.useRef(null);
+    const [color, _] = React.useState('#4285F4');
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
     };
@@ -41,9 +41,7 @@ function App() {
                     backgroundColor: Colors.black,
                 } },
                 React.createElement(Pressable, { onPress: () => {
-                        ScreenGuardModule.register(color, _ => {
-                            Alert.alert('register with color ' + color);
-                        });
+                        ScreenGuardModule.register(color);
                         setCurrentState('1');
                     } },
                     React.createElement(Text, { style: {
@@ -78,12 +76,14 @@ function App() {
                     React.createElement(Text, { style: {
                             color: currentState === '3' ? '#00FF00' : Colors.white,
                         } }, "Turn off screenguard")),
-                React.createElement(TextInput, { style: { borderColor: Colors.white, borderWidth: 1 } }),
+                React.createElement(TextInput, { ref: textInputRef, style: { borderColor: Colors.white, borderWidth: 1 } }),
                 React.createElement(View, { style: { height: 72 } }),
                 React.createElement(Pressable, { onPress: () => {
-                        ScreenGuardModule.registerWithBlurView({}, _ => {
-                            Alert.alert('register with blur radius 35');
-                        });
+                        const data = {
+                            radius: 34,
+                            timeAfterResume: 1000,
+                        };
+                        ScreenGuardModule.registerWithBlurView(data);
                         setCurrentState(() => '4');
                     } },
                     React.createElement(Text, { style: {
@@ -92,18 +92,16 @@ function App() {
                 React.createElement(View, { style: { height: 72 } }),
                 React.createElement(Pressable, { onPress: () => {
                         ScreenGuardModule.registerWithImage({
-                            uri: '',
+                            height: 150,
                             width: 200,
-                            height: 100,
-                            alignment: Alignment.bottomCenter,
-                        }, _ => {
-                            Alert.alert('register without screenguard');
+                            uri: 'https://www.icegif.com/wp-content/uploads/2022/09/icegif-386.gif',
+                            backgroundColor: color,
                         });
                         setCurrentState('6');
                     } },
                     React.createElement(Text, { style: {
                             color: currentState === '6' ? '#00FF00' : Colors.white,
-                        } }, "Turn on screenguard(Android only)")),
+                        } }, "Turn on screenguard with Image")),
                 React.createElement(Section, { title: "Step One" },
                     "Edit ",
                     React.createElement(Text, { style: styles.highlight }, "App.tsx"),

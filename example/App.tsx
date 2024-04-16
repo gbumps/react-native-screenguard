@@ -65,7 +65,9 @@ function Section({children, title}: SectionProps): JSX.Element {
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const [currentState, setCurrentState] = React.useState('');
-  const [color, _] = React.useState('#0F9D58');
+  const textInputRef = React.useRef<TextInput | null>(null);
+
+  const [color, _] = React.useState('#4285F4');
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -88,9 +90,7 @@ function App(): JSX.Element {
           }}>
           <Pressable
             onPress={() => {
-              ScreenGuardModule.register(color, _ => {
-                Alert.alert('register with color ' + color);
-              });
+              ScreenGuardModule.register(color);
               setCurrentState('1');
             }}>
             <Text
@@ -145,14 +145,18 @@ function App(): JSX.Element {
               Turn off screenguard
             </Text>
           </Pressable>
-          <TextInput style={{borderColor: Colors.white, borderWidth: 1}} />
+          <TextInput
+            ref={textInputRef}
+            style={{borderColor: Colors.white, borderWidth: 1}}
+          />
           <View style={{height: 72}} />
           <Pressable
             onPress={() => {
-              ScreenGuardModule.registerWithBlurView({
-              }, _ => {
-                Alert.alert('register with blur radius 35');
-              });
+              const data =  {
+                radius: 34,
+                timeAfterResume: 1000,
+              };
+              ScreenGuardModule.registerWithBlurView(data);
               setCurrentState(() => '4');
             }}>
             <Text
@@ -165,21 +169,24 @@ function App(): JSX.Element {
           <View style={{height: 72}} />
           <Pressable
             onPress={() => {
-              ScreenGuardModule.registerWithImage({
-                uri: '',
-                width: 200,
-                height: 100,
-                alignment: Alignment.bottomCenter,
-              },_ => {
-                Alert.alert('register without screenguard');
-              });
+              ScreenGuardModule.registerWithImage(
+                {
+                  height: 150,
+                  width: 200,
+                  alignment: 5,
+                  source: {
+                    uri: 'https://www.icegif.com/wp-content/uploads/2022/09/icegif-386.gif',
+                  },
+                  backgroundColor: color,
+                },
+              );
               setCurrentState('6');
             }}>
             <Text
               style={{
                 color: currentState === '6' ? '#00FF00' : Colors.white,
               }}>
-              Turn on screenguard(Android only)
+              Turn on screenguard with Image
             </Text>
           </Pressable>
           <Section title="Step One">

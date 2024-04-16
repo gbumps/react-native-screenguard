@@ -1,4 +1,5 @@
-const EVENT_NAME = 'onSnapper';
+const SCREENSHOT_EVT = 'onScreenShotCaptured';
+const SCREEN_RECORDING_EVT = 'onScreenRecordingCaptured';
 const BLACK_COLOR = '#000000';
 const REGEX = /[!@#$%^&*(),.?":{}|<>]/;
 const IMAGE_REGEX = /\.(jpg|jpeg|png|gif|bmp|webp|svg|tiff|heic|svg)$/i;
@@ -18,7 +19,8 @@ const Alignment = {
 };
 
 export {
-  EVENT_NAME,
+  SCREENSHOT_EVT,
+  SCREEN_RECORDING_EVT,
   BLACK_COLOR,
   REGEX,
   IMAGE_REGEX,

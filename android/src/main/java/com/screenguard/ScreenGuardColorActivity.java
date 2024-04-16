@@ -58,6 +58,9 @@ public class ScreenGuardColorActivity extends ReactActivity {
         setContentView(R.layout.activity_screen_guard_color);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        getWindow().getDecorView().setBackgroundColor(COLOR_TRANS);
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
         getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         Intent intent = getIntent();
