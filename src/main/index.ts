@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
-import { 
-  ScreenGuardBlurDataObject, 
-  ScreenGuardImageDataObject, 
-  ScreenGuardScreenShotPathDataObject 
-} from './data';
-
+import * as ScreenGuardData from './data';
 import * as ScreenGuardConstants from './constant';
 
 const { ScreenGuard } = NativeModules;
@@ -36,10 +31,9 @@ export default {
   /**
    * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
    * @param data ScreenGuardBlurDataObject data object
-   * @param callback void callback after a screenshot or a video capture has been taken
    * @version v0.1.2+
    */
-  registerWithBlurView(data: ScreenGuardBlurDataObject) {
+  registerWithBlurView(data: ScreenGuardData.ScreenGuardBlurDataObject) {
     const {
       radius = ScreenGuardConstants.RADIUS_DEFAULT,
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
@@ -83,7 +77,7 @@ export default {
    * @param data ScreenGuardImageDataObject data object,
    * @version v1.0.2+
    */
-  registerWithImage(data: ScreenGuardImageDataObject) {
+  registerWithImage(data: ScreenGuardData.ScreenGuardImageDataObject) {
     let {
       source,
       width,
@@ -169,14 +163,14 @@ export default {
    */
   registerScreenshotEventListener(
     getScreenShotPath: boolean = false,
-    callback: (data?: ScreenGuardScreenShotPathDataObject | null) => void
+    callback: (data?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null) => void
   ) {
     ScreenGuard.registerScreenShotEventListener(getScreenShotPath);
     if (screenShotEmitter == null) {
       screenShotEmitter = new NativeEventEmitter(ScreenGuard);
     }
 
-    const _onScreenCapture = (res?: ScreenGuardScreenShotPathDataObject | null) => {
+    const _onScreenCapture = (res?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null) => {
       callback(res);
     };
     const listenerCount = screenShotEmitter.listenerCount(

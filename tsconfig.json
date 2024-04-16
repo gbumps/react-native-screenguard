@@ -1,10 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
-      "react-native-screenguard": [
-        "node_modules/awesome-library"
-      ]
+      "react-native-screenguard": ["./src/commonjs/index"],
     },
     "outDir": "./src/commonjs",      
     "declaration": true,             
@@ -31,10 +29,7 @@
     "target": "esnext",
   },
   "include": [
-    "src/main/**/*.ts"
+    "src/main/**/*.ts"  // Include all TypeScript files in the main folder for compilation
   ],
-  "exclude": [
-    "node_modules",   
-    "example"         
-  ]
+  "exclude": ["example", "node_modules"]
 }

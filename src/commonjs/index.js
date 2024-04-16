@@ -22,7 +22,6 @@ export default {
     /**
      * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
      * @param data ScreenGuardBlurDataObject data object
-     * @param callback void callback after a screenshot or a video capture has been taken
      * @version v0.1.2+
      */
     registerWithBlurView(data) {
