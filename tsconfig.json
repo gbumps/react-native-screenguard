@@ -2,7 +2,9 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "react-native-screenguard": ["./src/main/index"]
+      "react-native-screenguard": [
+        "node_modules/awesome-library"
+      ]
     },
     "outDir": "./src/commonjs",      
     "declaration": true,             
