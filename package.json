@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "private": false,
   "description": "A Native screenshot blocking library for React-Native developer, with background customizable after captured. Screenshot detector are also supported.",
-  "main": "index",
-  "source": "index",
-  "types": "index.d.ts",
+  "main": "./src/commonjs/index",
+  "types": "./src/types/index.d.ts",
   "directories": {
     "example": "example"
   },
