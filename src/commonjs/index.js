@@ -4,7 +4,7 @@ import * as ScreenGuardConstants from './constant';
 const { ScreenGuard } = NativeModules;
 var screenShotEmitter = null;
 var screenRecordingEmitter = null;
-export default {
+class ScreenGuardModule {
     /**
      * activate screenshot blocking (iOS 13+, Android 5+)
      * @param capturedBackgroundColor background color layout after taking a screenshot
@@ -18,11 +18,11 @@ export default {
             ? ScreenGuardConstants.BLACK_COLOR
             : capturedBackgroundColor;
         ScreenGuard.activateShield(currentColor);
-    },
+    }
     /**
      * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
      * @param data ScreenGuardBlurDataObject data object
-     * @version v0.1.2+
+     * @version v1.0.0+
      */
     registerWithBlurView(data) {
         const { radius = ScreenGuardConstants.RADIUS_DEFAULT, timeAfterResume = ScreenGuardConstants.TIME_DELAYED, } = data;
@@ -51,11 +51,11 @@ export default {
         else {
             ScreenGuard.activateShieldWithBlurView({ radius, timeAfterResume });
         }
-    },
+    }
     /**
      * activate with an Image uri (iOS 13+, Android 8+)
      * @param data ScreenGuardImageDataObject data object,
-     * @version v1.0.2+
+     * @version v1.0.0+
      */
     registerWithImage(data) {
         let { source, width, height, backgroundColor = ScreenGuardConstants.BLACK_COLOR, alignment = ScreenGuardConstants.Alignment.center, timeAfterResume = ScreenGuardConstants.TIME_DELAYED, defaultSource, } = data;
@@ -97,7 +97,7 @@ export default {
             backgroundColor,
             timeAfterResume,
         });
-    },
+    }
     /**
      * Deactivate screenguard
      * Clear all screen protector and event listening
@@ -113,7 +113,7 @@ export default {
             screenRecordingEmitter.removeAllListeners(ScreenGuardConstants.SCREEN_RECORDING_EVT);
             screenRecordingEmitter = null;
         }
-    },
+    }
     /**
      * Screenshot event listener
      * Register for screenshot event listener
@@ -133,7 +133,7 @@ export default {
         if (!listenerCount) {
             screenShotEmitter.addListener(ScreenGuardConstants.SCREENSHOT_EVT, _onScreenCapture);
         }
-    },
+    }
     /**
      * Screen recording event listener (iOS only)
      * Register for screen recording event listener
@@ -153,5 +153,7 @@ export default {
                 screenRecordingEmitter.addListener(ScreenGuardConstants.SCREEN_RECORDING_EVT, _onScreenRecording);
             }
         }
-    },
-};
+    }
+}
+;
+export default ScreenGuardModule;

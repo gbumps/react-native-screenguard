@@ -1,5 +1,5 @@
 import * as ScreenGuardData from './data';
-declare const _default: {
+declare class ScreenGuardModule {
     /**
      * activate screenshot blocking (iOS 13+, Android 5+)
      * @param capturedBackgroundColor background color layout after taking a screenshot
@@ -9,13 +9,13 @@ declare const _default: {
     /**
      * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
      * @param data ScreenGuardBlurDataObject data object
-     * @version v0.1.2+
+     * @version v1.0.0+
      */
     registerWithBlurView(data: ScreenGuardData.ScreenGuardBlurDataObject): void;
     /**
      * activate with an Image uri (iOS 13+, Android 8+)
      * @param data ScreenGuardImageDataObject data object,
-     * @version v1.0.2+
+     * @version v1.0.0+
      */
     registerWithImage(data: ScreenGuardData.ScreenGuardImageDataObject): void;
     /**
@@ -31,12 +31,12 @@ declare const _default: {
      * @param callback callback after a screenshot has been triggered.
      * @version v0.3.6+
      */
-    registerScreenshotEventListener(getScreenShotPath: boolean | undefined, callback: (data?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null | undefined) => void): void;
+    registerScreenshotEventListener(getScreenShotPath: boolean | undefined, callback: (data?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null) => void): void;
     /**
      * Screen recording event listener (iOS only)
      * Register for screen recording event listener
      * @version v0.3.6+
      */
     registerScreenRecordingEventListener(callback: (arg: any) => void): void;
-};
-export default _default;
+}
+export default ScreenGuardModule;
