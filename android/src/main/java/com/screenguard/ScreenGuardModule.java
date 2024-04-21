@@ -112,7 +112,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             final View currentView =
                     currentActivity.getWindow().getDecorView().getRootView();
             currentView.setDrawingCacheEnabled(true);
-            Bitmap bitmap = captureReactView(currentView);
+            Bitmap bitmap = ScreenGuardHelper.captureReactView(currentView);
             String localPath = saveBitmapToFile(bitmap);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Intent intent = new Intent(
