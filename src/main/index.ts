@@ -9,7 +9,7 @@ var screenShotEmitter: NativeEventEmitter | null = null;
 
 var screenRecordingEmitter: NativeEventEmitter | null = null;
 
-class ScreenGuardModule {
+export default {
   /**
    * activate screenshot blocking (iOS 13+, Android 5+)
    * @param capturedBackgroundColor background color layout after taking a screenshot
@@ -26,12 +26,12 @@ class ScreenGuardModule {
         ? ScreenGuardConstants.BLACK_COLOR
         : capturedBackgroundColor;
     ScreenGuard.activateShield(currentColor);
-  }
+  },
 
   /**
    * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
    * @param data ScreenGuardBlurDataObject data object
-   * @version v1.0.0+
+   * @version v0.1.2+
    */
   registerWithBlurView(data: ScreenGuardData.ScreenGuardBlurDataObject) {
     const {
@@ -70,12 +70,12 @@ class ScreenGuardModule {
     } else {
       ScreenGuard.activateShieldWithBlurView({ radius, timeAfterResume });
     }
-  }
+  },
 
   /**
    * activate with an Image uri (iOS 13+, Android 8+)
    * @param data ScreenGuardImageDataObject data object,
-   * @version v1.0.0+
+   * @version v1.0.2+
    */
   registerWithImage(data: ScreenGuardData.ScreenGuardImageDataObject) {
     let {
@@ -133,7 +133,7 @@ class ScreenGuardModule {
       backgroundColor,
       timeAfterResume,
     });
-  }
+  },
 
   /**
    * Deactivate screenguard
@@ -152,7 +152,7 @@ class ScreenGuardModule {
       );
       screenRecordingEmitter = null;
     }
-  }
+  },
 
   /**
    * Screenshot event listener
@@ -182,7 +182,7 @@ class ScreenGuardModule {
         _onScreenCapture
       );
     }
-  }
+  },
 
   /**
    * Screen recording event listener (iOS only)
@@ -208,7 +208,5 @@ class ScreenGuardModule {
         );
       }
     }
-  }
+  },
 };
-
-export default ScreenGuardModule;
