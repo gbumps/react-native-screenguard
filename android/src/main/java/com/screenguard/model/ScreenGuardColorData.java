@@ -9,13 +9,15 @@ import com.screenguard.enums.ScreenGuardActionEnum;
 
 public class ScreenGuardColorData extends ScreenGuardData implements Parcelable {
 
-    public ScreenGuardColorData(String color) {
+    public ScreenGuardColorData(String color, int timeAfterResume) {
        this.backgroundColor = color;
+       this.timeAfterResume = timeAfterResume;
        this.action = ScreenGuardActionEnum.color;
     }
 
     protected ScreenGuardColorData(Parcel in) {
         this.backgroundColor = in.readString();
+        this.timeAfterResume = in.readInt();
         this.action = ScreenGuardActionEnum.color;
     }
 

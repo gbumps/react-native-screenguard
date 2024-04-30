@@ -18,7 +18,6 @@ public class ScreenGuardImageData extends ScreenGuardData implements Parcelable 
 
     public ScreenGuardImagePositionEnum position;
 
-    public int timeAfterSync;
 
     public ScreenGuardImageData(
             String backgroundColor,
@@ -26,14 +25,14 @@ public class ScreenGuardImageData extends ScreenGuardData implements Parcelable 
             double width,
             double height,
             int alignmentIndex,
-            int timeAfterSync
+            int timeAfterResume
     ) {
         this.width = width;
         this.height = height;
         this.backgroundColor = backgroundColor;
         this.imageUrl = imageUrl;
         this.position = ScreenGuardImagePosition.getEnumFromNumber(alignmentIndex);
-        this.timeAfterSync = timeAfterSync;
+        this.timeAfterResume = timeAfterResume;
         this.action = ScreenGuardActionEnum.image;
     }
 
@@ -77,6 +76,6 @@ public class ScreenGuardImageData extends ScreenGuardData implements Parcelable 
         parcel.writeString(backgroundColor);
         parcel.writeString(imageUrl);
         parcel.writeInt(pos);
-        parcel.writeInt(timeAfterSync);
+        parcel.writeInt(timeAfterResume);
     }
 }

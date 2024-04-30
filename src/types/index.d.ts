@@ -2,10 +2,10 @@ import * as ScreenGuardData from './data';
 declare const _default: {
     /**
      * activate screenshot blocking (iOS 13+, Android 5+)
-     * @param capturedBackgroundColor background color layout after taking a screenshot
+     * @param data ScreenGuardColorData object
      * @version v0.0.2+
      */
-    register(capturedBackgroundColor: String | null): void;
+    register(data: ScreenGuardData.ScreenGuardColorData): void;
     /**
      * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
      * @param data ScreenGuardBlurDataObject data object

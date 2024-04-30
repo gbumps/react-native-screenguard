@@ -112,6 +112,48 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 	https://docs.expo.dev/workflow/prebuild/
 
+#### Post-installation setting for Android
+
+On Android, remember to setup a little bit as you will not receive the background color like in the video.
+
+1. Open up `[your_project_path]/android/app/src/main/AndroidManifest.xml` and add activity `com.screenguard.ScreenGuardColorActivity` like below
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application ......>
+      	<activity
+      	  android:name=".MainActivity" .........>
+      	  ..........
+      	</activity>
+
+	<activity android:name="com.screenguard.ScreenGuardColorActivity"
+            android:theme="@style/Theme.AppCompat.Translucent"
+        />
+    </application>
+</manifest>
+```
+
+2. Open up `[your_project_path]/android/app/src/main/res/values/styles.xml` and add style `Theme.AppCompat.Translucent` like below
+
+
+```xml
+<resource>
+
+<style name="AppTheme">your current app style theme.............</style>
+
+<style name="Theme.AppCompat.Translucent">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+</resource>
+```
+
+
+
 ## Usage
 
 #### 1. register

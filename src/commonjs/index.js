@@ -7,17 +7,22 @@ var screenRecordingEmitter = null;
 export default {
     /**
      * activate screenshot blocking (iOS 13+, Android 5+)
-     * @param capturedBackgroundColor background color layout after taking a screenshot
+     * @param data ScreenGuardColorData object
      * @version v0.0.2+
      */
-    register(capturedBackgroundColor) {
-        let currentColor = capturedBackgroundColor == null ||
-            capturedBackgroundColor.trim().length === 0 ||
-            !capturedBackgroundColor.trim().startsWith('#') ||
-            ScreenGuardConstants.REGEX.test(capturedBackgroundColor.trim().substring(1))
+    register(data) {
+        let { backgroundColor = ScreenGuardConstants.BLACK_COLOR, timeAfterResume = ScreenGuardConstants.TIME_DELAYED, } = data;
+        let currentColor = backgroundColor.trim().length === 0 ||
+            !backgroundColor.trim().startsWith('#') ||
+            ScreenGuardConstants.REGEX.test(backgroundColor.trim().substring(1))
             ? ScreenGuardConstants.BLACK_COLOR
-            : capturedBackgroundColor;
-        ScreenGuard.activateShield(currentColor);
+            : data.backgroundColor;
+        if (Platform.OS === 'ios') {
+            ScreenGuard.activateShield(currentColor);
+        }
+        else {
+            ScreenGuard.activateShield(currentColor, timeAfterResume);
+        }
     },
     /**
      * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)

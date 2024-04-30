@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -24,7 +25,7 @@ import com.screenguard.enums.ScreenGuardActionEnum;
 import com.screenguard.model.ScreenGuardBlurData;
 import com.screenguard.model.ScreenGuardColorData;
 import com.screenguard.model.ScreenGuardImageData;
-import com.screenguard.model.ScreenGuardImagePosition;
+import com.screenguard.helper.ScreenGuardImagePosition;
 
 import java.io.File;
 
@@ -158,17 +159,19 @@ public class ScreenGuardColorActivity extends ReactActivity  {
         FrameLayout frameLayout = findViewById(R.id.frameLayout);
         ImageView imageView = findViewById(R.id.imageView);
         Handler handlerStopBlur = new Handler(Looper.getMainLooper());
-        Runnable delayedFunction = () -> imageView.setImageBitmap(null);
+        Runnable delayedFunction = () -> {
+            imageView.setImageBitmap(null);
+            frameLayout.setBackgroundColor(COLOR_TRANS);
+        };
         switch (currentActionType) {
             case blur:
-                handlerStopBlur.postDelayed(delayedFunction, screenGuardBlurData.timeAfterSync);
+                handlerStopBlur.postDelayed(delayedFunction, screenGuardBlurData.timeAfterResume);
                 break;
             case image:
-                handlerStopBlur.postDelayed(delayedFunction, screenGuardImageData.timeAfterSync);
-                frameLayout.setBackgroundColor(COLOR_TRANS);
+                handlerStopBlur.postDelayed(delayedFunction, screenGuardImageData.timeAfterResume);
                 break;
             case color:
-                frameLayout.setBackgroundColor(COLOR_TRANS);
+                handlerStopBlur.postDelayed(delayedFunction, 1000);
                 break;
         }
     }
@@ -196,10 +199,14 @@ public class ScreenGuardColorActivity extends ReactActivity  {
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) imgView.getLayoutParams();
                 layoutParams.gravity = ScreenGuardImagePosition.getGravity(screenGuardImageData.position);
                 imgView.setLayoutParams(layoutParams);
+                imgView.getLayoutParams().width = (int) Math.round(screenGuardImageData.width);
+                imgView.getLayoutParams().height = (int) Math.round(screenGuardImageData.height);
+
                 Glide.with(this)
                         .load(screenGuardImageData.imageUrl).override(
                                 (int) Math.round(screenGuardImageData.width),
                                 (int) Math.round(screenGuardImageData.height))
+                        .fitCenter()
                         .into(imgView);
         }
     }

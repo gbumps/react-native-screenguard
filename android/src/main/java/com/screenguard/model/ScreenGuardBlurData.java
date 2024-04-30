@@ -11,27 +11,25 @@ public class ScreenGuardBlurData extends ScreenGuardData implements Parcelable {
 
     public String bitmapPath;
 
-    public int timeAfterSync;
-
-    public ScreenGuardBlurData(int radius, String bitmapPath, int timeAfterSync) {
+    public ScreenGuardBlurData(int radius, String bitmapPath, int timeAfterResume) {
         this.action = ScreenGuardActionEnum.blur;
         this.radius = radius;
         this.bitmapPath = bitmapPath;
-        this.timeAfterSync = timeAfterSync;
+        this.timeAfterResume = timeAfterResume;
     }
 
     protected ScreenGuardBlurData(Parcel in) {
         action = ScreenGuardActionEnum.blur;
         radius = in.readInt();
         bitmapPath = in.readString();
-        timeAfterSync = in.readInt();
+        timeAfterResume = in.readInt();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(radius);
         dest.writeString(bitmapPath);
-        dest.writeInt(timeAfterSync);
+        dest.writeInt(timeAfterResume);
     }
 
     @Override
@@ -68,10 +66,10 @@ public class ScreenGuardBlurData extends ScreenGuardData implements Parcelable {
     }
 
     public int getTimeAfterSync() {
-        return timeAfterSync;
+        return timeAfterResume;
     }
 
     public void setTimeAfterSync(int timeAfterSync) {
-        this.timeAfterSync = timeAfterSync;
+        this.timeAfterResume = timeAfterResume;
     }
 }
