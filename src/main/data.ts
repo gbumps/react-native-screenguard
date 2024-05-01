@@ -60,12 +60,48 @@ export interface ScreenGuardImageDataObject {
    *
    *  bottomRight: 8,
    *
-   * @exception when not in between 0..8
-   *
-   * @defaultValue `4`
+   * @exception when not in between 0..8 and NaN
+   * 
+   * @defaultValue 4 when all positions(top, left, bottom, right) is null and alignment = null
    *
    */
   alignment?: number | 4;
+  /**
+   *  custom top position of the image
+   *
+   * @exception when NaN
+   *
+   * @defaultValue `0`
+   *
+   */
+  top?: number;
+  /**
+   *  custom left position of the image
+   *
+   * @exception when NaN
+   *
+   * @defaultValue `0`
+   *
+   */
+  left?: number;
+  /**
+   *  custom bottom position of the image
+   *
+   * @exception when NaN
+   *
+   * @defaultValue `0`
+   *
+   */
+  bottom?: number;
+  /**
+   *  custom right position of the image
+   *
+   * @exception when NaN
+   *
+   * @defaultValue `0`
+   *
+   */
+  right?: number;
   /**
    * hex color of the background
    *

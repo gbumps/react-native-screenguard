@@ -90,8 +90,12 @@ export default {
       source,
       width,
       height,
+      top,
+      left,
+      bottom,
+      right,
       backgroundColor = ScreenGuardConstants.BLACK_COLOR,
-      alignment = ScreenGuardConstants.Alignment.center,
+      alignment,
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
       defaultSource,
     } = data;
@@ -126,10 +130,14 @@ export default {
       source = { uri: ScreenGuardConstants.resolveAssetSource(data.source) };
     }
 
-    if (alignment != null && (alignment > 8 || alignment < 0)) {
+    if (alignment != null && (alignment > 8 || alignment < 0 || isNaN(alignment))) {
       throw new Error(
         'alignment must be in range from 0 -> 8 only, values: \n topLeft: 0; \n topCenter: 1; \n topRight: 2; \n centerLeft: 3; \n Center: 4; \n centerRight: 5; \n bottomLeft: 6; \n bottomCenter: 7;\n bottomRight: 8; \n If you want to center the image, leave null instead!'
       );
+    }
+
+    if (alignment == null && top == null && left == null && bottom == null && right == null) {
+      alignment = ScreenGuardConstants.Alignment.center;
     }
 
     ScreenGuard.activateShieldWithImage({
@@ -137,6 +145,10 @@ export default {
       defaultSource: newDefaultSource,
       width,
       height,
+      top,
+      left,
+      bottom,
+      right,
       alignment,
       backgroundColor,
       timeAfterResume,

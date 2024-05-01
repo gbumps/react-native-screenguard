@@ -114,7 +114,7 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 #### Post-installation setting for Android
 
-On Android, remember to setup a little bit as you will not receive the background color like in the video.
+On Android, remember to setup a little bit as you will not receive the background color or the blur effect like in the video example.
 
 1. Open up `[your_project_path]/android/app/src/main/AndroidManifest.xml` and add activity `com.screenguard.ScreenGuardColorActivity` like below
 
@@ -126,9 +126,9 @@ On Android, remember to setup a little bit as you will not receive the backgroun
       	  ..........
       	</activity>
 
-	<activity android:name="com.screenguard.ScreenGuardColorActivity"
-            android:theme="@style/Theme.AppCompat.Translucent"
-        />
++       <activity android:name="com.screenguard.ScreenGuardColorActivity"
++            android:theme="@style/Theme.AppCompat.Translucent"
++        />
     </application>
 </manifest>
 ```
@@ -141,14 +141,14 @@ On Android, remember to setup a little bit as you will not receive the backgroun
 
 <style name="AppTheme">your current app style theme.............</style>
 
-<style name="Theme.AppCompat.Translucent">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowAnimationStyle">@null</item>
-        <item name="android:windowSoftInputMode">adjustResize</item>
-    </style>
++ <style name="Theme.AppCompat.Translucent">
++        <item name="android:windowNoTitle">true</item>
++        <item name="android:windowBackground">@android:color/transparent</item>
++        <item name="android:colorBackgroundCacheHint">@null</item>
++        <item name="android:windowIsTranslucent">true</item>
++        <item name="android:windowAnimationStyle">@null</item>
++        <item name="android:windowSoftInputMode">adjustResize</item>
++ </style>
 </resource>
 ```
 
@@ -246,7 +246,7 @@ ScreenGuardModule.registerScreenRecordingEventListener(
 
   * `radius` <b>(required)</b>: blur radius value number in between `[15, 50]` (Explain below) , throws warning if smaller than 15 or bigger than 50, exception if smaller than 1 or not a number.
 
-  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the blur view to disappear before jumping back to the main application view, default 1000ms
+  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the view to disappear before jumping back to the main application view, default 1000ms
 
 
 ```js
@@ -279,13 +279,40 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4
 
   * `height`: height of the image
 
+  * `top`: top position of the image
+
+  * `left`: left position of the image.
+
+  * `bottom`: bottom position of the image.
+
+  * `right`: right position of the image.
+
   * `source` <b>(required)</b>: uri from network image or from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
 
   * `defaultSource`: default source if network image uri failed to load, from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg);
 
   * `backgroundColor`: background color behind the image, just like `register`.
 
-  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the blur view to disappear before jumping back to the main view, default 1000ms
+  * `alignment`: Position of image predefined in library, value from 0 -> 8.
+    
+    ** value definition:
+     -  topLeft: 0,
+     -  topCenter: 1,
+     -  topRight: 2,
+     -  centerLeft: 3,
+     -  center: 4,
+     -  centerRight: 5,
+     -  bottomLeft: 6,
+     -  bottomCenter: 7,
+     -  bottomRight: 8,
+
+   ** throw exception when not in between 0..8 and NaN
+  
+   ** defaultValue = 4 when all positions(top, left, bottom, right) is null and alignment = null
+
+   ** Set this param to null if you want to custom your own position with one of position param `top`, `left`, `bottom`, `right` above.
+
+  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the view to disappear before jumping back to the main view, default 1000ms
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';

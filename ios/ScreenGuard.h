@@ -9,7 +9,7 @@
 #import <React/RCTConvert.h>
 
 
-typedef NS_ENUM(NSInteger, Alignment) {
+typedef NS_ENUM(NSInteger, ScreenGuardImageAlignment) {
     AlignmentTopLeft,
     AlignmentTopCenter,
     AlignmentTopRight,
@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, Alignment) {
     AlignmentBottomRight
 };
 
-NSString* _Nullable NSStringFromAlignment(Alignment alignment);
+NSString* _Nullable NSStringFromAlignment(ScreenGuardImageAlignment alignment);
 
 @interface ScreenGuard : EventEmitter
 - (void)secureViewWithBackgroundColor: (NSString *_Nonnull)color;
@@ -30,7 +30,7 @@ NSString* _Nullable NSStringFromAlignment(Alignment alignment);
           withDefaultSource: (nullable NSDictionary *) defaultSource
                   withWidth: (nonnull NSNumber *) width
                  withHeight: (nonnull NSNumber *) height
-              withAlignment: (Alignment) alignment
+              withAlignment: (ScreenGuardImageAlignment) alignment
         withBackgroundColor: (nonnull NSString *) backgroundColor;
 - (void)removeScreenShot;
 - (UIColor *_Nonnull)colorFromHexString:(NSString *_Nonnull)hexString;

@@ -1,4 +1,4 @@
-package com.screenguard.model;
+package com.screenguard.helper;
 
 
 import com.screenguard.enums.ScreenGuardImagePositionEnum;
