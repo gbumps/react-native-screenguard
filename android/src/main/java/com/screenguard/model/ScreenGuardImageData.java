@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.screenguard.enums.ScreenGuardActionEnum;
 import com.screenguard.enums.ScreenGuardImagePositionEnum;
+import com.screenguard.helper.ScreenGuardImagePosition;
 
 public class ScreenGuardImageData extends ScreenGuardData implements Parcelable {
 
