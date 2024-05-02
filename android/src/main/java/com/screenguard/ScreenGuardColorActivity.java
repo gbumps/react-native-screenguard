@@ -75,13 +75,13 @@ public class ScreenGuardColorActivity extends ReactActivity  {
             ScreenGuardBlurData dataBlur = intent.getParcelableExtra(ScreenGuardBlurData.class.getName());
             ScreenGuardImageData dataImage = intent.getParcelableExtra(ScreenGuardImageData.class.getName());
             ScreenGuardColorData dataColor = intent.getParcelableExtra(ScreenGuardColorData.class.getName());
-            if (dataBlur != null) {
+            if (dataColor != null) {
+                screenGuardColorData = dataColor;
+                currentActionType = ScreenGuardActionEnum.color;
+            } else if (dataBlur != null) {
                 screenGuardBlurData = dataBlur;
                 currentActionType = ScreenGuardActionEnum.blur;
                 blurredBitmap = getBitmapFromFile(screenGuardBlurData.bitmapPath);
-            } else if (dataColor != null) {
-                screenGuardColorData = dataColor;
-                currentActionType = ScreenGuardActionEnum.color;
             } else if (dataImage != null) {
                 screenGuardImageData = dataImage;
                 currentActionType = ScreenGuardActionEnum.image;
@@ -171,7 +171,7 @@ public class ScreenGuardColorActivity extends ReactActivity  {
                 handlerStopBlur.postDelayed(delayedFunction, screenGuardImageData.timeAfterResume);
                 break;
             case color:
-                handlerStopBlur.postDelayed(delayedFunction, 1000);
+                handlerStopBlur.postDelayed(delayedFunction, screenGuardColorData.timeAfterResume);
                 break;
         }
     }
@@ -194,20 +194,20 @@ public class ScreenGuardColorActivity extends ReactActivity  {
                 frameLayout.setBackgroundColor(Color.parseColor(screenGuardColorData.backgroundColor));
                 break;
             case image:
-                frameLayout.setBackgroundColor(Color.parseColor(screenGuardImageData.backgroundColor));
                 ImageView imgView = findViewById(R.id.imageView);
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) imgView.getLayoutParams();
                 layoutParams.gravity = ScreenGuardImagePosition.getGravity(screenGuardImageData.position);
+                layoutParams.width =  (int) Math.round(screenGuardImageData.width);
+                layoutParams.height = (int) Math.round(screenGuardImageData.height);
                 imgView.setLayoutParams(layoutParams);
-                imgView.getLayoutParams().width = (int) Math.round(screenGuardImageData.width);
-                imgView.getLayoutParams().height = (int) Math.round(screenGuardImageData.height);
-
                 Glide.with(this)
                         .load(screenGuardImageData.imageUrl).override(
                                 (int) Math.round(screenGuardImageData.width),
                                 (int) Math.round(screenGuardImageData.height))
                         .fitCenter()
                         .into(imgView);
+
+                frameLayout.setBackgroundColor(Color.parseColor(screenGuardImageData.backgroundColor));
         }
     }
 }

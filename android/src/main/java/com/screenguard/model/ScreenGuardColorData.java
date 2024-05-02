@@ -16,9 +16,9 @@ public class ScreenGuardColorData extends ScreenGuardData implements Parcelable 
     }
 
     protected ScreenGuardColorData(Parcel in) {
-        this.backgroundColor = in.readString();
-        this.timeAfterResume = in.readInt();
-        this.action = ScreenGuardActionEnum.color;
+        backgroundColor = in.readString();
+        timeAfterResume = in.readInt();
+        action = ScreenGuardActionEnum.color;
     }
 
     public static final Creator<ScreenGuardColorData> CREATOR = new Creator<ScreenGuardColorData>() {
@@ -41,5 +41,6 @@ public class ScreenGuardColorData extends ScreenGuardData implements Parcelable 
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeString(backgroundColor);
+        parcel.writeInt(timeAfterResume);
     }
 }
