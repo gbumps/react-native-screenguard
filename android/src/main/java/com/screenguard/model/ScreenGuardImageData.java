@@ -38,12 +38,13 @@ public class ScreenGuardImageData extends ScreenGuardData implements Parcelable 
     }
 
     protected ScreenGuardImageData(Parcel in) {
-        this.width = in.readDouble();
-        this.height = in.readDouble();
-        this.backgroundColor = in.readString();
-        this.imageUrl = in.readString();
-        this.position = ScreenGuardImagePosition.getEnumFromNumber(in.readInt());
-        this.action = ScreenGuardActionEnum.image;
+        width = in.readDouble();
+        height = in.readDouble();
+        backgroundColor = in.readString();
+        imageUrl = in.readString();
+        position = ScreenGuardImagePosition.getEnumFromNumber(in.readInt());
+        timeAfterResume = in.readInt();
+        action = ScreenGuardActionEnum.image;
     }
 
     public static final Creator<ScreenGuardImageData> CREATOR = new Creator<ScreenGuardImageData>() {
