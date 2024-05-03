@@ -365,16 +365,15 @@ ScreenGuardModule.unregister();
 
 ## Limitation
 
-- From `v0.3.6` and above, callbacks will not be activated on all register functions. You may have to activate it yourself by using [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew) or [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew) instead.
+- From `v0.3.6` and above, callbacks will not be activated on all functions. You may have to activate it yourself by using [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew) or [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew) instead.
 
-- This library support blocking screenshot for iOS 13+, Android 5+ only.
+- This library support blocking screenshot for iOS 13+, Android 8+ only.
 
 - The protection filter is already activated until you call `unregister`. So remember to call a function only <b>ONCE</b> for limitting errors and unexpected problems might happened during testing.
 
 - Lib does not support combine feature together. (For example you want to use `registerWithBlurView` combine with `register` to have a blur view with color behind,.....)
 
-- On Android, if you want to use callback, consider using `registerScreenShotEventListener` instead, as you may not receive any event after a screenshot has been triggered if using with `register`.
-
+- `registerWithImage` on Android is still in experimental, so please use it with caution as some unexpected behavior might occur.
 
 ## Contributing
 All contributions are welcome! Please open an issue if you get stuck and bugs, or a PR if you have any feature idea, improvements and bug fixing. I'm very appreciate ! 

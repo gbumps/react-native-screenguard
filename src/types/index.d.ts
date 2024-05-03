@@ -1,13 +1,13 @@
 import * as ScreenGuardData from './data';
 declare const _default: {
     /**
-     * activate screenshot blocking (iOS 13+, Android 5+)
+     * activate screenshot blocking with a color effect (iOS 13+, Android 8+)
      * @param data ScreenGuardColorData object
      * @version v0.0.2+
      */
     register(data: ScreenGuardData.ScreenGuardColorData): void;
     /**
-     * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
+     * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 8+)
      * @param data ScreenGuardBlurDataObject data object
      * @version v0.1.2+
      */

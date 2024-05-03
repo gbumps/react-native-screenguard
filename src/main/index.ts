@@ -11,7 +11,7 @@ var screenRecordingEmitter: NativeEventEmitter | null = null;
 
 export default {
   /**
-   * activate screenshot blocking (iOS 13+, Android 5+)
+   * activate screenshot blocking with a color effect (iOS 13+, Android 8+)
    * @param data ScreenGuardColorData object
    * @version v0.0.2+
    */
@@ -37,7 +37,18 @@ export default {
   },
 
   /**
-   * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 6+)
+   * (Android only) activate screenshot and screen record blocking without 
+   * any effect (blur, image, color) on Android (Android 5+)
+   * @version v1.0.0+
+   */
+  registerWithoutEffect() {
+    if (Platform.OS === 'android') {
+      ScreenGuard.activateShieldWithoutEffect();
+    }
+  },
+
+  /**
+   * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 8+)
    * @param data ScreenGuardBlurDataObject data object
    * @version v0.1.2+
    */
