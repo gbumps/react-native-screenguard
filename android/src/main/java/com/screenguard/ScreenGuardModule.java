@@ -102,6 +102,13 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             if (currentActivity.getClass() == ScreenGuardColorActivity.class) {
                 deactivateShield();
             }
+            if (mHandlerBlockScreenShot != null) {
+                mHandlerBlockScreenShot.post(() ->
+                        currentActivity.getWindow().setFlags(
+                                WindowManager.LayoutParams.FLAG_SECURE,
+                                WindowManager.LayoutParams.FLAG_SECURE
+                        ));
+            }
             currentActivity.runOnUiThread(() -> {
                 final View currentView =
                         currentActivity.getWindow().getDecorView().getRootView();
@@ -121,15 +128,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
                     currentActivity.startActivity(intent);
 
                 }
-                if (mHandlerBlockScreenShot != null) {
-                    mHandlerBlockScreenShot.post(() ->
-                            currentActivity.getWindow().setFlags(
-                                    WindowManager.LayoutParams.FLAG_SECURE,
-                                    WindowManager.LayoutParams.FLAG_SECURE
-                            ));
-                }
             });
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -152,6 +151,13 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             }
             if (currentActivity.getClass() == ScreenGuardColorActivity.class) {
                 deactivateShield();
+            }
+            if (mHandlerBlockScreenShot != null) {
+                mHandlerBlockScreenShot.post(() ->
+                        currentActivity.getWindow().setFlags(
+                                WindowManager.LayoutParams.FLAG_SECURE,
+                                WindowManager.LayoutParams.FLAG_SECURE
+                        ));
             }
             currentActivity.runOnUiThread(() -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -181,14 +187,8 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
                     ));
 
                     intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-
                     currentActivity.startActivity(intent);
                 }
-
-                mHandlerBlockScreenShot.post(() -> currentActivity.getWindow().setFlags(
-                        WindowManager.LayoutParams.FLAG_SECURE,
-                        WindowManager.LayoutParams.FLAG_SECURE
-                ));
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -205,34 +205,52 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
                 currentReactContext = getReactApplicationContext();
             }
             Activity currentActivity = currentReactContext.getCurrentActivity();
-            if (currentActivity != null) {
+            if (currentActivity == null) {
+                return;
+            }
+            if (mHandlerBlockScreenShot != null) {
                 mHandlerBlockScreenShot.post(() ->
-                                currentActivity.getWindow().setFlags(
-                        WindowManager.LayoutParams.FLAG_SECURE, 
+                        currentActivity.getWindow().setFlags(
+                                WindowManager.LayoutParams.FLAG_SECURE,
+                                WindowManager.LayoutParams.FLAG_SECURE
+                        ));
+            }
+            currentActivity.runOnUiThread(() -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Intent intent = new Intent(
+                            currentReactContext.getCurrentActivity(),
+                            ScreenGuardColorActivity.class
+                    );
+                    intent.putExtra(ScreenGuardColorData.class.getName(),
+                            new ScreenGuardColorData(
+                            hexColor, timeAfterResume
+                    ));
+
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+                    currentActivity.startActivity(intent);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @ReactMethod
+    public void activateShieldWithoutEffect() {
+        try {
+            if (mHandlerBlockScreenShot == null) {
+                mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
+            }
+            if (currentReactContext == null) {
+                currentReactContext = getReactApplicationContext();
+            }
+            Activity currentActivity = currentReactContext.getCurrentActivity();
+            if (currentActivity != null && mHandlerBlockScreenShot != null) {
+                mHandlerBlockScreenShot.post(() -> currentActivity.getWindow().setFlags(
+                        WindowManager.LayoutParams.FLAG_SECURE,
                         WindowManager.LayoutParams.FLAG_SECURE
                 ));
-                currentActivity.runOnUiThread(() -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        Intent intent = new Intent(
-                                currentReactContext.getCurrentActivity(),
-                                ScreenGuardColorActivity.class
-                        );
-                        intent.putExtra(ScreenGuardColorData.class.getName(),
-                                new ScreenGuardColorData(
-                                hexColor, timeAfterResume
-                        ));
-
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-
-                        currentActivity.startActivity(intent);
-                    }
-
-                    mHandlerBlockScreenShot.post(() -> currentActivity.getWindow().setFlags(
-                            WindowManager.LayoutParams.FLAG_SECURE,
-                            WindowManager.LayoutParams.FLAG_SECURE
-                    ));
-                });
-
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -258,7 +276,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
                  .getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE));
                 mHandlerBlockScreenShot = null;
             } else {
-                Log.w("ACTIVITY_SCREENSHOT", "handler is null");
+                Log.w(ScreenGuardModule.NAME, "deactivate shield: handler is null");
             }
             removeListeners(1);
         } catch (Exception e) {
