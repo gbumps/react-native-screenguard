@@ -7,6 +7,12 @@ declare const _default: {
      */
     register(data: ScreenGuardData.ScreenGuardColorData): void;
     /**
+     * (Android only) activate screenshot and screen record blocking without
+     * any effect (blur, image, color) on Android (Android 5+)
+     * @version v1.0.0+
+     */
+    registerWithoutEffect(): void;
+    /**
      * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 8+)
      * @param data ScreenGuardBlurDataObject data object
      * @version v0.1.2+
