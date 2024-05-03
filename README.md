@@ -22,11 +22,11 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
     * [2.Linking](#2-linking)
   * [Usage](#usage)
      * [register](#1-register)
-     * [registerWithoutScreenguard](#2-registerwithoutscreenguard)(Removed)
+     * [registerWithoutEffect](#2-registerwithouteffectnew)(New ✨)
      * [registerScreenshotEventListener](#3-registerscreenshoteventlistener)
      * [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistener)
-     * [registerWithBlurView](#5-registerwithblurview)(beta)
-     * [registerWithImage](#6-registerwithimage)(beta)
+     * [registerWithBlurView](#5-registerwithblurview)
+     * [registerWithImage](#6-registerwithimage)
      * [unregister](#7-unregister)
   * [Limitation](#limitation)
   * [Contributing](#contributing)
@@ -37,12 +37,6 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
 
   ## 1. Install
 
-This library is separated into 2 version: `stable` and `beta` versions for different purpose.  
-
-  #### Stable
-
-- For protecting app from screenshot and screen recording captured, install stable version is enough.
-
 ```sh
 $ npm install react-native-screenguard --save
 ```
@@ -50,24 +44,8 @@ $ npm install react-native-screenguard --save
 ```sh
 $ yarn add react-native-screenguard
 ```
-Source code on `master` branch.
-
-  #### Beta
-
-- If you want more customization over the screen protector filter like `registerWithBlurView` and `registerWithImage`, install this version.
-
-```sh
-$ npm install react-native-screenguard@beta --save
-
-```
-
-```sh
-$ yarn add react-native-screenguard@beta
-```
 
 `Note`: Remember to `pod install` on ios and `gradle build` on Android again to take effect.
-
-Source code on `beta` branch.
 
 If you want to test on iOS simulator, open Simulator, on the top screen, navigate to `Device` -> `Trigger Screenshot`. This is applied to iOS 14+.
 
@@ -180,19 +158,14 @@ Android
 https://github.com/gbumps/react-native-screenguard/assets/16846439/da99c58c-fb79-4885-b496-ecb242bd4cf8
 
 
-#### 2. registerWithoutScreenguard
+#### 2. registerWithoutEffect (New ✨)
 
-- (iOS + Android) Activate without screenguard, if you just want to detect and receive event callback only.
-
-- `Note:` This function is remove from `v.1.0.0`
+- (Android only) Activate screenguard without an effect (blur, color, image);
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
 
-ScreenGuardModule.registerWithoutScreenguard(
-	(_) => {
-	.....do anything you want after the screenshot 
-});
+ScreenGuardModule.registerWithoutEffect();
 ```
 
 #### 3. registerScreenshotEventListener
@@ -279,13 +252,13 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4
 
   * `height`: height of the image
 
-  * `top`: top position of the image
+  * `top`: top position of the image (iOS only)
 
-  * `left`: left position of the image.
+  * `left`: left position of the image. (iOS only)
 
-  * `bottom`: bottom position of the image.
+  * `bottom`: bottom position of the image. (iOS only)
 
-  * `right`: right position of the image.
+  * `right`: right position of the image. (iOS only)
 
   * `source` <b>(required)</b>: uri from network image or from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
 
@@ -308,7 +281,9 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4
 
    ** throw exception when not in between 0..8 and NaN
   
-   ** defaultValue = 4 when all positions(top, left, bottom, right) is null and alignment = null
+   ** defaultValue = 4 when all positions(top, left, bottom, right) is null and alignment = null, 
+
+   ** Cannot combine with position(top, left, bottom, right) params cause this will always be checked 1st, and all position will be skipped if this param != null
 
    ** Set this param to null if you want to custom your own position with one of position param `top`, `left`, `bottom`, `right` above.
 
@@ -344,7 +319,7 @@ const dataRequire = {
 ScreenGuardModule.registerWithImage(dataRequire);
 ```
 
-`Warning`: This feature is still in experimental on Android, so please use with caution as some unexpected behaviour might occurs.
+`Note`: This feature is still in experimental on Android, so please use with caution as some unexpected behaviour might occurs.
 
 iOS
 
@@ -372,8 +347,6 @@ ScreenGuardModule.unregister();
 - The protection filter is already activated until you call `unregister`. So remember to call a function only <b>ONCE</b> for limitting errors and unexpected problems might happened during testing.
 
 - Lib does not support combine feature together. (For example you want to use `registerWithBlurView` combine with `register` to have a blur view with color behind,.....)
-
-- `registerWithImage` on Android is still in experimental, so please use it with caution as some unexpected behavior might occur.
 
 ## Contributing
 All contributions are welcome! Please open an issue if you get stuck and bugs, or a PR if you have any feature idea, improvements and bug fixing. I'm very appreciate ! 
