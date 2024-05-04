@@ -6,7 +6,7 @@
 
 ![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue)
 
-A Native library for blocking screenshot for react-native developer, with background color screenshot customizable.
+A Native library for blocking screenshot for react-native developer, with background screenshot customizable.
 
 
 https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3-4d5b-8ad5-93525fb90a72
@@ -17,16 +17,14 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
 <!--ts-->
   * [Installation](#installation)
     * [1.Install](#1-install)
-      * [stable](#stable)
-      * [beta](#beta)
     * [2.Linking](#2-linking)
   * [Usage](#usage)
      * [register](#1-register)
-     * [registerWithoutScreenguard](#2-registerwithoutscreenguard)(Deprecated)
+     * [registerWithoutEffect](#2-registerwithouteffectnew)(New ✨)
      * [registerScreenshotEventListener](#3-registerscreenshoteventlistener)
      * [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistener)
-     * [registerWithBlurView](#5-registerwithblurview)(beta)
-     * [registerWithImage](#6-registerwithimage)(beta)
+     * [registerWithBlurView](#5-registerwithblurview)
+     * [registerWithImage](#6-registerwithimage)
      * [unregister](#7-unregister)
   * [Limitation](#limitation)
   * [Contributing](#contributing)
@@ -37,12 +35,6 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
 
   ## 1. Install
 
-This library is separated into 2 version: `stable` and `beta` versions for different purpose.  
-
-  #### Stable
-
-- For protecting app from screenshot and screen recording captured, install stable version is enough.
-
 ```sh
 $ npm install react-native-screenguard --save
 ```
@@ -50,24 +42,8 @@ $ npm install react-native-screenguard --save
 ```sh
 $ yarn add react-native-screenguard
 ```
-Source code on `master` branch.
-
-  #### Beta
-
-- If you want more customization over the screen protector filter like `registerWithBlurView` and `registerWithImage`, install this version.
-
-```sh
-$ npm install react-native-screenguard@beta --save
-
-```
-
-```sh
-$ yarn add react-native-screenguard@beta
-```
 
 `Note`: Remember to `pod install` on ios and `gradle build` on Android again to take effect.
-
-Source code on `beta` branch.
 
 If you want to test on iOS simulator, open Simulator, on the top screen, navigate to `Device` -> `Trigger Screenshot`. This is applied to iOS 14+.
 
@@ -112,6 +88,48 @@ For Expo user: First, you need to eject Expo or `npx expo prebuild` in order to 
 
 	https://docs.expo.dev/workflow/prebuild/
 
+#### Post-installation setting for Android
+
+On Android, remember to setup a little bit as you will not receive the background color or the blur effect like in the video example.
+
+1. Open up `[your_project_path]/android/app/src/main/AndroidManifest.xml` and add activity `com.screenguard.ScreenGuardColorActivity` like below
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application ......>
+      	<activity
+      	  android:name=".MainActivity" .........>
+      	  ..........
+      	</activity>
+
++       <activity android:name="com.screenguard.ScreenGuardColorActivity"
++            android:theme="@style/Theme.AppCompat.Translucent"
++        />
+    </application>
+</manifest>
+```
+
+2. Open up `[your_project_path]/android/app/src/main/res/values/styles.xml` and add style `Theme.AppCompat.Translucent` like below
+
+
+```xml
+<resource>
+
+<style name="AppTheme">your current app style theme.............</style>
+
++ <style name="Theme.AppCompat.Translucent">
++        <item name="android:windowNoTitle">true</item>
++        <item name="android:windowBackground">@android:color/transparent</item>
++        <item name="android:colorBackgroundCacheHint">@null</item>
++        <item name="android:windowIsTranslucent">true</item>
++        <item name="android:windowAnimationStyle">@null</item>
++        <item name="android:windowSoftInputMode">adjustResize</item>
++ </style>
+</resource>
+```
+
+
+
 ## Usage
 
 #### 1. register
@@ -138,19 +156,14 @@ Android
 https://github.com/gbumps/react-native-screenguard/assets/16846439/da99c58c-fb79-4885-b496-ecb242bd4cf8
 
 
-#### 2. registerWithoutScreenguard
+#### 2. registerWithoutEffect(New ✨)
 
-- (iOS + Android) Activate without screenguard, if you just want to detect and receive event callback only.
-
-- `Note:` This function is deprecated and will be removed from ver `0.4.0+`, consider using [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew) or [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew) instead.
+- (Android only) Activate screenguard without an effect (blur, color, image);
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
 
-ScreenGuardModule.registerWithoutScreenguard(
-	(_) => {
-	.....do anything you want after the screenshot 
-});
+ScreenGuardModule.registerWithoutEffect();
 ```
 
 #### 3. registerScreenshotEventListener
@@ -196,8 +209,6 @@ ScreenGuardModule.registerScreenRecordingEventListener(
 
 #### 5. registerWithBlurView
 
-- Beta version only. See how to install [here](#beta)
-
 - Activate screenguard with a blurred effect view after captured.
 
 - Blurview on Android using [Blurry](https://github.com/wasabeef/Blurry).
@@ -206,7 +217,7 @@ ScreenGuardModule.registerScreenRecordingEventListener(
 
   * `radius` <b>(required)</b>: blur radius value number in between `[15, 50]` (Explain below) , throws warning if smaller than 15 or bigger than 50, exception if smaller than 1 or not a number.
 
-  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the blur view to disappear before jumping back to the main application view, default 1000ms
+  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the view to disappear before jumping back to the main application view, default 1000ms
 
 
 ```js
@@ -229,8 +240,6 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4
 
 #### 6. registerWithImage
 
-- Beta version only. See how to install [here](#beta)
-
 - Activate screenguard with a custom image view and background color. 
 
 - ImageView using [SDWebImage](https://github.com/SDWebImage/SDWebImage) on iOS and [Glide](https://github.com/bumptech/glide) on Android for faster loading and caching.
@@ -241,13 +250,42 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4
 
   * `height`: height of the image
 
-  * `source` <b>(required)</b>: uri from network image or from local project `require`, accept all kinds of images (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
+  * `top`: top position of the image (iOS only)
 
-  * `defaultSource`: default source if network image uri failed to load, from local project `require`, accept all kinds of images;
+  * `left`: left position of the image. (iOS only)
+
+  * `bottom`: bottom position of the image. (iOS only)
+
+  * `right`: right position of the image. (iOS only)
+
+  * `source` <b>(required)</b>: uri from network image or from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg), throws warning if uri is not an image uri;
+
+  * `defaultSource`: default source if network image uri failed to load, from local project `require`, accept all kinds of image (jpg|jpeg|png|gif|bmp|webp|svg);
 
   * `backgroundColor`: background color behind the image, just like `register`.
 
-  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the blur view to disappear before jumping back to the main view, default 1000ms
+  * `alignment`: Position of image predefined in library, value from 0 -> 8.
+    
+    ** value definition:
+     -  topLeft: 0,
+     -  topCenter: 1,
+     -  topRight: 2,
+     -  centerLeft: 3,
+     -  center: 4,
+     -  centerRight: 5,
+     -  bottomLeft: 6,
+     -  bottomCenter: 7,
+     -  bottomRight: 8,
+
+   ** throw exception when not in between 0..8 and NaN
+  
+   ** defaultValue = 4 when all positions(top, left, bottom, right) is null and alignment = null, 
+
+   ** Cannot combine with position(top, left, bottom, right) params cause this will always be checked 1st, and all positions will be skipped if not null.
+
+   ** Set this param to null if you want to custom your own position with one of position param `top`, `left`, `bottom`, `right` above.
+
+  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the view to disappear before jumping back to the main view, default 1000ms
 
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
@@ -279,7 +317,7 @@ const dataRequire = {
 ScreenGuardModule.registerWithImage(dataRequire);
 ```
 
-`Warning`: This feature is still in experimental on Android, so please use with caution as some unexpected behaviour might occurs.
+`Note`: This feature is still in experimental on Android, so please use with caution as some unexpected behaviour might occurs.
 
 iOS
 
@@ -300,16 +338,13 @@ ScreenGuardModule.unregister();
 
 ## Limitation
 
-- From `v0.3.6` and above, callbacks will not be activated on all register functions. You may have to activate it yourself by using [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew) or [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew) instead.
+- From `v0.3.6` and above, callbacks will not be activated on all functions. You may have to activate it yourself by using [registerScreenshotEventListener](#3-registerscreenshoteventlistenernew) or [registerScreenRecordingEventListener](#4-registerscreenrecordingeventlistenernew) instead.
 
-- This library support blocking screenshot for iOS 13+, Android 5+ only.
+- This library support blocking screenshot for iOS 13+, Android 8+ only.
 
-- The protection filter is already activated until you call `unregister`. So remember to call a function only <b>ONCE</b> for limitting errors and unexpected problems might happened during testing.
+- Remember to call a function only <b>ONCE</b> and don't combine with other register functions for limitting errors and unexpected problems might happened during testing.
 
-- Lib does not support combine feature together. (For example you want to use `registerWithBlurView` combine with `register` to have a blur view with color behind,.....)
-
-- On Android, if you want to use callback, consider using `registerScreenShotEventListener` instead, as you may not receive any event after a screenshot has been triggered if using with `register`.
-
+- Please remember that input will be temporary disabled until call `unregister` on Android except `registerWithoutEffect`.
 
 ## Contributing
 All contributions are welcome! Please open an issue if you get stuck and bugs, or a PR if you have any feature idea, improvements and bug fixing. I'm very appreciate ! 

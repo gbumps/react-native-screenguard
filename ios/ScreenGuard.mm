@@ -15,7 +15,7 @@ bool hasListeners;
 
 UITextField *textField;
 UIImageView *imageView;
-
+UIScrollView *scrollView;
 
 - (NSArray<NSString *> *)supportedEvents {
   return @[SCREENSHOT_EVT, SCREEN_RECORDING_EVT];
@@ -37,6 +37,174 @@ UIImageView *imageView;
     [textField setSecureTextEntry: TRUE];
     [textField setBackgroundColor: [self colorFromHexString: color]];
   } else return;
+}
+
+- (void)secureViewWithBlurView: (nonnull NSNumber *)radius {
+  if (@available(iOS 13.0, *)) {
+    if (textField == nil) {
+      [self initTextField];
+    }
+      
+    [textField setBackgroundColor: [UIColor clearColor]];
+    [textField setSecureTextEntry: TRUE];
+    UIViewController *presentedViewController = RCTPresentedViewController();
+    UIImage *imageView = [self convertViewToImage:presentedViewController.view.superview];
+    CIImage *inputImage = [CIImage imageWithCGImage:imageView.CGImage];
+    
+    CIContext *context = [CIContext contextWithOptions:nil];
+    
+    CIFilter *blurFilter = [CIFilter filterWithName:@"CIGaussianBlur"];
+    [blurFilter setValue:inputImage forKey:kCIInputImageKey];
+    [blurFilter setValue:radius forKey:kCIInputRadiusKey];
+          
+    CIImage *outputImage = [blurFilter valueForKey:kCIOutputImageKey];
+          
+    CGImageRef cgImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
+    
+    UIImage *blurredImage = [UIImage imageWithCGImage:cgImage];
+          
+    CGImageRelease(cgImage);
+      
+    [textField setBackground: blurredImage];
+    
+  } else return;
+}
+
+- (void)secureViewWithImageAlignment: (nonnull NSDictionary *) source
+                   withDefaultSource: (nullable NSDictionary *) defaultSource
+                           withWidth: (nonnull NSNumber *) width
+                          withHeight: (nonnull NSNumber *) height
+                       withAlignment: (ScreenGuardImageAlignment) alignment
+                 withBackgroundColor: (nonnull NSString *) backgroundColor 
+{
+  if (@available(iOS 13.0, *)) {
+    if (textField == nil) {
+      [self initTextField];
+    }
+
+    [textField setSecureTextEntry: TRUE];
+    [textField setContentMode: UIViewContentModeCenter];
+    if (scrollView == nil) {
+        scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    }
+    scrollView.showsHorizontalScrollIndicator = NO;
+    scrollView.showsVerticalScrollIndicator = NO;
+    scrollView.scrollEnabled = false;
+    imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
+        
+    imageView.translatesAutoresizingMaskIntoConstraints = NO;
+    [imageView setClipsToBounds:TRUE];
+    [scrollView addSubview:imageView];
+      
+    if (source[@"uri"] != nil) {
+        NSString *uriImage = source[@"uri"];
+        NSString *uriDefaultSource = defaultSource[@"uri"];
+        
+        NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
+        
+        SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
+        
+        UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
+        
+        [imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
+                     placeholderImage: thumbnailImage
+                              options: downloaderOptions
+                            completed: ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+             switch (alignment) {
+                 case AlignmentTopLeft:
+                     [imageView setContentMode: UIViewContentModeTopLeft];
+                     break;
+                 case AlignmentTopCenter:
+                     [imageView setContentMode: UIViewContentModeTop];
+                     break;
+                 case AlignmentTopRight:
+                     [imageView setContentMode: UIViewContentModeTopRight];
+                     break;
+                 case AlignmentCenterLeft:
+                     [imageView setContentMode: UIViewContentModeLeft];
+                     break;
+                 case AlignmentCenter:
+                     [imageView setContentMode: UIViewContentModeCenter];
+                     break;
+                 case AlignmentCenterRight:
+                     [imageView setContentMode: UIViewContentModeRight];
+                     break;
+                 case AlignmentBottomLeft:
+                     [imageView setContentMode: UIViewContentModeBottomLeft];
+                     break;
+                 case AlignmentBottomCenter:
+                     [imageView setContentMode: UIViewContentModeBottom];
+                     break;
+                 case AlignmentBottomRight:
+                     [imageView setContentMode: UIViewContentModeBottomRight];
+                     break;
+             }
+        }];
+    }
+      
+    [textField addSubview: scrollView];
+    [textField sendSubviewToBack: scrollView];
+    [textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
+  } else return;
+}
+
+- (void)secureViewWithImagePosition: (nonnull NSDictionary *) source
+                  withDefaultSource: (nullable NSDictionary *) defaultSource
+                          withWidth: (nonnull NSNumber *) width
+                         withHeight: (nonnull NSNumber *) height
+                            withTop: (NSNumber *) top
+                           withLeft: (NSNumber *) left
+                         withBottom: (NSNumber *) bottom
+                          withRight: (NSNumber *) right
+                withBackgroundColor: (nonnull NSString *) backgroundColor
+{
+ if (@available(iOS 13.0, *)) {
+   if (textField == nil) {
+     [self initTextField];
+   }
+   [textField setSecureTextEntry: TRUE];
+   [textField setContentMode: UIViewContentModeCenter];
+   if (scrollView == nil) {
+     scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+     scrollView.showsHorizontalScrollIndicator = NO;
+     scrollView.showsVerticalScrollIndicator = NO;
+     scrollView.scrollEnabled = false;
+   }
+   CGFloat topInset = top ? [top doubleValue] : 0;
+   CGFloat leftInset = left ? [left doubleValue] : 0;
+   CGFloat bottomInset = bottom ? [bottom doubleValue] : 0;
+   CGFloat rightInset = right ? [right doubleValue] : 0;
+     
+   scrollView.contentInset = UIEdgeInsetsMake(topInset, leftInset, bottomInset, rightInset);
+   
+   imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
+     
+   imageView.translatesAutoresizingMaskIntoConstraints = NO;
+     
+   [imageView setClipsToBounds:TRUE];
+   [scrollView addSubview:imageView];
+     
+   if (source[@"uri"] != nil) {
+       NSString *uriImage = source[@"uri"];
+       NSString *uriDefaultSource = defaultSource[@"uri"];
+       
+       NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
+       
+       SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
+       
+       UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
+       
+       [imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
+                    placeholderImage: thumbnailImage
+                             options: downloaderOptions
+                           completed: ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+       }];
+   }
+     
+   [textField addSubview: scrollView];
+   [textField sendSubviewToBack: scrollView];
+   [textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
+ } else return;
 }
 
 - (void) initTextField {
@@ -63,6 +231,9 @@ UIImageView *imageView;
       if (imageView != nil) {
           [imageView setImage: nil];
           [imageView removeFromSuperview];
+      }
+      if (scrollView != nil) {
+          [scrollView removeFromSuperview];
       }
     [textField setSecureTextEntry: FALSE];
     [textField setBackgroundColor: [UIColor clearColor]];
@@ -97,43 +268,60 @@ RCT_EXPORT_METHOD(activateShield: (NSString *)screenshotBackgroundColor) {
   });
 }
 
-// deprecated
-RCT_EXPORT_METHOD(activateWithoutShield) {
-  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-  NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSNumber *)borderRadius) {
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self removeScreenShot];
+    [self secureViewWithBlurView: borderRadius];
   });
-  [center removeObserver:UIApplicationUserDidTakeScreenshotNotification];
-  [center removeObserver:UIScreenCapturedDidChangeNotification];
-  
-  [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
-                      object:nil
-                       queue:mainQueue
-                  usingBlock:^(NSNotification *notification) {
+}
+
+RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
+  if (![data isKindOfClass:[NSDictionary class]]) {
+    return;
+  }
     
-    if (hasListeners) {
-      [self emit:SCREENSHOT_EVT body:nil];
+  NSDictionary *source = data[@"source"];
+  NSDictionary *defaultSource = data[@"defaultSource"];
+  NSNumber *width = data[@"width"];
+  NSNumber *height = data[@"height"];
+  NSNumber *top = data[@"top"];
+  NSNumber *left = data[@"left"];
+  NSNumber *bottom = data[@"bottom"];
+  NSNumber *right = data[@"right"];
+  NSString *backgroundColor = data[@"backgroundColor"];
+  NSNumber *alignment = data[@"alignment"];
+    if (alignment != nil) {
+        NSInteger alignment = [data[@"alignment"] integerValue];
+        ScreenGuardImageAlignment dataAlignment = (ScreenGuardImageAlignment)alignment;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self secureViewWithImageAlignment: source
+                             withDefaultSource: defaultSource
+                                     withWidth: width
+                                    withHeight: height
+                                 withAlignment: dataAlignment
+                           withBackgroundColor: backgroundColor];
+        });
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self secureViewWithImagePosition: source
+                            withDefaultSource: defaultSource
+                                    withWidth: width
+                                   withHeight: height
+                                      withTop: top
+                                     withLeft: left
+                                   withBottom: bottom
+                                    withRight: right
+                          withBackgroundColor: backgroundColor];
+        });
     }
-  }];
-    [center addObserverForName:UIScreenCapturedDidChangeNotification
-                        object:nil
-                         queue:mainQueue
-                    usingBlock:^(NSNotification *notification) {
-      
-      if (hasListeners) {
-        [self emit:SCREEN_RECORDING_EVT body:nil];
-      }
-    }];
+    
 }
 
 RCT_EXPORT_METHOD(deactivateShield) {
   dispatch_async(dispatch_get_main_queue(), ^{
     [self removeScreenShot];
-  });
-  [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
+    [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
     [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
-
+  });
 }
 
 RCT_EXPORT_METHOD(registerScreenShotEventListener: (BOOL) getScreenShotPath) {

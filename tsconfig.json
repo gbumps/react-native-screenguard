@@ -1,14 +1,17 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
-      "react-native-screenguard": ["index"]
+      "react-native-screenguard": ["./src/commonjs/index"],
     },
-    "declaration": true,
+    "outDir": "./src/commonjs",      
+    "declaration": true,             
+    "declarationDir": "./src/types", 
+    "rootDir": "./src/main",         
+    "esModuleInterop": true,         
+    "forceConsistentCasingInFileNames": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "jsx": "react",
     "lib": ["esnext"],
     "module": "esnext",
@@ -23,6 +26,10 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "esnext"
-  }
+    "target": "esnext",
+  },
+  "include": [
+    "src/main/**/*.ts"  // Include all TypeScript files in the main folder for compilation
+  ],
+  "exclude": ["example", "node_modules"]
 }
