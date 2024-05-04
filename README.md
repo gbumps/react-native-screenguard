@@ -317,6 +317,20 @@ const dataRequire = {
 ScreenGuardModule.registerWithImage(dataRequire);
 ```
 
+```js
+import ScreenGuardModule from 'react-native-screenguard';
+
+const dataRequire = {
+  height: 150,
+  width: 200,
+  top: 50,
+  lef: 50,
+  source: require('./images/test.png'),
+  backgroundColor: color,
+},
+ScreenGuardModule.registerWithImage(dataRequire);
+```
+
 `Note`: This feature is still in experimental on Android, so please use with caution as some unexpected behaviour might occurs.
 
 iOS
