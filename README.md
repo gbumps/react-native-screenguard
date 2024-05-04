@@ -104,6 +104,8 @@ On Android, remember to setup a little bit as you will not receive the backgroun
 
 +       <activity android:name="com.screenguard.ScreenGuardColorActivity"
 +            android:theme="@style/Theme.AppCompat.Translucent"
++            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
++            android:windowSoftInputMode="stateAlwaysVisible|adjustResize"
 +        />
     </application>
 </manifest>
