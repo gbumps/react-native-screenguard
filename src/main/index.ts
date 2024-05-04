@@ -197,7 +197,7 @@ export default {
    * @version v0.3.6+
    */
   registerScreenshotEventListener(
-    getScreenShotPath: boolean = false,
+    getScreenShotPath: boolean | false = false,
     callback: (data?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null) => void
   ) {
     ScreenGuard.registerScreenShotEventListener(getScreenShotPath);
