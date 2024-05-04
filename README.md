@@ -6,7 +6,7 @@
 
 ![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue)
 
-A Native library for blocking screenshot for react-native developer, with background color screenshot customizable.
+A Native library for blocking screenshot for react-native developer, with background screenshot customizable.
 
 
 https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3-4d5b-8ad5-93525fb90a72
@@ -17,8 +17,6 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
 <!--ts-->
   * [Installation](#installation)
     * [1.Install](#1-install)
-      * [stable](#stable)
-      * [beta](#beta)
     * [2.Linking](#2-linking)
   * [Usage](#usage)
      * [register](#1-register)
@@ -158,7 +156,7 @@ Android
 https://github.com/gbumps/react-native-screenguard/assets/16846439/da99c58c-fb79-4885-b496-ecb242bd4cf8
 
 
-#### 2. registerWithoutEffect (New ✨)
+#### 2. registerWithoutEffect(New ✨)
 
 - (Android only) Activate screenguard without an effect (blur, color, image);
 
@@ -283,7 +281,7 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/17429686-1bc4
   
    ** defaultValue = 4 when all positions(top, left, bottom, right) is null and alignment = null, 
 
-   ** Cannot combine with position(top, left, bottom, right) params cause this will always be checked 1st, and all position will be skipped if this param != null
+   ** Cannot combine with position(top, left, bottom, right) params cause this will always be checked 1st, and all positions will be skipped if not null.
 
    ** Set this param to null if you want to custom your own position with one of position param `top`, `left`, `bottom`, `right` above.
 
@@ -344,9 +342,9 @@ ScreenGuardModule.unregister();
 
 - This library support blocking screenshot for iOS 13+, Android 8+ only.
 
-- The protection filter is already activated until you call `unregister`. So remember to call a function only <b>ONCE</b> for limitting errors and unexpected problems might happened during testing.
+- Remember to call a function only <b>ONCE</b> and don't combine with other register functions for limitting errors and unexpected problems might happened during testing.
 
-- Lib does not support combine feature together. (For example you want to use `registerWithBlurView` combine with `register` to have a blur view with color behind,.....)
+- Please remember that input will be temporary disabled until call `unregister` on Android except `registerWithoutEffect`.
 
 ## Contributing
 All contributions are welcome! Please open an issue if you get stuck and bugs, or a PR if you have any feature idea, improvements and bug fixing. I'm very appreciate ! 
