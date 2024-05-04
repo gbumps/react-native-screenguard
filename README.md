@@ -145,7 +145,10 @@ import ScreenGuardModule from 'react-native-screenguard';
 
 ScreenGuardModule.register(
 	//insert any hex color you want here, default black if null or empty
-	'#0F9D58',
+	{
+    backgroundColor: '#0F9D58',
+    timeAfterResume: 2000,
+  },
 );
 ```
 
