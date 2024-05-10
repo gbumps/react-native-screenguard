@@ -140,6 +140,12 @@ On Android, remember to setup a little bit as you will not receive the backgroun
 
 - Android will receive the background color when app in background or inactive state.
 
+- Accepted a JS object with following parameters:
+
+  * `backgroundColor` <b>(required)</b>: The background color you want to display, default `#000000` (BLACK)
+
+  * `timeAfterResume` <b>(Android only)</b>: A small amount of time (in milliseconds) for the view to disappear before jumping back to the main application view, default 1000ms
+
 ```js
 import ScreenGuardModule from 'react-native-screenguard';
 
@@ -364,6 +370,8 @@ ScreenGuardModule.unregister();
 - Remember to call a function only <b>ONCE</b> and don't combine with other register functions for limitting errors and unexpected problems might happened during testing.
 
 - Please remember that input will be temporary disabled until call `unregister` on Android except `registerWithoutEffect`.
+
+On Android, the `registerScreenshotEventListener` method will not function when screenshot blocking is activated. This is because the Android platform inherently blocks all standard screenshot attempts, including those from system apps and button combinations. However, the event might still be received if the user takes a screenshot using a third-party screenshot or screen recording app (such as AZ Screen Recorder, XRecorder, etc.).
 
 ## Contributing
 All contributions are welcome! Please open an issue if you get stuck and bugs, or a PR if you have any feature idea, improvements and bug fixing. I'm very appreciate ! 
