@@ -369,7 +369,7 @@ ScreenGuardModule.unregister();
 
 - Remember to call a function only <b>ONCE</b> and don't combine with other register functions for limitting errors and unexpected problems might happened during testing.
 
-- Please remember that input will be temporary disabled until call `unregister` on Android except `registerWithoutEffect`.
+- Please remember that text input will be temporary disabled until calling `unregister` on Android except `registerWithoutEffect`. Workaround: You can use your own custom-made keyboard if included in your project, or find some react native libs which provide custom keyboard ui like `wix/react-native-ui-libs` could solve this.
 
 On Android, the `registerScreenshotEventListener` method will not function when screenshot blocking is activated. This is because the Android platform inherently blocks all standard screenshot attempts, including those from system apps and button combinations. However, the event might still be received if the user takes a screenshot using a third-party screenshot or screen recording app (such as AZ Screen Recorder, XRecorder, etc.).
 
