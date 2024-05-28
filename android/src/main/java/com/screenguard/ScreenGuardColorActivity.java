@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -90,7 +91,11 @@ public class ScreenGuardColorActivity extends ReactActivity  {
         }
         overridePendingTransition(0, 0);
         IntentFilter intentFilter = new IntentFilter(SCREENGUARD_COLOR_ACTIVITY_CLOSE);
-        registerReceiver(closeReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(closeReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(closeReceiver, intentFilter);
+        }
     }
 
 
