@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.facebook.react.ReactActivity;
@@ -89,7 +90,7 @@ public class ScreenGuardColorActivity extends ReactActivity  {
         }
         overridePendingTransition(0, 0);
         IntentFilter intentFilter = new IntentFilter(SCREENGUARD_COLOR_ACTIVITY_CLOSE);
-        registerReceiver(closeReceiver, intentFilter);
+        registerReceiver(closeReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
     }
 
 
