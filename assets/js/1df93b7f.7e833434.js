@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkreact_native_screenguard_docs=self.webpackChunkreact_native_screenguard_docs||[]).push([[583],{8198:(e,t,r)=>{r.r(t),r.d(t,{default:()=>c});r(8774),r(4586),r(1107);var a=r(6347);var s=r(4848);function c(){return(0,s.jsx)(a.rd,{to:"/react-native-screenguard/docs/getting-started/get-started"})}}}]);
