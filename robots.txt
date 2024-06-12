@@ -1,2 +1,2 @@
 User-agent: *
-Allow: /
+Allow: /react-native-screenguard
