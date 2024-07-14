@@ -88,17 +88,20 @@ export default {
             if (!ScreenGuardConstants.IMAGE_REGEX.test(source.uri)) {
                 console.warn('Looks like the uri is not an image uri. Try to provide a correct image uri for better result!');
             }
-            if (defaultSource == null) {
-                console.warn('Consider adding a default source to display image that cannot be loaded from uri!');
-            }
-            else {
-                newDefaultSource = {
-                    uri: ScreenGuardConstants.resolveAssetSource(data.source),
-                };
-            }
         }
         else if (typeof source === 'number') {
             source = { uri: ScreenGuardConstants.resolveAssetSource(data.source) };
+        }
+        if (defaultSource == null) {
+            console.warn('Consider adding a default source to display image that cannot be loaded from uri!');
+            newDefaultSource = {
+                uri: ScreenGuardConstants.resolveAssetSource(require('../images/screenshot_blocking.webp')),
+            };
+        }
+        else {
+            newDefaultSource = {
+                uri: ScreenGuardConstants.resolveAssetSource(data.source),
+            };
         }
         if (alignment != null &&
             (alignment > 8 || alignment < 0 || isNaN(alignment))) {
