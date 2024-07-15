@@ -75,7 +75,7 @@ UIScrollView *scrollView;
                            withWidth: (nonnull NSNumber *) width
                           withHeight: (nonnull NSNumber *) height
                        withAlignment: (ScreenGuardImageAlignment) alignment
-                 withBackgroundColor: (nonnull NSString *) backgroundColor 
+                 withBackgroundColor: (nonnull NSString *) backgroundColor
 {
   if (@available(iOS 13.0, *)) {
     if (textField == nil) {
@@ -84,18 +84,12 @@ UIScrollView *scrollView;
 
     [textField setSecureTextEntry: TRUE];
     [textField setContentMode: UIViewContentModeCenter];
-    if (scrollView == nil) {
-        scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    }
-    scrollView.showsHorizontalScrollIndicator = NO;
-    scrollView.showsVerticalScrollIndicator = NO;
-    scrollView.scrollEnabled = false;
+    
     imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
         
     imageView.translatesAutoresizingMaskIntoConstraints = NO;
-    [imageView setClipsToBounds:TRUE];
-    [scrollView addSubview:imageView];
-      
+    [imageView setClipsToBounds:YES];
+    
     if (source[@"uri"] != nil) {
         NSString *uriImage = source[@"uri"];
         NSString *uriDefaultSource = defaultSource[@"uri"];
@@ -110,41 +104,19 @@ UIScrollView *scrollView;
                      placeholderImage: thumbnailImage
                               options: downloaderOptions
                             completed: ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-             switch (alignment) {
-                 case AlignmentTopLeft:
-                     [imageView setContentMode: UIViewContentModeTopLeft];
-                     break;
-                 case AlignmentTopCenter:
-                     [imageView setContentMode: UIViewContentModeTop];
-                     break;
-                 case AlignmentTopRight:
-                     [imageView setContentMode: UIViewContentModeTopRight];
-                     break;
-                 case AlignmentCenterLeft:
-                     [imageView setContentMode: UIViewContentModeLeft];
-                     break;
-                 case AlignmentCenter:
-                     [imageView setContentMode: UIViewContentModeCenter];
-                     break;
-                 case AlignmentCenterRight:
-                     [imageView setContentMode: UIViewContentModeRight];
-                     break;
-                 case AlignmentBottomLeft:
-                     [imageView setContentMode: UIViewContentModeBottomLeft];
-                     break;
-                 case AlignmentBottomCenter:
-                     [imageView setContentMode: UIViewContentModeBottom];
-                     break;
-                 case AlignmentBottomRight:
-                     [imageView setContentMode: UIViewContentModeBottomRight];
-                     break;
-             }
         }];
     }
-      
-    [textField addSubview: scrollView];
-    [textField sendSubviewToBack: scrollView];
-    [textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
+      if (scrollView == nil) {
+        scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        scrollView.showsHorizontalScrollIndicator = NO;
+        scrollView.showsVerticalScrollIndicator = NO;
+        scrollView.scrollEnabled = false;
+      }
+      [self setImageView: alignment];
+      [textField addSubview: scrollView];
+      [textField sendSubviewToBack: scrollView];
+      [textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
+
   } else return;
 }
 
@@ -164,26 +136,20 @@ UIScrollView *scrollView;
    }
    [textField setSecureTextEntry: TRUE];
    [textField setContentMode: UIViewContentModeCenter];
+     
    if (scrollView == nil) {
      scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
      scrollView.showsHorizontalScrollIndicator = NO;
      scrollView.showsVerticalScrollIndicator = NO;
      scrollView.scrollEnabled = false;
    }
-   CGFloat topInset = top ? [top doubleValue] : 0;
-   CGFloat leftInset = left ? [left doubleValue] : 0;
-   CGFloat bottomInset = bottom ? [bottom doubleValue] : 0;
-   CGFloat rightInset = right ? [right doubleValue] : 0;
-     
-   scrollView.contentInset = UIEdgeInsetsMake(topInset, leftInset, bottomInset, rightInset);
    
    imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
      
    imageView.translatesAutoresizingMaskIntoConstraints = NO;
      
-   [imageView setClipsToBounds:TRUE];
-   [scrollView addSubview:imageView];
-     
+   [imageView setClipsToBounds: TRUE];
+
    if (source[@"uri"] != nil) {
        NSString *uriImage = source[@"uri"];
        NSString *uriDefaultSource = defaultSource[@"uri"];
@@ -200,28 +166,28 @@ UIScrollView *scrollView;
                            completed: ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
        }];
    }
+   [self setImageViewBasedOnPosition:[top doubleValue] left:[left doubleValue] bottom:[bottom doubleValue] right:[right doubleValue]];
      
    [textField addSubview: scrollView];
    [textField sendSubviewToBack: scrollView];
    [textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
  } else return;
 }
-
-- (void) initTextField {
+ - (void) initTextField {
     CGRect screenRect = [[UIScreen mainScreen] bounds];
-    textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, screenRect.size.width, screenRect.size.height)];
-    textField.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    [textField setTextAlignment:NSTextAlignmentCenter];
-    [textField setUserInteractionEnabled: NO];
+     textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, screenRect.size.width, screenRect.size.height)];
+     textField.translatesAutoresizingMaskIntoConstraints = NO;
+     
+     [textField setTextAlignment:NSTextAlignmentCenter];
+     [textField setUserInteractionEnabled: NO];
 
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    [window makeKeyAndVisible];
-    [window.layer.superlayer addSublayer:textField.layer];
+     UIWindow *window = [UIApplication sharedApplication].keyWindow;
+     [window makeKeyAndVisible];
+     [window.layer.superlayer addSublayer:textField.layer];
 
-    if (textField.layer.sublayers.firstObject) {
-        [textField.layer.sublayers.firstObject addSublayer: window.layer];
-    }
+     if (textField.layer.sublayers.firstObject) {
+         [textField.layer.sublayers.firstObject addSublayer: window.layer];
+     }
 }
 
 
@@ -261,6 +227,76 @@ UIScrollView *scrollView;
     return image;
 }
 
+- (void)setImageView: (ScreenGuardImageAlignment)alignment {
+    [scrollView addSubview:imageView];
+    
+    CGFloat scrollViewWidth = scrollView.bounds.size.width;
+    CGFloat scrollViewHeight = scrollView.bounds.size.height;
+    CGFloat imageViewWidth = imageView.bounds.size.width;
+    CGFloat imageViewHeight = imageView.bounds.size.height;
+
+    CGPoint imageViewOrigin;
+
+    switch (alignment) {
+        case AlignmentTopLeft:
+            imageViewOrigin = CGPointMake(0, 0);
+            break;
+        case AlignmentTopCenter:
+            imageViewOrigin = CGPointMake((scrollViewWidth - imageViewWidth) / 2, 0);
+            break;
+        case AlignmentTopRight:
+            imageViewOrigin = CGPointMake(scrollViewWidth - imageViewWidth, 0);
+            break;
+        case AlignmentCenterLeft:
+            imageViewOrigin = CGPointMake(0, (scrollViewHeight - imageViewHeight) / 2);
+            break;
+        case AlignmentCenter:
+            imageViewOrigin = CGPointMake((scrollViewWidth - imageViewWidth) / 2, (scrollViewHeight - imageViewHeight) / 2);
+            break;
+        case AlignmentCenterRight:
+            imageViewOrigin = CGPointMake(scrollViewWidth - imageViewWidth, (scrollViewHeight - imageViewHeight) / 2);
+            break;
+        case AlignmentBottomLeft:
+            imageViewOrigin = CGPointMake(0, scrollViewHeight - imageViewHeight);
+            break;
+        case AlignmentBottomCenter:
+            imageViewOrigin = CGPointMake((scrollViewWidth - imageViewWidth) / 2, scrollViewHeight - imageViewHeight);
+            break;
+        case AlignmentBottomRight:
+            imageViewOrigin = CGPointMake(scrollViewWidth - imageViewWidth, scrollViewHeight - imageViewHeight);
+            break;
+        default:
+            imageViewOrigin = CGPointZero;
+            break;
+    }
+
+    imageView.frame = CGRectMake(imageViewOrigin.x, imageViewOrigin.y, imageViewWidth, imageViewHeight);
+
+    CGFloat contentWidth = MAX(scrollViewWidth, imageViewOrigin.x + imageViewWidth);
+    CGFloat contentHeight = MAX(scrollViewHeight, imageViewOrigin.y + imageViewHeight);
+    scrollView.contentSize = CGSizeMake(contentWidth, contentHeight);
+}
+
+- (void)setImageViewBasedOnPosition:(double)top left:(double)left bottom:(double)bottom right:(double)right {
+    [scrollView addSubview:imageView];
+    
+    CGFloat scrollViewWidth = scrollView.bounds.size.width;
+    CGFloat scrollViewHeight = scrollView.bounds.size.height;
+    CGFloat imageViewWidth = imageView.bounds.size.width;
+    CGFloat imageViewHeight = imageView.bounds.size.height;
+
+    CGFloat centerX = scrollViewWidth / 2;
+    CGFloat centerY = scrollViewHeight / 2;
+
+    CGFloat imageViewX = centerX + left - right - (imageViewWidth / 2);
+    CGFloat imageViewY = centerY + top - bottom - (imageViewHeight / 2);
+
+    imageView.frame = CGRectMake(imageViewX, imageViewY, imageViewWidth, imageViewHeight);
+
+    CGFloat contentWidth = MAX(scrollViewWidth, fabs(left - right) + imageViewWidth);
+    CGFloat contentHeight = MAX(scrollViewHeight, fabs(top - bottom) + imageViewHeight);
+    scrollView.contentSize = CGSizeMake(contentWidth, contentHeight);
+}
 
 RCT_EXPORT_METHOD(activateShield: (NSString *)screenshotBackgroundColor) {
   dispatch_async(dispatch_get_main_queue(), ^{
