@@ -30,7 +30,7 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import ScreenGuardModule, {ScreenGuardConstants} from '../';
+import ScreenGuardModule, {ScreenGuardConstants} from 'react-native-screenguard';
 
 type SectionProps = PropsWithChildren<{
   title: string;
