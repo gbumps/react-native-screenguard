@@ -66,25 +66,11 @@ function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const [currentState, setCurrentState] = React.useState('');
 
-  // const {isPrevent, status} = useCaptureProtection();
-
   const textInputRef = React.useRef<TextInput | null>(null);
   const [modalVisible, setModalVisible] = React.useState(false);
 
   const [color, _] = React.useState('#DB4437');
 
-  // React.useEffect(() => {
-  //   ScreenGuardModule.register('#000000', _ => {
-  //     Alert.alert('register with blur radius 35');
-  //   });
-  //   ScreenGuardModule.register('#000000', _ => {
-  //     Alert.alert('register with blur radius 35');
-  //   });
-  // }, []);
-
-  // ScreenGuardModule.registerWithoutScreenguard(_ => {
-  //   Alert.alert('123');
-  // });
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
