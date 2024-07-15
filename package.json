@@ -1,7 +1,6 @@
 {
   "name": "react-native-screenguard",
-  "version": "1.0.0",
-  "private": false,
+  "version": "1.0.2",
   "description": "A Native screenshot blocking library for React-Native developer, with background customizable after captured. Screenshot detector are also supported.",
   "main": "./src/commonjs/index.js",
   "types": "./src/types/index.d.ts",
@@ -33,7 +32,6 @@
   "engines": {
     "node": ">= 16.0.0"
   },
-  "packageManager": "^yarn@1.22.15",
   "eslintConfig": {
     "root": true,
     "extends": [
@@ -58,7 +56,7 @@
     "lib/",
     "android/",
     "ios/",
-    "example"
+    "example/"
   ],
   "prettier": {
     "quoteProps": "consistent",
@@ -93,5 +91,6 @@
   "bugs": {
     "url": "https://github.com/gbumps/react-native-screenguard/issues"
   },
-  "homepage": "https://github.com/gbumps/react-native-screenguard/blob/master/README.md"
+  "homepage": "https://gbumps.github.io/react-native-screenguard",
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

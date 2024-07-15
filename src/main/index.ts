@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import * as ScreenGuardData from './data';
 import * as ScreenGuardConstants from './constant';
@@ -24,9 +23,7 @@ export default {
     let currentColor =
       backgroundColor.trim().length === 0 ||
       !backgroundColor.trim().startsWith('#') ||
-      ScreenGuardConstants.REGEX.test(
-        backgroundColor.trim().substring(1)
-      )
+      ScreenGuardConstants.REGEX.test(backgroundColor.trim().substring(1))
         ? ScreenGuardConstants.BLACK_COLOR
         : data.backgroundColor;
     if (Platform.OS === 'ios') {
@@ -37,7 +34,7 @@ export default {
   },
 
   /**
-   * (Android only) activate screenshot and screen record blocking without 
+   * (Android only) activate screenshot and screen record blocking without
    * any effect (blur, image, color) on Android (Android 5+)
    * @version v1.0.0+
    */
@@ -128,30 +125,38 @@ export default {
           'Looks like the uri is not an image uri. Try to provide a correct image uri for better result!'
         );
       }
-      if (defaultSource == null) {
-        console.warn(
-          'Consider adding a default source to display image that cannot be loaded from uri!'
-        );
-      } else {
-        newDefaultSource = {
-          uri: ScreenGuardConstants.resolveAssetSource(data.source),
-        };
-      }
     } else if (typeof source === 'number') {
       source = { uri: ScreenGuardConstants.resolveAssetSource(data.source) };
     }
 
-    if (alignment != null && 
-      (alignment > 8 || alignment < 0 || isNaN(alignment))) {
+    if (defaultSource == null) {
+      console.warn(
+        'Consider adding a default source to display image that cannot be loaded from uri!'
+      );
+      newDefaultSource = {
+        uri: ScreenGuardConstants.resolveAssetSource(
+          require('../images/screenshot_blocking.webp')
+        ),
+      };
+    } else {
+      newDefaultSource = {
+        uri: ScreenGuardConstants.resolveAssetSource(data.source),
+      };
+    }
+    if (
+      alignment != null &&
+      (alignment > 8 || alignment < 0 || isNaN(alignment))
+    ) {
       throw new Error(
         'alignment must be in range from 0 -> 8 only, values: \n topLeft: 0; \n topCenter: 1; \n topRight: 2; \n centerLeft: 3; \n Center: 4; \n centerRight: 5; \n bottomLeft: 6; \n bottomCenter: 7;\n bottomRight: 8; \n If you want to center the image, leave null instead!'
       );
     }
 
-    if (alignment == null && (
-      (top == null && left == null && 
-        bottom == null && right == null) || Platform.OS === 'android'))
-    {
+    if (
+      alignment == null &&
+      ((top == null && left == null && bottom == null && right == null) ||
+        Platform.OS === 'android')
+    ) {
       alignment = ScreenGuardConstants.Alignment.center;
     }
 
@@ -198,14 +203,18 @@ export default {
    */
   registerScreenshotEventListener(
     getScreenShotPath: boolean | false = false,
-    callback: (data?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null) => void
+    callback: (
+      data?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
+    ) => void
   ) {
     ScreenGuard.registerScreenShotEventListener(getScreenShotPath);
     if (screenShotEmitter == null) {
       screenShotEmitter = new NativeEventEmitter(ScreenGuard);
     }
 
-    const _onScreenCapture = (res?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null) => {
+    const _onScreenCapture = (
+      res?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
+    ) => {
       callback(res);
     };
     const listenerCount = screenShotEmitter.listenerCount(
@@ -245,3 +254,5 @@ export default {
     }
   },
 };
+
+export { ScreenGuardConstants };

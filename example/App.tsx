@@ -30,7 +30,7 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import ScreenGuardModule from 'react-native-screenguard';
+import ScreenGuardModule, {ScreenGuardConstants} from 'react-native-screenguard';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -255,6 +255,7 @@ function App(): JSX.Element {
                 source: {
                   uri: 'https://www.icegif.com/wp-content/uploads/2022/09/icegif-386.gif',
                 },
+                alignment: ScreenGuardConstants.Alignment.topCenter,
                 defaultSource: require('./images/ahihi.jpg'),
                 timeAfterResume: 2000,
                 backgroundColor: color,

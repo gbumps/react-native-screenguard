@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import * as ScreenGuardConstants from './constant';
 const { ScreenGuard } = NativeModules;
@@ -88,24 +87,28 @@ export default {
             if (!ScreenGuardConstants.IMAGE_REGEX.test(source.uri)) {
                 console.warn('Looks like the uri is not an image uri. Try to provide a correct image uri for better result!');
             }
-            if (defaultSource == null) {
-                console.warn('Consider adding a default source to display image that cannot be loaded from uri!');
-            }
-            else {
-                newDefaultSource = {
-                    uri: ScreenGuardConstants.resolveAssetSource(data.source),
-                };
-            }
         }
         else if (typeof source === 'number') {
             source = { uri: ScreenGuardConstants.resolveAssetSource(data.source) };
+        }
+        if (defaultSource == null) {
+            console.warn('Consider adding a default source to display image that cannot be loaded from uri!');
+            newDefaultSource = {
+                uri: ScreenGuardConstants.resolveAssetSource(require('../images/screenshot_blocking.webp')),
+            };
+        }
+        else {
+            newDefaultSource = {
+                uri: ScreenGuardConstants.resolveAssetSource(data.source),
+            };
         }
         if (alignment != null &&
             (alignment > 8 || alignment < 0 || isNaN(alignment))) {
             throw new Error('alignment must be in range from 0 -> 8 only, values: \n topLeft: 0; \n topCenter: 1; \n topRight: 2; \n centerLeft: 3; \n Center: 4; \n centerRight: 5; \n bottomLeft: 6; \n bottomCenter: 7;\n bottomRight: 8; \n If you want to center the image, leave null instead!');
         }
-        if (alignment == null && ((top == null && left == null &&
-            bottom == null && right == null) || Platform.OS === 'android')) {
+        if (alignment == null &&
+            ((top == null && left == null && bottom == null && right == null) ||
+                Platform.OS === 'android')) {
             alignment = ScreenGuardConstants.Alignment.center;
         }
         ScreenGuard.activateShieldWithImage({
@@ -179,3 +182,4 @@ export default {
         }
     },
 };
+export { ScreenGuardConstants };
