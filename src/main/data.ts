@@ -61,7 +61,7 @@ export interface ScreenGuardImageDataObject {
    *  bottomRight: 8,
    *
    * @exception when not in between 0..8 and NaN
-   * 
+   *
    * @defaultValue 4 when all positions(top, left, bottom, right) is null and alignment = null
    *
    */
@@ -173,9 +173,7 @@ export interface ScreenGuardColorData {
    * @defaultValue `1000`
    */
   timeAfterResume?: number | 1000;
-
 }
-
 
 export interface ScreenGuardScreenShotPathDataObject {
   /**
@@ -191,5 +189,3 @@ export interface ScreenGuardScreenShotPathDataObject {
    */
   type?: string | '';
 }
-
-
