@@ -92,7 +92,7 @@ public class ScreenGuardColorActivity extends ReactActivity  {
         overridePendingTransition(0, 0);
         IntentFilter intentFilter = new IntentFilter(SCREENGUARD_COLOR_ACTIVITY_CLOSE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(closeReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
+            registerReceiver(closeReceiver, intentFilter, RECEIVER_NOT_EXPORTED);
         } else {
             registerReceiver(closeReceiver, intentFilter);
         }
