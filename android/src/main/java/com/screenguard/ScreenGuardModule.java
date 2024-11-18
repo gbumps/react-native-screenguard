@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -176,7 +175,6 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
                     double height = data.getDouble("height");
                     int alignment = data.getInt("alignment");
                     int timeAfterResume = data.getInt("timeAfterResume");
-
                     intent.putExtra(ScreenGuardImageData.class.getName(), new ScreenGuardImageData(
                             backgroundColor,
                             uriImage,
@@ -226,6 +224,8 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
                             hexColor, timeAfterResume
                     ));
 
+                    intent.setPackage(currentReactContext.getPackageName());
+
                     intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
                     currentActivity.startActivity(intent);
@@ -266,18 +266,23 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             if (currentReactContext == null) {
                 currentReactContext = getReactApplicationContext();
             }
-            currentReactContext.sendBroadcast(
-                new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE)
-            );
             Activity currentActivity = currentReactContext.getCurrentActivity();
-            if (currentActivity != null) {
-               mHandlerBlockScreenShot.post(() ->
-                       currentActivity
-                 .getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE));
-                mHandlerBlockScreenShot = null;
-            } else {
-                Log.w(ScreenGuardModule.NAME, "deactivate shield: handler is null");
+            if (currentActivity == null) {
+                throw new NullPointerException("Current Activity is null!");
             }
+            if (Build.VERSION.SDK_INT >= 33) {
+                if (currentActivity.getLocalClassName().equals(ScreenGuardColorActivity.class.getName())) {
+                    currentActivity.finish();
+                }
+            } else {
+                currentReactContext.sendBroadcast(
+                        new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE)
+                );
+            }
+            mHandlerBlockScreenShot.post(() -> currentActivity
+              .getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE));
+
+            mHandlerBlockScreenShot = null;
             removeListeners(1);
         } catch (Exception e) {
             e.printStackTrace();
