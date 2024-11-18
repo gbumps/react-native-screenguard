@@ -19,15 +19,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.facebook.react.ReactActivity;
 import com.screenguard.enums.ScreenGuardActionEnum;
+import com.screenguard.helper.ScreenGuardImagePosition;
 import com.screenguard.model.ScreenGuardBlurData;
 import com.screenguard.model.ScreenGuardColorData;
 import com.screenguard.model.ScreenGuardImageData;
-import com.screenguard.helper.ScreenGuardImagePosition;
 
 import java.io.File;
 
@@ -56,6 +55,7 @@ public class ScreenGuardColorActivity extends ReactActivity  {
         public void onReceive(Context context, Intent intent) {
             finish();
         }
+
     };
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -91,8 +91,8 @@ public class ScreenGuardColorActivity extends ReactActivity  {
         }
         overridePendingTransition(0, 0);
         IntentFilter intentFilter = new IntentFilter(SCREENGUARD_COLOR_ACTIVITY_CLOSE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(closeReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
+        if (Build.VERSION.SDK_INT >= 33) {
+            registerReceiver(closeReceiver, intentFilter, RECEIVER_NOT_EXPORTED);
         } else {
             registerReceiver(closeReceiver, intentFilter);
         }
@@ -101,8 +101,8 @@ public class ScreenGuardColorActivity extends ReactActivity  {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(closeReceiver);
         doResumeByAction();
+        unregisterReceiver(closeReceiver);
         super.onDestroy();
     }
 
