@@ -8,6 +8,7 @@
     "example": "example"
   },
   "devDependencies": {
+    "@expo/config-plugins": "^9.0.15",
     "@react-native-community/eslint-config": "^3.0.2",
     "@types/jest": "^28.1.2",
     "@types/react": "~17.0.21",
