@@ -13,6 +13,7 @@ https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3
 
 You can find full documentation and how to use [here](https://gbumps.github.io/react-native-screenguard)
 
+Web docs repo (for contribution) [here](https://github.com/gbumps/rn-screenguard-docs)
 
 # Get started
 
