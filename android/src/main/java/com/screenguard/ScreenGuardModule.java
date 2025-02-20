@@ -279,7 +279,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
                 currentActivity.finish();
               }
             } else {
-              currentContext.sendBroadcast(
+              currentReactContext.sendBroadcast(
                 new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE));
             }
             removeListeners(1);
@@ -287,19 +287,5 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             e.printStackTrace();
         }
     }
-
-    private void deactivateShield() {
-        try {
-          if (mHandlerBlockScreenShot == null) {
-            mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
-          }
-          if (currentActivity == null) {
-              throw new NullPointerException("Current Activity is null!");
-          }
-            
-        } catch (Exception e) {
-          Log.e(UNREGISTER, e.getMessage());
-        }
-      }
 
 }
