@@ -270,23 +270,36 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
             if (currentActivity == null) {
                 throw new NullPointerException("Current Activity is null!");
             }
-            if (Build.VERSION.SDK_INT >= 33) {
-                if (currentActivity.getLocalClassName().equals(ScreenGuardColorActivity.class.getName())) {
-                    currentActivity.finish();
-                }
-            } else {
-                currentReactContext.sendBroadcast(
-                        new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE)
-                );
-            }
-            mHandlerBlockScreenShot.post(() -> currentActivity
-              .getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE));
-
+            mHandlerBlockScreenShot.postDelayed(() -> currentActivity
+                    .getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE), 400);
+    
             mHandlerBlockScreenShot = null;
+            if (Build.VERSION.SDK_INT >= 33) {
+              if (currentActivity instanceof ScreenGuardColorActivity) {
+                currentActivity.finish();
+              }
+            } else {
+              currentContext.sendBroadcast(
+                new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE));
+            }
             removeListeners(1);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    private void deactivateShield() {
+        try {
+          if (mHandlerBlockScreenShot == null) {
+            mHandlerBlockScreenShot = new Handler(Looper.getMainLooper());
+          }
+          if (currentActivity == null) {
+              throw new NullPointerException("Current Activity is null!");
+          }
+            
+        } catch (Exception e) {
+          Log.e(UNREGISTER, e.getMessage());
+        }
+      }
 
 }
