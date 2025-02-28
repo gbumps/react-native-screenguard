@@ -90,3 +90,7 @@ if (isNewArchitectureEnabled()) {
     codegenJavaPackageName = "com.screenguard"
   }
 }
+
+cmake {
+    path "src/main/jni/CMakeLists.txt"
+}

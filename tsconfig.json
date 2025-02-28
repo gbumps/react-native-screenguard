@@ -30,6 +30,6 @@
   },
   "include": [
     "src/main/**/*.ts"  // Include all TypeScript files in the main folder for compilation
-  ],
+, "src/main/NativeScreenGuard.ts"  ],
   "exclude": ["example", "node_modules"]
 }
