@@ -47,3 +47,8 @@ NSString* _Nullable NSStringFromAlignment(ScreenGuardImageAlignment alignment);
 - (UIColor *_Nonnull)colorFromHexString:(NSString *_Nonnull)hexString;
 - (UIImage *_Nonnull)convertViewToImage:(UIView *_Nonnull)view;
 @end
+
+#if RCT_NEW_ARCH_ENABLED
+@interface ScreenGuard() <NativeScreenguardSpec, RCTBridgeModule>
+@end
+#endif
