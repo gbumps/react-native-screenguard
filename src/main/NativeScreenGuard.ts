@@ -2,15 +2,15 @@ import { TurboModule, TurboModuleRegistry } from 'react-native';
 import * as ScreenGuardData from './data';
 
 export interface Spec extends TurboModule {
-  register: (color: string) => void;
-  registerWithoutEffect: () => void;
-  registerWithBlurView(
+  activateShield: (data: ScreenGuardData.ScreenGuardColorData) => void;
+  activateShieldWithoutEffect: () => void;
+  activateShieldWithBlurView(
     data: ScreenGuardData.ScreenGuardBlurDataObject
   ): () => void;
-  registerWithImage(
+  activateShieldWithImage(
     data: ScreenGuardData.ScreenGuardImageDataObject
   ): () => void;
-  unregister: () => void;
+  deactivateShield: () => void;
   registerScreenshotEventListener(
     getScreenShotPath: boolean | false,
     callback: (

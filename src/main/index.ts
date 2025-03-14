@@ -1,8 +1,9 @@
-import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+import { NativeEventEmitter, Platform } from 'react-native';
+import NativeScreenGuard from './NativeScreenGuard';
 import * as ScreenGuardData from './data';
 import * as ScreenGuardConstants from './constant';
 
-const { ScreenGuard } = NativeModules;
+// const { ScreenGuard } = NativeModules;
 
 var screenShotEmitter: NativeEventEmitter | null = null;
 
@@ -26,11 +27,10 @@ export default {
       ScreenGuardConstants.REGEX.test(backgroundColor.trim().substring(1))
         ? ScreenGuardConstants.BLACK_COLOR
         : data.backgroundColor;
-    if (Platform.OS === 'ios') {
-      ScreenGuard.activateShield(currentColor);
-    } else {
-      ScreenGuard.activateShield(currentColor, timeAfterResume);
-    }
+    NativeScreenGuard?.activateShield({
+      backgroundColor: currentColor,
+      timeAfterResume,
+    });
   },
 
   /**
@@ -40,7 +40,7 @@ export default {
    */
   registerWithoutEffect() {
     if (Platform.OS === 'android') {
-      ScreenGuard.activateShieldWithoutEffect();
+      NativeScreenGuard?.activateShieldWithoutEffect();
     }
   },
 
@@ -81,11 +81,10 @@ export default {
     ) {
       throw new Error('timeAfterResume must be > 0!');
     }
-    if (Platform.OS === 'ios') {
-      ScreenGuard.activateShieldWithBlurView(radius);
-    } else {
-      ScreenGuard.activateShieldWithBlurView({ radius, timeAfterResume });
-    }
+    NativeScreenGuard?.activateShieldWithBlurView({
+      radius,
+      timeAfterResume,
+    });
   },
 
   /**
@@ -160,9 +159,9 @@ export default {
       alignment = ScreenGuardConstants.Alignment.center;
     }
 
-    ScreenGuard.activateShieldWithImage({
+    NativeScreenGuard?.activateShieldWithImage({
       source,
-      defaultSource: newDefaultSource,
+      // defaultSource: newDefaultSource,
       width,
       height,
       top,
@@ -181,7 +180,7 @@ export default {
    * @version v0.0.2+
    */
   unregister() {
-    ScreenGuard.deactivateShield();
+    NativeScreenGuard?.deactivateShield();
     if (screenShotEmitter != null) {
       screenShotEmitter.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
       screenShotEmitter = null;
@@ -207,25 +206,28 @@ export default {
       data?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
     ) => void
   ) {
-    ScreenGuard.registerScreenShotEventListener(getScreenShotPath);
-    if (screenShotEmitter == null) {
-      screenShotEmitter = new NativeEventEmitter(ScreenGuard);
-    }
-
-    const _onScreenCapture = (
-      res?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
-    ) => {
-      callback(res);
-    };
-    const listenerCount = screenShotEmitter.listenerCount(
-      ScreenGuardConstants.SCREENSHOT_EVT
+    NativeScreenGuard?.registerScreenshotEventListener(
+      getScreenShotPath,
+      callback
     );
-    if (!listenerCount) {
-      screenShotEmitter.addListener(
-        ScreenGuardConstants.SCREENSHOT_EVT,
-        _onScreenCapture
-      );
-    }
+    // if (screenShotEmitter == null) {
+    //   screenShotEmitter = new NativeEventEmitter(ScreenGuard);
+    // }
+
+    // const _onScreenCapture = (
+    //   res?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
+    // ) => {
+    //   callback(res);
+    // };
+    // const listenerCount = screenShotEmitter.listenerCount(
+    //   ScreenGuardConstants.SCREENSHOT_EVT
+    // );
+    // if (!listenerCount) {
+    //   screenShotEmitter.addListener(
+    //     ScreenGuardConstants.SCREENSHOT_EVT,
+    //     _onScreenCapture
+    //   );
+    // }
   },
 
   /**
@@ -235,22 +237,22 @@ export default {
    */
   registerScreenRecordingEventListener(callback: (arg: any) => void) {
     if (Platform.OS === 'ios') {
-      ScreenGuard.registerScreenRecordingEventListener();
-      if (screenRecordingEmitter == null) {
-        screenRecordingEmitter = new NativeEventEmitter(ScreenGuard);
-      }
-      const _onScreenRecording = (res: any) => {
-        callback(res);
-      };
-      const listenerCount = screenRecordingEmitter.listenerCount(
-        ScreenGuardConstants.SCREEN_RECORDING_EVT
-      );
-      if (!listenerCount) {
-        screenRecordingEmitter.addListener(
-          ScreenGuardConstants.SCREEN_RECORDING_EVT,
-          _onScreenRecording
-        );
-      }
+      NativeScreenGuard?.registerScreenRecordingEventListener(callback);
+      // if (screenRecordingEmitter == null) {
+      // screenRecordingEmitter = new NativeEventEmitter(ScreenGuard);
+      // }
+      // const _onScreenRecording = (res: any) => {
+      //   callback(res);
+      // };
+      // const listenerCount = screenRecordingEmitter.listenerCount(
+      //   ScreenGuardConstants.SCREEN_RECORDING_EVT
+      // );
+      // if (!listenerCount) {
+      //   screenRecordingEmitter.addListener(
+      //     ScreenGuardConstants.SCREEN_RECORDING_EVT,
+      //     _onScreenRecording
+      //   );
+      // }
     }
   },
 };
