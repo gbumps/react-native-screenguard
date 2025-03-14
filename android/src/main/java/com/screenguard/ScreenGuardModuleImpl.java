@@ -24,7 +24,7 @@ import com.screenguard.model.ScreenGuardImageData;
 import java.lang.ref.WeakReference;
 
 @ReactModule(name = ScreenGuardModule.NAME)
-public class ScreenGuardModule extends ReactContextBaseJavaModule {
+public class ScreenGuardModuleImpl implements ActivityEventListener {
 
     private WeakReference<Activity> mainActivityRef = null;
 
@@ -49,7 +49,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
         return NAME;
     }
 
-    @ReactMethod
+    
     public void registerScreenShotEventListener(Boolean isCaptureScreenshotFile) {
         if (mScreenGuard == null) {
             mScreenGuard = new ScreenGuard(
@@ -63,7 +63,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
         mScreenGuard.register();
     }
 
-    @ReactMethod
+    
     public void addListener(String eventName) {
 //        if (mScreenGuard == null) {
 //            mScreenGuard = new ScreenGuard(
@@ -77,7 +77,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
         // Keep: Required for RN built in Event Emitter Calls.
     }
 
-    @ReactMethod
+    
     public void removeListeners(int count) {
         if (mScreenGuard != null) {
             mScreenGuard.unregister();
@@ -85,7 +85,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
         }
     }
 
-    @ReactMethod
+    
     public void activateShieldWithBlurView(ReadableMap screenGuardBlurData) {
         try {
             if (currentReactContext == null) {
@@ -128,7 +128,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
     }
 
 
-    @ReactMethod
+    
     public void activateShieldWithImage(ReadableMap data) {
         try {
             if (currentReactContext == null) {
@@ -180,7 +180,7 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
         }
     }
 
-    @ReactMethod
+    
     public void activateShield(String hexColor, int timeAfterResume) {
         try {
             if (currentReactContext == null) {
@@ -220,13 +220,16 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
         }
     }
 
-    @ReactMethod
+    
     public void activateShieldWithoutEffect() {
         try {
             if (currentReactContext == null) {
                 currentReactContext = getReactApplicationContext();
             }
             Activity currentActivity = currentReactContext.getCurrentActivity();
+
+            mainActivityRef = new WeakReference<>(currentActivity);
+
             if (currentActivity != null) {
                 currentActivity.runOnUiThread(() ->
                         currentActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
@@ -237,8 +240,8 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
         }
     }
 
-    @ReactMethod
-    private void deactivateShield() {
+    
+    public void deactivateShield() {
         try {
             Activity mainActivity = mainActivityRef != null ? mainActivityRef.get() : null;
             if (mainActivity != null) {
