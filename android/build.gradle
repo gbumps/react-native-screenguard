@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-      classpath "com.android.tools.build:gradle:7.2.1"
+      classpath "com.android.tools.build:gradle:8.7.2"
     }
   }
 }
@@ -65,6 +65,19 @@ android {
     targetCompatibility JavaVersion.VERSION_1_8
   }
 
+  sourceSets {
+    main {
+      if (isNewArchitectureEnabled()) {
+        java.srcDirs += [
+          "src/newarch",
+          "generated/java",
+          "generated/jni"
+          ]
+      } else {
+        java.srcDirs += ["src/oldarch"]
+      }
+    }
+  }
 }
 
 repositories {
