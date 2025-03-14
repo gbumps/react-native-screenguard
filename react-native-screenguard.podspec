@@ -20,9 +20,11 @@ Pod::Spec.new do |s|
   s.dependency 'SDWebImage', '~> 5.19.4'
 
   # Don't install the dependencies when we run `pod install` in the old architecture.
-  if defined?(install_modules_dependencies) != nil
+  if respond_to?(:install_modules_dependencies, true)
     install_modules_dependencies(s)
   else
+    s.dependency "React-Core"
+    # Don't install the dependencies when we run `pod install` in the old architecture.
     if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
       s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
       s.pod_target_xcconfig    = {

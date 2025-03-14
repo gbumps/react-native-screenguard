@@ -1,12 +1,23 @@
 #import "EventEmitter/EventEmitter.h"
 #import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTComponent.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTConvert.h>
+
+#if __has_include(<React/RCTBridgeModule.h>)
+#import <React/RCTBridgeModule.h>
+#elif __has_include("RCTBridgeModule.h")
+#import "RCTBridgeModule.h"
+#else
+#import "React/RCTBridgeModule.h"
+#endif
+
+#if RCT_NEW_ARCH_ENABLED
+#import "ScreenGuardSpec.h"
+#endif
 
 
 typedef NS_ENUM(NSInteger, ScreenGuardImageAlignment) {
