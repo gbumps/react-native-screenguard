@@ -93,13 +93,9 @@
     "url": "https://github.com/gbumps/react-native-screenguard/issues"
   },
   "codegenConfig": {
-    "name": "ScreenGuard",
+    "name": "ScreenGuardSpec",
     "type": "modules",
-    "jsSrcsDir": "./src/commonjs",
-    "outputDir": {
-      "ios": "ios/generated",
-      "android": "android/generated"
-    },
+    "jsSrcsDir": "./src/main",
     "android": {
       "javaPackageName": "com.screenguard"
     },
