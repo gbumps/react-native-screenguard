@@ -24,7 +24,7 @@ import com.screenguard.model.ScreenGuardImageData;
 import java.lang.ref.WeakReference;
 
 @ReactModule(name = ScreenGuardModule.NAME)
-public class ScreenGuardModuleImpl implements ActivityEventListener {
+public class ScreenGuardModuleImpl extends ReactContextBaseJavaModule {
 
     private WeakReference<Activity> mainActivityRef = null;
 

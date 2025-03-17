@@ -8,9 +8,10 @@ import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.Promise;
+import com.screenguard.ScreenGuardModuleImpl;
 
 class ScreenGuardSpec extends NativeScreenGuardSpec {
-    private final RNShareImpl delegate;
+    private final ScreenGuardModuleImpl delegate;
 
     public ScreenGuardSpec(ReactApplicationContext context) {
         super(context);
