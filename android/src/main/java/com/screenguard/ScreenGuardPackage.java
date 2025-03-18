@@ -3,23 +3,22 @@ package com.screenguard;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.facebook.react.BaseReactPackage;
+import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.TurboReactPackage;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ScreenGuardPackage extends TurboReactPackage {
 
   @Nullable
   @Override
   public NativeModule getModule(@NonNull String name, @NonNull ReactApplicationContext context) {
-    if (name.equals(ScreenGuardModule.NAME)) {
-        return new ScreenGuardModule(context);
+    if (name.equals(ScreenGuardModuleImpl.NAME)) {
+        return new ScreenGuardModuleImpl(context);
     }
     return null;
   }
@@ -30,9 +29,9 @@ public class ScreenGuardPackage extends TurboReactPackage {
       @Override
       public Map<String, ReactModuleInfo> getReactModuleInfos() {
         Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
-        moduleInfos.put(RateAppModule.NAME, new ReactModuleInfo(
-                ScreenGuardModule.NAME,
-                ScreenGuardModule.NAME,
+        moduleInfos.put(ScreenGuardModuleImpl.NAME, new ReactModuleInfo(
+                ScreenGuardModuleImpl.NAME,
+                ScreenGuardModuleImpl.NAME,
                 false,  // canOverrideExistingModule
                 false,  // needsEagerInit
                 false,  // isCxxModule
@@ -40,6 +39,6 @@ public class ScreenGuardPackage extends TurboReactPackage {
         ));
         return moduleInfos;
       }
-    }
+    };
   }
 }

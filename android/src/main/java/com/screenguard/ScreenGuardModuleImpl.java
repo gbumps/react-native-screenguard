@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -23,9 +22,8 @@ import com.screenguard.model.ScreenGuardImageData;
 
 import java.lang.ref.WeakReference;
 
-@ReactModule(name = ScreenGuardModule.NAME)
+@ReactModule(name = ScreenGuardModuleImpl.NAME)
 public class ScreenGuardModuleImpl extends ReactContextBaseJavaModule {
-
     private WeakReference<Activity> mainActivityRef = null;
 
     public static final String NAME = "ScreenGuard";
@@ -38,12 +36,11 @@ public class ScreenGuardModuleImpl extends ReactContextBaseJavaModule {
 
     private ScreenGuard mScreenGuard;
 
-    public ScreenGuardModule(ReactApplicationContext reactContext) {
-        super(reactContext);
+    public ScreenGuardModuleImpl(ReactApplicationContext reactContext) {
+        super();
         currentReactContext = reactContext;
     }
 
-    @Override
     @NonNull
     public String getName() {
         return NAME;
@@ -57,7 +54,7 @@ public class ScreenGuardModuleImpl extends ReactContextBaseJavaModule {
                     isCaptureScreenshotFile,
                     (url) -> currentReactContext.getJSModule(
                           DeviceEventManagerModule.RCTDeviceEventEmitter.class
-                    ).emit(ScreenGuardModule.SCREENSHOT_EVT, url)
+                    ).emit(ScreenGuardModuleImpl.SCREENSHOT_EVT, url)
             );
         }
         mScreenGuard.register();
@@ -123,7 +120,7 @@ public class ScreenGuardModuleImpl extends ReactContextBaseJavaModule {
                 }
             });
         } catch (Exception e) {
-            Log.e(ScreenGuardModule.class.getName(), "activateShieldWithBlurView: " + e.getMessage());
+            Log.e(ScreenGuardModuleImpl.class.getName(), "activateShieldWithBlurView: " + e.getMessage());
         }
     }
 
@@ -176,7 +173,7 @@ public class ScreenGuardModuleImpl extends ReactContextBaseJavaModule {
                 }
             });
         } catch (Exception e) {
-            Log.e(ScreenGuardModule.class.getName(), "activateShieldWithImage: " + e.getMessage());
+            Log.e(ScreenGuardModuleImpl.class.getName(), "activateShieldWithImage: " + e.getMessage());
         }
     }
 
@@ -216,7 +213,7 @@ public class ScreenGuardModuleImpl extends ReactContextBaseJavaModule {
                 }
             });
         } catch (Exception e) {
-            Log.e(ScreenGuardModule.class.getName(), "activateShield exception: " + e.getMessage());
+            Log.e(ScreenGuardModuleImpl.class.getName(), "activateShield exception: " + e.getMessage());
         }
     }
 
@@ -236,7 +233,7 @@ public class ScreenGuardModuleImpl extends ReactContextBaseJavaModule {
                 );
             }
         } catch (Exception e) {
-            Log.e(ScreenGuardModule.class.getName(), "activateShieldWithoutEffect exception: " + e.getMessage());
+            Log.e(ScreenGuardModuleImpl.class.getName(), "activateShieldWithoutEffect exception: " + e.getMessage());
         }
     }
 
@@ -265,7 +262,7 @@ public class ScreenGuardModuleImpl extends ReactContextBaseJavaModule {
                         new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE));
             }
         } catch (Exception e) {
-            Log.e(ScreenGuardModule.class.getName(), "deactivateShield exception: " + e.getMessage());
+            Log.e(ScreenGuardModuleImpl.class.getName(), "deactivateShield exception: " + e.getMessage());
         }
     }
 

@@ -160,7 +160,7 @@ export default {
     }
 
     NativeScreenGuard?.activateShieldWithImage({
-      source,
+      sourceUri: source.uri,
       // defaultSource: newDefaultSource,
       width,
       height,
@@ -235,7 +235,7 @@ export default {
    * Register for screen recording event listener
    * @version v0.3.6+
    */
-  registerScreenRecordingEventListener(callback: (arg: any) => void) {
+  registerScreenRecordingEventListener(callback: () => void) {
     if (Platform.OS === 'ios') {
       NativeScreenGuard?.registerScreenRecordingEventListener(callback);
       // if (screenRecordingEmitter == null) {
