@@ -1,21 +1,21 @@
 package com.screenguard;
 
-import android.os.Build;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.NonNull;
-
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.Promise;
-import com.screenguard.ScreenGuardModuleImpl;
+import com.screenguard.NativeScreenGuardSpec;
 
 class ScreenGuardSpec extends NativeScreenGuardSpec {
     private final ScreenGuardModuleImpl delegate;
 
     public ScreenGuardSpec(ReactApplicationContext context) {
-        super(context);
+        super();
         delegate = new ScreenGuardModuleImpl(context);
+    }
+
+    @Override
+    public void activateShield(ReadableMap data) {
+
     }
 
     public void registerScreenShotEventListener(Boolean isCaptureScreenshotFile) {
@@ -39,5 +39,15 @@ class ScreenGuardSpec extends NativeScreenGuardSpec {
 
     public void deactivateShield() {
         delegate.deactivateShield();
+    }
+
+    @Override
+    public void registerScreenshotEventListener(boolean getScreenShotPath, Callback callback) {
+
+    }
+
+    @Override
+    public void registerScreenRecordingEventListener(Callback callback) {
+
     }
 }
