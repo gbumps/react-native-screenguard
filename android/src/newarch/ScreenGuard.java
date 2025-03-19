@@ -9,7 +9,7 @@ class ScreenGuardSpec extends NativeScreenGuardSpec {
     private final ScreenGuardModuleImpl delegate;
 
     public ScreenGuardSpec(ReactApplicationContext context) {
-        super();
+        super(context);
         delegate = new ScreenGuardModuleImpl(context);
     }
 
