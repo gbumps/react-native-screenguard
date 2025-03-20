@@ -178,7 +178,7 @@ public class ScreenGuardModuleImpl extends ReactContextBaseJavaModule {
     }
 
     
-    public void activateShield(String hexColor, int timeAfterResume) {
+    public void activateShield(ReadableMap data) {
         try {
             if (currentReactContext == null) {
                 currentReactContext = getReactApplicationContext();
@@ -195,6 +195,8 @@ public class ScreenGuardModuleImpl extends ReactContextBaseJavaModule {
             );
 
             currentActivity.runOnUiThread(() -> {
+                String hexColor = data.getString("backgroundColor");
+                int timeAfterResume = data.getInt("timeAfterResume");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     Intent intent = new Intent(
                             currentReactContext.getCurrentActivity(),

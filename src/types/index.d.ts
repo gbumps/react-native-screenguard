@@ -52,7 +52,7 @@ declare const _default: {
    * Register for screen recording event listener
    * @version v0.3.6+
    */
-  registerScreenRecordingEventListener(callback: (arg: any) => void): void;
+  registerScreenRecordingEventListener(callback: () => void): void;
 };
 export default _default;
 export { ScreenGuardConstants };

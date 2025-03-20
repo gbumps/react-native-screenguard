@@ -15,35 +15,32 @@ class ScreenGuardSpec extends NativeScreenGuardSpec {
 
     @Override
     public void activateShield(ReadableMap data) {
-
+        delegate.activateShield(data);
     }
 
-    public void registerScreenShotEventListener(Boolean isCaptureScreenshotFile) {
-        delegate.registerScreenShotEventListener(isCaptureScreenshotFile);
-    }
-
+    @Override
     public void activateShieldWithBlurView(ReadableMap screenGuardBlurData) {
         delegate.activateShieldWithBlurView(screenGuardBlurData);
     }
+
+    @Override
     public void activateShieldWithImage(ReadableMap data) {
         delegate.activateShieldWithImage(data);
     }
 
-    public void activateShield(String hexColor, int timeAfterResume) {
-        delegate.activateShield(hexColor, timeAfterResume);
-    }
-
+    @Override
     public void activateShieldWithoutEffect() {
         delegate.activateShieldWithoutEffect();
     }
 
+    @Override
     public void deactivateShield() {
         delegate.deactivateShield();
     }
 
     @Override
     public void registerScreenshotEventListener(boolean getScreenShotPath, Callback callback) {
-
+        delegate.registerScreenShotEventListener(getScreenShotPath);
     }
 
     @Override
