@@ -1,7 +1,7 @@
-import { Platform } from 'react-native';
-import NativeScreenGuard from '../main/NativeScreenGuard';
+import { TurboModuleRegistry, Platform, } from 'react-native';
 import * as ScreenGuardConstants from './constant';
 // const { ScreenGuard } = NativeModules;
+const NativeScreenGuard = TurboModuleRegistry.get('ScreenGuard');
 var screenShotEmitter = null;
 var screenRecordingEmitter = null;
 export default {

@@ -1,9 +1,7 @@
 import { NativeEventEmitter, Platform } from 'react-native';
-import NativeScreenGuard from './NativeScreenGuard';
 import * as ScreenGuardData from './data';
+import NativeScreenGuard from './NativeScreenGuard';
 import * as ScreenGuardConstants from './constant';
-
-// const { ScreenGuard } = NativeModules;
 
 var screenShotEmitter: NativeEventEmitter | null = null;
 
