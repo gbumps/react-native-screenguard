@@ -10,9 +10,6 @@
 #if __has_include(<React/RCTBridgeModule.h>)
 #import <React/RCTBridgeModule.h>
 #elif __has_include("RCTBridgeModule.h")
-#import "RCTBridgeModule.h"
-#else
-#import "React/RCTBridgeModule.h"
 #endif
 
 #if RCT_NEW_ARCH_ENABLED
@@ -34,7 +31,11 @@ typedef NS_ENUM(NSInteger, ScreenGuardImageAlignment) {
 
 NSString* _Nullable NSStringFromAlignment(ScreenGuardImageAlignment alignment);
 
-@interface ScreenGuard : EventEmitter
+#if RCT_NEW_ARCH_ENABLED
+@interface ScreenGuard: EventEmitter <NativeScreenGuardSpec>
+@end
+#else
+@interface ScreenGuard : EventEmitter <RCTBridgeModule>
 - (void)secureViewWithBackgroundColor: (NSString *_Nonnull)color;
 - (void)secureViewWithBlurView: (nonnull NSNumber *)radius;
 - (void)secureViewWithImage: (nonnull NSDictionary *) source
@@ -46,9 +47,5 @@ NSString* _Nullable NSStringFromAlignment(ScreenGuardImageAlignment alignment);
 - (void)removeScreenShot;
 - (UIColor *_Nonnull)colorFromHexString:(NSString *_Nonnull)hexString;
 - (UIImage *_Nonnull)convertViewToImage:(UIView *_Nonnull)view;
-@end
-
-#if RCT_NEW_ARCH_ENABLED
-@interface ScreenGuard() <NativeScreenguardSpec, RCTBridgeModule>
 @end
 #endif
