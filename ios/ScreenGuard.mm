@@ -315,7 +315,7 @@ RCT_EXPORT_METHOD(activateShield: (nonnull NSDictionary *) data) {
         [self secureViewWithBackgroundColor: screenshotBackgroundColor];
     });
 }
-#endif
+
 
 RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSDictionary *) data) {
     NSNumber *borderRadius = data[@"radius"];
@@ -333,10 +333,6 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
     NSDictionary *defaultSource = data[@"defaultSource"];
     NSNumber *width = data[@"width"];
     NSNumber *height = data[@"height"];
-    NSNumber *top = data[@"top"];
-    NSNumber *left = data[@"left"];
-    NSNumber *bottom = data[@"bottom"];
-    NSNumber *right = data[@"right"];
     NSString *backgroundColor = data[@"backgroundColor"];
     NSNumber *alignment = data[@"alignment"];
     if (alignment != nil) {
@@ -351,6 +347,10 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
                            withBackgroundColor: backgroundColor];
         });
     } else {
+        NSNumber *top = data[@"top"];
+        NSNumber *left = data[@"left"];
+        NSNumber *bottom = data[@"bottom"];
+        NSNumber *right = data[@"right"];
         dispatch_async(dispatch_get_main_queue(), ^{
             [self secureViewWithImagePosition: source
                             withDefaultSource: defaultSource
@@ -371,27 +371,6 @@ RCT_EXPORT_METHOD(deactivateShield) {
         [self removeScreenShot];
         [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
         [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
-    });
-}
-
-- (void)activateShieldWithoutEffect {
-
-}
-
-
-- (void)registerScreenRecordingEventListener:(RCTResponseSenderBlock)callback { 
-    
-}
-
-
-- (void)registerScreenshotEventListener:(BOOL)getScreenShotPath callback:(RCTResponseSenderBlock)callback { 
-    
-}
-
-- (void)activateShield:(JS::NativeScreenGuard::SpecActivateShieldData &)data {
-    NSString *screenshotBackgroundColor = data.backgroundColor();
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self secureViewWithBackgroundColor: screenshotBackgroundColor];
     });
 }
 
@@ -464,6 +443,146 @@ RCT_EXPORT_METHOD(removeEvent) {
     [center removeObserver:self
                       name:UIScreenCapturedDidChangeNotification
                     object:nil];
+}
+#endif
+
+//New Architecture entry point
+- (void)activateShieldWithoutEffect {
+    RCTLogWarn(@"This function is not supported on iOS!");
+}
+
+
+- (void)registerScreenRecordingEventListener:(RCTResponseSenderBlock)callback {
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+    [center removeObserver:self
+                      name:UIScreenCapturedDidChangeNotification
+                    object:nil];
+    [center addObserverForName:UIScreenCapturedDidChangeNotification
+                        object:nil
+                         queue:mainQueue
+                    usingBlock:^(NSNotification *notification) {
+        
+        if (hasListeners) {
+            [self emit:SCREEN_RECORDING_EVT body:nil];
+        }
+    }];
+}
+
+
+- (void)registerScreenshotEventListener:(BOOL)getScreenShotPath callback:(RCTResponseSenderBlock)callback {
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+    [center removeObserver:self
+                      name:UIApplicationUserDidTakeScreenshotNotification
+                    object:nil];
+    [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
+                        object:nil
+                         queue:mainQueue
+                    usingBlock:^(NSNotification *notification) {
+        
+        if (getScreenShotPath) {
+            UIViewController *presentedViewController = RCTPresentedViewController();
+            
+            UIImage *image = [self convertViewToImage:presentedViewController.view.superview];
+            NSData *data = UIImagePNGRepresentation(image);
+            if (!data) {
+                callback(nil);
+                [self emit:SCREENSHOT_EVT body: nil];
+                // reject(@"error", @"Failed to convert image to PNG", nil);
+                return;
+            }
+            
+            NSString *tempDir = NSTemporaryDirectory();
+            NSString *fileName = [[NSUUID UUID] UUIDString];
+            NSString *filePath = [tempDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", fileName]];
+            
+            NSError *error = nil;
+            NSDictionary *result;
+            BOOL success = [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
+            if (!success) {
+                result = @{@"path": @"Error retrieving file", @"name": @"", @"type": @""};
+            } else {
+                result = @{@"path": filePath, @"name": fileName, @"type": @"PNG"};
+            }
+            callback(@[result]);
+        } else if (hasListeners) {
+            callback(nil);
+        }
+    }];
+}
+
+- (void)activateShield:(JS::NativeScreenGuard::SpecActivateShieldData &)data {
+    NSString *screenshotBackgroundColor = data.backgroundColor();
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self secureViewWithBackgroundColor: screenshotBackgroundColor];
+    });
+}
+
+- (void)activateShieldWithBlurView:(JS::NativeScreenGuard::SpecActivateShieldWithBlurViewData &)data { 
+    NSNumber *borderRadius = [NSNumber numberWithDouble: data.radius()];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self secureViewWithBlurView: borderRadius];
+    });
+}
+
+
+- (void)activateShieldWithImage:(JS::NativeScreenGuard::SpecActivateShieldWithImageData &)data {
+    NSDictionary *source = [[NSDictionary alloc] initWithObjectsAndKeys: data.source().uri(), @"uri", nil];
+    NSDictionary *defaultSource = [[NSDictionary alloc] initWithObjectsAndKeys: data.defaultSource().uri(), @"uri", nil];
+    NSNumber *width = [NSNumber numberWithDouble: data.width()];
+    NSNumber *height = [NSNumber numberWithDouble: data.height()];
+    NSString *backgroundColor = data.backgroundColor();
+    if (data.alignment().has_value()) {
+        NSInteger alignment = [[NSNumber numberWithDouble: data.alignment().value()] integerValue];
+        ScreenGuardImageAlignment dataAlignment = (ScreenGuardImageAlignment)alignment;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self secureViewWithImageAlignment: source
+                             withDefaultSource: defaultSource
+                                     withWidth: width
+                                    withHeight: height
+                                 withAlignment: dataAlignment
+                           withBackgroundColor: backgroundColor];
+        });
+    } else {
+        NSNumber *top = [NSNumber alloc];
+        NSNumber *left = [NSNumber alloc];
+        NSNumber *bottom = [NSNumber alloc];
+        NSNumber *right = [NSNumber alloc];
+        if (data.top().has_value()) {
+            top = [NSNumber numberWithDouble: data.top().value()];
+        }
+        if (data.left().has_value()) {
+            left = [NSNumber numberWithDouble: data.left().value()];
+        }
+        if (data.bottom().has_value()) {
+            bottom = [NSNumber numberWithDouble: data.bottom().value()];
+        }
+        if (data.right().has_value()) {
+            right = [NSNumber numberWithDouble: data.right().value()];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self secureViewWithImagePosition: source
+                            withDefaultSource: defaultSource
+                                    withWidth: width
+                                   withHeight: height
+                                      withTop: top
+                                     withLeft: left
+                                   withBottom: bottom
+                                    withRight: right
+                          withBackgroundColor: backgroundColor];
+        });
+    }
+    }
+
+
+- (void)deactivateShield { 
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self removeScreenShot];
+        [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
+        [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
+    });
 }
 
 
