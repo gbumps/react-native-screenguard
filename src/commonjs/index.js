@@ -1,4 +1,4 @@
-import { TurboModuleRegistry, Platform, } from 'react-native';
+import { NativeEventEmitter, Platform } from 'react-native';
 import * as ScreenGuardConstants from './constant';
 // const { ScreenGuard } = NativeModules;
 const NativeScreenGuard = TurboModuleRegistry.get('ScreenGuard');
@@ -109,8 +109,8 @@ export default {
             alignment = ScreenGuardConstants.Alignment.center;
         }
         NativeScreenGuard?.activateShieldWithImage({
-            sourceUri: source.uri,
-            // defaultSource: newDefaultSource,
+            source,
+            defaultSource: newDefaultSource,
             width,
             height,
             top,
@@ -147,23 +147,14 @@ export default {
      */
     registerScreenshotEventListener(getScreenShotPath = false, callback) {
         NativeScreenGuard?.registerScreenshotEventListener(getScreenShotPath, callback);
-        // if (screenShotEmitter == null) {
-        //   screenShotEmitter = new NativeEventEmitter(ScreenGuard);
-        // }
-        // const _onScreenCapture = (
-        //   res?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
-        // ) => {
-        //   callback(res);
-        // };
-        // const listenerCount = screenShotEmitter.listenerCount(
-        //   ScreenGuardConstants.SCREENSHOT_EVT
-        // );
-        // if (!listenerCount) {
-        //   screenShotEmitter.addListener(
-        //     ScreenGuardConstants.SCREENSHOT_EVT,
-        //     _onScreenCapture
-        //   );
-        // }
+        if (screenShotEmitter == null) {
+            screenShotEmitter = new NativeEventEmitter(NativeScreenGuard);
+        }
+        const _onScreenCapture = (res) => {
+            callback(res);
+        };
+        screenShotEmitter.addListener(ScreenGuardConstants.SCREENSHOT_EVT, _onScreenCapture);
+        return () => screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
     },
     /**
      * Screen recording event listener (iOS only)
@@ -173,22 +164,15 @@ export default {
     registerScreenRecordingEventListener(callback) {
         if (Platform.OS === 'ios') {
             NativeScreenGuard?.registerScreenRecordingEventListener(callback);
-            // if (screenRecordingEmitter == null) {
-            // screenRecordingEmitter = new NativeEventEmitter(ScreenGuard);
-            // }
-            // const _onScreenRecording = (res: any) => {
-            //   callback(res);
-            // };
-            // const listenerCount = screenRecordingEmitter.listenerCount(
-            //   ScreenGuardConstants.SCREEN_RECORDING_EVT
-            // );
-            // if (!listenerCount) {
-            //   screenRecordingEmitter.addListener(
-            //     ScreenGuardConstants.SCREEN_RECORDING_EVT,
-            //     _onScreenRecording
-            //   );
-            // }
+            if (screenRecordingEmitter == null) {
+                screenRecordingEmitter = new NativeEventEmitter(NativeScreenGuard);
+            }
+            const _onScreenRecording = () => {
+                callback();
+            };
+            screenRecordingEmitter.addListener(ScreenGuardConstants.SCREEN_RECORDING_EVT, _onScreenRecording);
         }
+        return () => screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREEN_RECORDING_EVT);
     },
 };
 export { ScreenGuardConstants };

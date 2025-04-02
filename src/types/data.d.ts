@@ -112,7 +112,7 @@ export interface ScreenGuardImageDataObject {
    * @defaultValue `#000000` (BLACK)
    *
    */
-  backgroundColor?: string | '#000000';
+  backgroundColor?: string;
   /**
    * (Android only) Time delayed for the view to stop displaying when going back
    * to the application (in milliseconds)
@@ -161,7 +161,7 @@ export interface ScreenGuardColorData {
    * @defaultValue `#000000` (BLACK)
    *
    */
-  backgroundColor?: string | '#000000';
+  backgroundColor: string;
   /**
    * (Android only) Time delayed for the view to stop displaying when going back
    * to the application (in milliseconds)

@@ -8,7 +8,7 @@ export interface Spec extends TurboModule {
      * @defaultValue `#000000` (BLACK)
      *
      */
-    backgroundColor?: string;
+    backgroundColor: string;
     /**
      * (Android only) Time delayed for the view to stop displaying when going back
      * to the application (in milliseconds)
@@ -36,7 +36,7 @@ export interface Spec extends TurboModule {
      *
      * @defaultValue `15`
      */
-    radius?: number;
+    radius: number;
     /**
      * (Android only) Time delayed for the blur view to stop displaying when going back
      * to the application (in milliseconds)
@@ -64,16 +64,9 @@ export interface Spec extends TurboModule {
      * @warning when uri is not an image uri or empty
      *
      */
-    sourceUri?: string;
-    /**
-     * source image from your local project directory,
-     *
-     * useful when the current source image uri cannot be loaded or error
-     *
-     * @warning when source is uri image and sourceId == null
-     *
-     */
-    sourceId?: number;
+    source: {
+      uri: string;
+    };
     /**
      * default source image from your local project directory,
      *
@@ -82,7 +75,9 @@ export interface Spec extends TurboModule {
      * @warning when source is uri image and default source == null
      *
      */
-    defaultSource?: number;
+    defaultSource: {
+      uri: string;
+    };
     /**
      * width of the image
      *
@@ -170,7 +165,7 @@ export interface Spec extends TurboModule {
      * @defaultValue `#000000` (BLACK)
      *
      */
-    backgroundColor?: string;
+    backgroundColor: string;
     /**
      * (Android only) Time delayed for the view to stop displaying when going back
      * to the application (in milliseconds)
