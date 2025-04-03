@@ -39,7 +39,7 @@ class ScreenGuardSpec extends NativeScreenGuardSpec {
     }
 
     @Override
-    public void registerScreenshotEventListener(boolean getScreenShotPath, Callback callback) {
+    public void registerScreenshotEventListener(boolean getScreenShotPath) {
         delegate.registerScreenShotEventListener(getScreenShotPath);
     }
 
