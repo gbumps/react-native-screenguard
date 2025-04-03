@@ -25,8 +25,8 @@ class ScreenGuardSpec extends ReactContextBaseJavaModule {
         delegate.activateShieldWithImage(data);
     }
 
-    public void activateShield(String hexColor, int timeAfterResume) {
-        delegate.activateShield(hexColor, timeAfterResume);
+    public void activateShield(ReadableMap data) {
+        delegate.activateShield(data);
     }
 
     public void activateShieldWithoutEffect() {
