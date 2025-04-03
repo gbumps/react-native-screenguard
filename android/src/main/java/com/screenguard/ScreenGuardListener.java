@@ -9,15 +9,16 @@ import android.provider.MediaStore;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableMap;
 
-public class ScreenGuard {
+public class ScreenGuardListener {
 
+    public static final String NAME = "ScreenGuardListener";
     private final HandlerThread mHandlerThread;
     private final Handler mHandler;
     private final ContentResolver mContentResolver;
     private final ContentObserver mContentObserver;
 
-    public ScreenGuard(ReactApplicationContext context, Boolean getScreenShot, Listener listener) {
-        mHandlerThread = new HandlerThread("ScreenGuard");
+    public ScreenGuardListener(ReactApplicationContext context, Boolean getScreenShot, Listener listener) {
+        mHandlerThread = new HandlerThread(NAME);
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
         mContentResolver = context.getContentResolver();
