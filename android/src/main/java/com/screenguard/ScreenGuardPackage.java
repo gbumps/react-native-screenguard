@@ -17,28 +17,25 @@ public class ScreenGuardPackage extends TurboReactPackage {
   @Nullable
   @Override
   public NativeModule getModule(@NonNull String name, @NonNull ReactApplicationContext context) {
-    if (name.equals(ScreenGuardModuleImpl.NAME)) {
-        return new ScreenGuardModuleImpl(context);
+    if (name.equals(ScreenGuardModule.NAME)) {
+        return new com.screenguard.ScreenGuard(context);
     }
     return null;
   }
 
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
-    return new ReactModuleInfoProvider() {
-      @Override
-      public Map<String, ReactModuleInfo> getReactModuleInfos() {
-        Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
-        moduleInfos.put(ScreenGuardModuleImpl.NAME, new ReactModuleInfo(
-                ScreenGuardModuleImpl.NAME,
-                ScreenGuardModuleImpl.NAME,
-                false,  // canOverrideExistingModule
-                false,  // needsEagerInit
-                false,  // isCxxModule
-                true    // isTurboModule
-        ));
-        return moduleInfos;
-      }
+    return () -> {
+      Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
+      moduleInfos.put(ScreenGuardModule.NAME, new ReactModuleInfo(
+              ScreenGuardModule.NAME,
+              ScreenGuardModule.NAME,
+              false,  // canOverrideExistingModule
+              false,  // needsEagerInit
+              false,  // isCxxModule
+              true    // isTurboModule
+      ));
+      return moduleInfos;
     };
   }
 }

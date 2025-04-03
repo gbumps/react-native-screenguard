@@ -5,12 +5,12 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.screenguard.NativeScreenGuardSpec;
 
-class ScreenGuardSpec extends NativeScreenGuardSpec {
-    private final ScreenGuardModuleImpl delegate;
+class ScreenGuard extends NativeScreenGuardSpec {
+    private final ScreenGuardModule delegate;
 
-    public ScreenGuardSpec(ReactApplicationContext context) {
+    public ScreenGuard(ReactApplicationContext context) {
         super(context);
-        delegate = new ScreenGuardModuleImpl(context);
+        delegate = new ScreenGuardModule(context);
     }
 
     @Override

@@ -5,12 +5,12 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReadableMap;
 import com.screenguard.ScreenGuardModuleImpl;
 
-class ScreenGuardSpec extends ReactContextBaseJavaModule {
-    private final ScreenGuardModuleImpl delegate;
+class ScreenGuard extends ReactContextBaseJavaModule {
+    private final ScreenGuardModule delegate;
 
-    public ScreenGuardSpec(ReactApplicationContext context) {
+    public ScreenGuard(ReactApplicationContext context) {
         super(context);
-        delegate = new ScreenGuardModuleImpl(context);
+        delegate = new ScreenGuardModule(context);
     }
 
     public void registerScreenShotEventListener(Boolean isCaptureScreenshotFile) {
