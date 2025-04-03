@@ -3,7 +3,7 @@ package com.screenguard;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReadableMap;
-import com.screenguard.ScreenGuardModuleImpl;
+import com.screenguard.ScreenGuardModule;
 
 class ScreenGuard extends ReactContextBaseJavaModule {
     private final ScreenGuardModule delegate;

@@ -4,6 +4,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.screenguard.NativeScreenGuardSpec;
+import com.screenguard.ScreenGuardModule;
 
 class ScreenGuard extends NativeScreenGuardSpec {
     private final ScreenGuardModule delegate;
