@@ -39,7 +39,7 @@ declare const _default: {
    * @version v0.3.6+
    */
   registerScreenshotEventListener(
-    getScreenShotPath: boolean | undefined,
+    getScreenShotPath: boolean,
     callback: (
       data?:
         | ScreenGuardData.ScreenGuardScreenShotPathDataObject

@@ -182,23 +182,24 @@ export interface Spec extends TurboModule {
   }) => void;
   deactivateShield: () => void;
   registerScreenshotEventListener: (
-    getScreenShotPath: boolean,
-    callback: (data?: {
-      /**
-       * Path of the image after captured
-       */
-      path?: string;
-      /**
-       * File name of the image after captured
-       */
-      name?: string;
-      /**
-       * Type of the file captured
-       */
-      type?: string;
-    }) => void
+    getScreenShotPath: boolean
+    // ,
+    // callback: (data?: {
+    //   /**
+    //    * Path of the image after captured
+    //    */
+    //   path?: string;
+    //   /**
+    //    * File name of the image after captured
+    //    */
+    //   name?: string;
+    //   /**
+    //    * Type of the file captured
+    //    */
+    //   type?: string;
+    // }) => void
   ) => void;
-  registerScreenRecordingEventListener: (callback: () => void) => void;
+  registerScreenRecordingEventListener: () => void;
 }
 
 export default TurboModuleRegistry.get<Spec>('ScreenGuard');

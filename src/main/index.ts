@@ -199,15 +199,12 @@ export default {
    * @version v0.3.6+
    */
   registerScreenshotEventListener(
-    getScreenShotPath: boolean | false = false,
+    getScreenShotPath: boolean,
     callback: (
       data?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
     ) => void
   ) {
-    NativeScreenGuard?.registerScreenshotEventListener(
-      getScreenShotPath,
-      callback
-    );
+    NativeScreenGuard?.registerScreenshotEventListener(getScreenShotPath);
     if (screenShotEmitter == null) {
       screenShotEmitter = new NativeEventEmitter(NativeScreenGuard);
     }
@@ -234,7 +231,7 @@ export default {
    */
   registerScreenRecordingEventListener(callback: () => void) {
     if (Platform.OS === 'ios') {
-      NativeScreenGuard?.registerScreenRecordingEventListener(callback);
+      NativeScreenGuard?.registerScreenRecordingEventListener();
       if (screenRecordingEmitter == null) {
         screenRecordingEmitter = new NativeEventEmitter(NativeScreenGuard);
       }

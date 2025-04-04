@@ -145,8 +145,8 @@ export default {
      * @param callback callback after a screenshot has been triggered.
      * @version v0.3.6+
      */
-    registerScreenshotEventListener(getScreenShotPath = false, callback) {
-        NativeScreenGuard?.registerScreenshotEventListener(getScreenShotPath, callback);
+    registerScreenshotEventListener(getScreenShotPath, callback) {
+        NativeScreenGuard?.registerScreenshotEventListener(getScreenShotPath);
         if (screenShotEmitter == null) {
             screenShotEmitter = new NativeEventEmitter(NativeScreenGuard);
         }
@@ -163,7 +163,7 @@ export default {
      */
     registerScreenRecordingEventListener(callback) {
         if (Platform.OS === 'ios') {
-            NativeScreenGuard?.registerScreenRecordingEventListener(callback);
+            NativeScreenGuard?.registerScreenRecordingEventListener();
             if (screenRecordingEmitter == null) {
                 screenRecordingEmitter = new NativeEventEmitter(NativeScreenGuard);
             }
