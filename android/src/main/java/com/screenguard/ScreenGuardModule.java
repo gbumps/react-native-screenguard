@@ -22,8 +22,7 @@ import com.screenguard.model.ScreenGuardImageData;
 
 import java.lang.ref.WeakReference;
 
-@ReactModule(name = ScreenGuardModule.NAME)
-public class ScreenGuardModule extends ReactContextBaseJavaModule {
+public class ScreenGuardModule {
     private WeakReference<Activity> mainActivityRef = null;
 
     public static final String NAME = "ScreenGuard";
@@ -85,9 +84,9 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
     
     public void activateShieldWithBlurView(ReadableMap screenGuardBlurData) {
         try {
-            if (currentReactContext == null) {
-                currentReactContext = getReactApplicationContext();
-            }
+//            if (currentReactContext == null) {
+//                currentReactContext = getReactApplicationContext();
+//            }
             Activity currentActivity = currentReactContext.getCurrentActivity();
 
             if (currentActivity == null) {
@@ -128,9 +127,9 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
     
     public void activateShieldWithImage(ReadableMap data) {
         try {
-            if (currentReactContext == null) {
-                currentReactContext = getReactApplicationContext();
-            }
+//            if (currentReactContext == null) {
+//                currentReactContext = getReactApplicationContext();
+//            }
             Activity currentActivity = currentReactContext.getCurrentActivity();
 
             if (currentActivity == null) {
@@ -180,9 +179,9 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
     
     public void activateShield(ReadableMap data) {
         try {
-            if (currentReactContext == null) {
-                currentReactContext = getReactApplicationContext();
-            }
+//            if (currentReactContext == null) {
+//                currentReactContext = getReactApplicationContext();
+//            }
             Activity currentActivity = currentReactContext.getCurrentActivity();
 
             if (currentActivity == null) {
@@ -222,9 +221,9 @@ public class ScreenGuardModule extends ReactContextBaseJavaModule {
     
     public void activateShieldWithoutEffect() {
         try {
-            if (currentReactContext == null) {
-                currentReactContext = getReactApplicationContext();
-            }
+//            if (currentReactContext == null) {
+//                currentReactContext = getReactApplicationContext();
+//            }
             Activity currentActivity = currentReactContext.getCurrentActivity();
 
             mainActivityRef = new WeakReference<>(currentActivity);

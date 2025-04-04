@@ -18,14 +18,14 @@ public class ScreenGuardObserver extends ContentObserver {
 
     private ReactApplicationContext mContext;
     private ContentResolver mContentResolver;
-    private final ScreenGuard.Listener mListener;
+    private final ScreenGuardListener.Listener mListener;
     private Boolean getScreenShotPath;
 
     public ScreenGuardObserver(
             ReactApplicationContext context, 
             Handler handler, 
             ContentResolver contentResolver, 
-            ScreenGuard.Listener listener,
+            ScreenGuardListener.Listener listener,
             Boolean isGetScreenShotPath
     ) {
         super(handler);
