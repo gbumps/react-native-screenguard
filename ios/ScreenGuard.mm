@@ -447,6 +447,7 @@ RCT_EXPORT_METHOD(removeEvent) {
 #endif
 
 //New Architecture entry point
+#ifdef RCT_NEW_ARCH_ENABLED
 - (void)activateShieldWithoutEffect {
     RCTLogWarn(@"This function is not supported on iOS!");
 }
@@ -584,6 +585,8 @@ RCT_EXPORT_METHOD(removeEvent) {
         [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
     });
 }
+#endif
+
 
 
 // // Don't compile this code when we build for the old architecture.
