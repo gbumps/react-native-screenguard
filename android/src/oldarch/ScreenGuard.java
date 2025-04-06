@@ -54,9 +54,4 @@ class ScreenGuard extends ReactContextBaseJavaModule {
         delegate.deactivateShield();
     }
 
-    @NonNull
-    @Override
-    public String getName() {
-        return ScreenGuardModule.NAME;
-    }
 }
