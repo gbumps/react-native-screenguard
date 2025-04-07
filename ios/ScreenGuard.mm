@@ -7,6 +7,7 @@
 NSString * const SCREENSHOT_EVT = @"onScreenShotCaptured";
 NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 
+static BOOL getScreenShotPath;
 
 @implementation ScreenGuard
 RCT_EXPORT_MODULE(ScreenGuard)
@@ -173,6 +174,7 @@ UIScrollView *scrollView;
         [textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
     } else return;
 }
+
 - (void) initTextField {
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, screenRect.size.width, screenRect.size.height)];
@@ -308,6 +310,52 @@ UIScrollView *scrollView;
     scrollView.contentSize = CGSizeMake(contentWidth, contentHeight);
 }
 
+- (void)handleScreenshotNotification:(NSNotification *)notification {
+    if (hasListeners && getScreenShotPath) {
+        UIViewController *presentedViewController = RCTPresentedViewController();
+        UIImage *image = [self convertViewToImage:presentedViewController.view.superview];
+        NSData *data = UIImagePNGRepresentation(image);
+        if (!data) {
+            [self emit:SCREENSHOT_EVT body:nil];
+            return;
+        }
+        NSString *tempDir = NSTemporaryDirectory();
+        NSString *fileName = [[NSUUID UUID] UUIDString];
+        NSString *filePath = [tempDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", fileName]];
+        NSError *error = nil;
+        NSDictionary *result;
+        BOOL success = [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
+        if (!success) {
+            result = @{@"path": @"Error retrieving file", @"name": @"", @"type": @""};
+        } else {
+            result = @{@"path": filePath, @"name": fileName, @"type": @"PNG"};
+        }
+        [self emit:SCREENSHOT_EVT body:result];
+    } else if (hasListeners) {
+        [self emit:SCREENSHOT_EVT body:nil];
+    }
+}
+
+- (void)handleScreenRecordNotification:(NSNotification *)notification {
+    dispatch_async(dispatch_get_main_queue(), ^{
+            BOOL isCaptured = [[UIScreen mainScreen] isCaptured];
+            NSDictionary *result;
+            if (isCaptured) {
+                if (hasListeners) {
+                    result = @{@"isRecording": @"true"};
+                    [self emit:SCREEN_RECORDING_EVT body: result];
+                }
+            } else {
+                if (hasListeners) {
+                    result = @{@"isRecording": @"false"};
+                    [self emit:SCREEN_RECORDING_EVT body: result];
+                }
+                
+            }
+        });
+    
+}
+
 #if !RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_METHOD(activateShield: (nonnull NSDictionary *) data) {
     NSString *screenshotBackgroundColor = data[@"backgroundColor"];
@@ -369,148 +417,83 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
 RCT_EXPORT_METHOD(deactivateShield) {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self removeScreenShot];
-        [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
-        [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
+        [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                        name: UIApplicationUserDidTakeScreenshotNotification
+                                                      object: nil];
+        [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                        name: UIScreenCapturedDidChangeNotification
+                                                      object: nil];
     });
 }
 
 
 
-RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL) getScreenShotPath) {
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
-    [center removeObserver:self
-                      name:UIApplicationUserDidTakeScreenshotNotification
-                    object:nil];
-    [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
-                        object:nil
-                         queue:mainQueue
-                    usingBlock:^(NSNotification *notification) {
+RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL) getScreenshotPath) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                        name: UIApplicationUserDidTakeScreenshotNotification
+                                                      object: nil];
         
-        if (hasListeners && getScreenShotPath) {
-            UIViewController *presentedViewController = RCTPresentedViewController();
-            
-            UIImage *image = [self convertViewToImage:presentedViewController.view.superview];
-            NSData *data = UIImagePNGRepresentation(image);
-            if (!data) {
-                [self emit:SCREENSHOT_EVT body: nil];
-                // reject(@"error", @"Failed to convert image to PNG", nil);
-                return;
-            }
-            
-            NSString *tempDir = NSTemporaryDirectory();
-            NSString *fileName = [[NSUUID UUID] UUIDString];
-            NSString *filePath = [tempDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", fileName]];
-            
-            NSError *error = nil;
-            NSDictionary *result;
-            BOOL success = [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
-            if (!success) {
-                result = @{@"path": @"Error retrieving file", @"name": @"", @"type": @""};
-            } else {
-                result = @{@"path": filePath, @"name": fileName, @"type": @"PNG"};
-            }
-            [self emit:SCREENSHOT_EVT body: result];
-        } else if (hasListeners) {
-            [self emit:SCREENSHOT_EVT body: nil];
-        }
-    }];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleScreenshotNotification:)
+                                                     name:UIApplicationUserDidTakeScreenshotNotification
+                                                   object:nil];
+        getScreenShotPath = getScreenshotPath;
+    });
+    
 }
 
 RCT_EXPORT_METHOD(registerScreenRecordingEventListener) {
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
-    [center removeObserver:self
-                      name:UIScreenCapturedDidChangeNotification
-                    object:nil];
-    [center addObserverForName:UIScreenCapturedDidChangeNotification
-                        object:nil
-                         queue:mainQueue
-                    usingBlock:^(NSNotification *notification) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                        name: UIScreenCapturedDidChangeNotification
+                                                      object: nil];
         
-        if (hasListeners) {
-            [self emit:SCREEN_RECORDING_EVT body:nil];
-        }
-    }];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleScreenRecordNotification:)
+                                                     name:UIScreenCapturedDidChangeNotification
+                                                   object:nil];
+    });
 }
 
-RCT_EXPORT_METHOD(removeEvent) {
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
-    [center removeObserver:self
-                      name:UIApplicationUserDidTakeScreenshotNotification
-                    object:nil];
-    [center removeObserver:self
-                      name:UIScreenCapturedDidChangeNotification
-                    object:nil];
+RCT_EXPORT_METHOD(activateShieldWithoutEffect) {
+    RCTLogWarn(@"This function is for Android only, please use register, registerWithBlurView, registerWithImageInstead!");
 }
 #endif
 
 //New Architecture entry point
 #ifdef RCT_NEW_ARCH_ENABLED
 - (void)activateShieldWithoutEffect {
-    RCTLogWarn(@"This function is not supported on iOS!");
+    RCTLogWarn(@"This function is for Android only, please use register, registerWithBlurView, registerWithImageInstead!");
 }
 
 
-- (void)registerScreenRecordingEventListener:(RCTResponseSenderBlock)callback {
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
-    [center removeObserver:self
-                      name:UIScreenCapturedDidChangeNotification
-                    object:nil];
-    [center addObserverForName:UIScreenCapturedDidChangeNotification
-                        object:nil
-                         queue:mainQueue
-                    usingBlock:^(NSNotification *notification) {
+- (void)registerScreenRecordingEventListener() {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                        name: UIScreenCapturedDidChangeNotification
+                                                      object: nil];
         
-        if (hasListeners) {
-            [self emit:SCREEN_RECORDING_EVT body:nil];
-        }
-    }];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleScreenRecordNotification:)
+                                                     name:UIScreenCapturedDidChangeNotification
+                                                   object:nil];
+    });
 }
 
 
-- (void)registerScreenshotEventListener:(BOOL)getScreenShotPath callback:(RCTResponseSenderBlock)callback {
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
-    [center removeObserver:self
-                      name:UIApplicationUserDidTakeScreenshotNotification
-                    object:nil];
-    [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
-                        object:nil
-                         queue:mainQueue
-                    usingBlock:^(NSNotification *notification) {
+- (void)registerScreenshotEventListener:(BOOL)getScreenShotPath {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                        name: UIApplicationUserDidTakeScreenshotNotification
+                                                      object: nil];
         
-        if (getScreenShotPath) {
-            UIViewController *presentedViewController = RCTPresentedViewController();
-            
-            UIImage *image = [self convertViewToImage:presentedViewController.view.superview];
-            NSData *data = UIImagePNGRepresentation(image);
-            if (!data) {
-                callback(nil);
-                [self emit:SCREENSHOT_EVT body: nil];
-                // reject(@"error", @"Failed to convert image to PNG", nil);
-                return;
-            }
-            
-            NSString *tempDir = NSTemporaryDirectory();
-            NSString *fileName = [[NSUUID UUID] UUIDString];
-            NSString *filePath = [tempDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", fileName]];
-            
-            NSError *error = nil;
-            NSDictionary *result;
-            BOOL success = [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
-            if (!success) {
-                result = @{@"path": @"Error retrieving file", @"name": @"", @"type": @""};
-            } else {
-                result = @{@"path": filePath, @"name": fileName, @"type": @"PNG"};
-            }
-            callback(@[result]);
-        } else if (hasListeners) {
-            callback(nil);
-        }
-    }];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleScreenshotNotification:)
+                                                     name:UIApplicationUserDidTakeScreenshotNotification
+                                                   object:nil];
+        getScreenShotPath = getScreenshotPath;
+    });
 }
 
 - (void)activateShield:(JS::NativeScreenGuard::SpecActivateShieldData &)data {
@@ -520,7 +503,7 @@ RCT_EXPORT_METHOD(removeEvent) {
     });
 }
 
-- (void)activateShieldWithBlurView:(JS::NativeScreenGuard::SpecActivateShieldWithBlurViewData &)data { 
+- (void)activateShieldWithBlurView:(JS::NativeScreenGuard::SpecActivateShieldWithBlurViewData &)data {
     NSNumber *borderRadius = [NSNumber numberWithDouble: data.radius()];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self secureViewWithBlurView: borderRadius];
@@ -578,7 +561,7 @@ RCT_EXPORT_METHOD(removeEvent) {
     }
 
 
-- (void)deactivateShield { 
+- (void)deactivateShield {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self removeScreenShot];
         [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
