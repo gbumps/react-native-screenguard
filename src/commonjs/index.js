@@ -1,9 +1,13 @@
 import { NativeEventEmitter, Platform, TurboModuleRegistry } from 'react-native';
+import NativeScreenGuard from './NativeScreenGuard';
 import * as ScreenGuardConstants from './constant';
 // const { ScreenGuard } = NativeModules;
+
 const NativeScreenGuard = TurboModuleRegistry.get('ScreenGuard');
-var screenShotEmitter = null;
-var screenRecordingEmitter = null;
+
+var screenShotEmitter = new NativeEventEmitter();
+var screenRecordingEmitter = new NativeEventEmitter();
+
 export default {
     /**
      * activate screenshot blocking with a color effect (iOS 13+, Android 8+)
@@ -147,13 +151,11 @@ export default {
      */
     registerScreenshotEventListener(getScreenShotPath, callback) {
         NativeScreenGuard?.registerScreenshotEventListener(getScreenShotPath);
-        if (screenShotEmitter == null) {
-            screenShotEmitter = new NativeEventEmitter(NativeScreenGuard);
-        }
+        screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
         const _onScreenCapture = (res) => {
             callback(res);
         };
-        screenShotEmitter.addListener(ScreenGuardConstants.SCREENSHOT_EVT, _onScreenCapture);
+        screenShotEmitter?.addListener(ScreenGuardConstants.SCREENSHOT_EVT, _onScreenCapture);
         return () => screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
     },
     /**
@@ -164,15 +166,13 @@ export default {
     registerScreenRecordingEventListener(callback) {
         if (Platform.OS === 'ios') {
             NativeScreenGuard?.registerScreenRecordingEventListener();
-            if (screenRecordingEmitter == null) {
-                screenRecordingEmitter = new NativeEventEmitter(NativeScreenGuard);
-            }
-            const _onScreenRecording = () => {
-                callback();
+            screenRecordingEmitter?.removeAllListeners(ScreenGuardConstants.SCREEN_RECORDING_EVT);
+            const _onScreenRecording = (res) => {
+                callback(res);
             };
-            screenRecordingEmitter.addListener(ScreenGuardConstants.SCREEN_RECORDING_EVT, _onScreenRecording);
+            screenRecordingEmitter?.addListener(ScreenGuardConstants.SCREEN_RECORDING_EVT, _onScreenRecording);
         }
-        return () => screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREEN_RECORDING_EVT);
+        return () => screenRecordingEmitter?.removeAllListeners(ScreenGuardConstants.SCREEN_RECORDING_EVT);
     },
 };
 export { ScreenGuardConstants };

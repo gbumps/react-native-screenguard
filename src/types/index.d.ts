@@ -53,7 +53,9 @@ declare const _default: {
    * @version v0.3.6+
    */
   registerScreenRecordingEventListener(
-    callback: () => void
+    callback: (
+      res?: ScreenGuardData.ScreenGuardScreenRecordDataObject | null | undefined
+    ) => void
   ): () => void | undefined;
 };
 export default _default;

@@ -189,3 +189,10 @@ export interface ScreenGuardScreenShotPathDataObject {
    */
   type?: string | '';
 }
+
+export interface ScreenGuardScreenRecordDataObject {
+  /**
+   * Path of the image after captured
+   */
+  isRecording?: boolean | false;
+}
