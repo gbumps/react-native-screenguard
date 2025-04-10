@@ -262,6 +262,7 @@ public class ScreenGuardModule {
                 currentReactContext.sendBroadcast(
                         new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE));
             }
+            mScreenGuard.unregister();
         } catch (Exception e) {
             Log.e(ScreenGuardModule.class.getName(), "deactivateShield exception: " + e.getMessage());
         }

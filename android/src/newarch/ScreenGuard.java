@@ -45,7 +45,7 @@ class ScreenGuard extends NativeScreenGuardSpec {
     }
 
     @Override
-    public void registerScreenRecordingEventListener(Callback callback) {
+    public void registerScreenRecordingEventListener() {
 
     }
 }

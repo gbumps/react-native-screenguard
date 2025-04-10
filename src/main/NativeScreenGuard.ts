@@ -181,24 +181,7 @@ export interface Spec extends TurboModule {
     timeAfterResume?: number;
   }) => void;
   deactivateShield: () => void;
-  registerScreenshotEventListener: (
-    getScreenShotPath: boolean
-    // ,
-    // callback: (data?: {
-    //   /**
-    //    * Path of the image after captured
-    //    */
-    //   path?: string;
-    //   /**
-    //    * File name of the image after captured
-    //    */
-    //   name?: string;
-    //   /**
-    //    * Type of the file captured
-    //    */
-    //   type?: string;
-    // }) => void
-  ) => void;
+  registerScreenshotEventListener: (getScreenShotPath: boolean) => void;
   registerScreenRecordingEventListener: () => void;
 }
 

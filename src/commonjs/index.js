@@ -1,5 +1,4 @@
 import { NativeEventEmitter, Platform, TurboModuleRegistry } from 'react-native';
-import NativeScreenGuard from './NativeScreenGuard';
 import * as ScreenGuardConstants from './constant';
 // const { ScreenGuard } = NativeModules;
 
