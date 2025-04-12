@@ -468,7 +468,7 @@ RCT_EXPORT_METHOD(activateShieldWithoutEffect) {
 }
 
 
-- (void)registerScreenRecordingEventListener() {
+- (void)registerScreenRecordingEventListener {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] removeObserver: self
                                                         name: UIScreenCapturedDidChangeNotification
@@ -482,7 +482,7 @@ RCT_EXPORT_METHOD(activateShieldWithoutEffect) {
 }
 
 
-- (void)registerScreenshotEventListener:(BOOL)getScreenShotPath {
+- (void)registerScreenshotEventListener:(BOOL)getScreenshotPath {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] removeObserver: self
                                                         name: UIApplicationUserDidTakeScreenshotNotification
