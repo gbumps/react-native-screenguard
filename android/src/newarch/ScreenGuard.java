@@ -1,10 +1,8 @@
 package com.screenguard;
 
-import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
-import com.screenguard.NativeScreenGuardSpec;
-import com.screenguard.ScreenGuardModule;
 
 class ScreenGuard extends NativeScreenGuardSpec {
     private final ScreenGuardModule delegate;
@@ -15,37 +13,67 @@ class ScreenGuard extends NativeScreenGuardSpec {
     }
 
     @Override
-    public void activateShield(ReadableMap data) {
-        delegate.activateShield(data);
+    public void activateShield(ReadableMap data, Promise promise) {
+        try {
+            delegate.activateShield(data);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("activateShield", e.getMessage());
+        }
     }
 
     @Override
-    public void activateShieldWithBlurView(ReadableMap screenGuardBlurData) {
-        delegate.activateShieldWithBlurView(screenGuardBlurData);
+    public void activateShieldWithBlurView(ReadableMap screenGuardBlurData, Promise promise) {
+        try {
+            delegate.activateShieldWithBlurView(screenGuardBlurData);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("activateShieldWithBlurView", e.getMessage());
+        }
     }
 
     @Override
-    public void activateShieldWithImage(ReadableMap data) {
-        delegate.activateShieldWithImage(data);
+    public void activateShieldWithImage(ReadableMap data, Promise promise) {
+        try {
+            delegate.activateShieldWithImage(data);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("activateShieldWithImage", e.getMessage());
+        }
     }
 
     @Override
-    public void activateShieldWithoutEffect() {
-        delegate.activateShieldWithoutEffect();
+    public void activateShieldWithoutEffect(Promise promise) {
+        try {
+            delegate.activateShieldWithoutEffect();
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("activateShieldWithoutEffect", e.getMessage());
+        }
     }
 
     @Override
-    public void deactivateShield() {
-        delegate.deactivateShield();
+    public void deactivateShield(Promise promise) {
+        try {
+            delegate.deactivateShield();
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("deactivateShield", e.getMessage());
+        }
     }
 
     @Override
-    public void registerScreenshotEventListener(boolean getScreenShotPath) {
-        delegate.registerScreenShotEventListener(getScreenShotPath);
+    public void registerScreenshotEventListener(boolean getScreenShotPath, Promise promise) {
+        try {
+            delegate.registerScreenShotEventListener(getScreenShotPath);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("registerScreenshotEventListener", e.getMessage());
+        }
     }
 
     @Override
-    public void registerScreenRecordingEventListener() {
-
+    public void registerScreenRecordingEventListener(Promise promise) {
+        promise.reject("registerScreenshotEventListener", "Not yet supported!");
     }
 }

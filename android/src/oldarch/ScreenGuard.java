@@ -2,11 +2,11 @@ package com.screenguard;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.module.annotations.ReactModule;
 
 class ScreenGuard extends ReactContextBaseJavaModule {
     public static final String NAME = "ScreenGuard";
@@ -24,34 +24,63 @@ class ScreenGuard extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void registerScreenshotEventListener(Boolean isCaptureScreenshotFile) {
-        delegate.registerScreenShotEventListener(isCaptureScreenshotFile);
+    public void registerScreenshotEventListener(Boolean isCaptureScreenshotFile, Promise promise) {
+        try {
+            delegate.registerScreenShotEventListener(isCaptureScreenshotFile);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("registerScreenshotEventListener", e.getMessage());
+        }
     }
-    // public void addListener(String eventName);
-    // public void removeListeners(int count) 
+    
     @ReactMethod
-    public void activateShieldWithBlurView(ReadableMap screenGuardBlurData) {
-        delegate.activateShieldWithBlurView(screenGuardBlurData);
-    }
-
-    @ReactMethod
-    public void activateShieldWithImage(ReadableMap data) {
-        delegate.activateShieldWithImage(data);
-    }
-
-    @ReactMethod
-    public void activateShield(ReadableMap data) {
-        delegate.activateShield(data);
-    }
-
-    @ReactMethod
-    public void activateShieldWithoutEffect() {
-        delegate.activateShieldWithoutEffect();
+    public void activateShieldWithBlurView(ReadableMap screenGuardBlurData, Promise promise) {
+        try {
+            delegate.activateShieldWithBlurView(screenGuardBlurData);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("activateShieldWithBlurView", e.getMessage());
+        }
     }
 
     @ReactMethod
-    public void deactivateShield() {
-        delegate.deactivateShield();
+    public void activateShieldWithImage(ReadableMap data, Promise promise) {
+        try {
+            delegate.activateShieldWithImage(data);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("activateShieldWithImage", e.getMessage());
+        }   
+    }
+
+    @ReactMethod
+    public void activateShield(ReadableMap data, Promise promise) {
+        try {
+            delegate.activateShield(data);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("activateShield", e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void activateShieldWithoutEffect(Promise promise) {
+        try {
+            delegate.activateShieldWithoutEffect();
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("activateShieldWithoutEffect", e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void deactivateShield(Promise promise) {
+        try {
+            delegate.deactivateShield();
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("deactivateShield", e.getMessage());
+        }
     }
 
 }
