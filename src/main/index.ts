@@ -14,7 +14,7 @@ export default {
    * @param data ScreenGuardColorData object
    * @version v0.0.2+
    */
-  register(data: ScreenGuardData.ScreenGuardColorData) {
+  async register(data: ScreenGuardData.ScreenGuardColorData) {
     let {
       backgroundColor = ScreenGuardConstants.BLACK_COLOR,
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
@@ -26,7 +26,7 @@ export default {
       ScreenGuardConstants.REGEX.test(backgroundColor.trim().substring(1))
         ? ScreenGuardConstants.BLACK_COLOR
         : data.backgroundColor;
-    NativeScreenGuard?.activateShield({
+    await NativeScreenGuard?.activateShield({
       backgroundColor: currentColor,
       timeAfterResume,
     });
@@ -37,9 +37,9 @@ export default {
    * any effect (blur, image, color) on Android (Android 5+)
    * @version v1.0.0+
    */
-  registerWithoutEffect() {
+  async registerWithoutEffect() {
     if (Platform.OS === 'android') {
-      NativeScreenGuard?.activateShieldWithoutEffect();
+      await NativeScreenGuard?.activateShieldWithoutEffect();
     }
   },
 
@@ -48,7 +48,7 @@ export default {
    * @param data ScreenGuardBlurDataObject data object
    * @version v0.1.2+
    */
-  registerWithBlurView(data: ScreenGuardData.ScreenGuardBlurDataObject) {
+  async registerWithBlurView(data: ScreenGuardData.ScreenGuardBlurDataObject) {
     const {
       radius = ScreenGuardConstants.RADIUS_DEFAULT,
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
@@ -80,7 +80,7 @@ export default {
     ) {
       throw new Error('timeAfterResume must be > 0!');
     }
-    NativeScreenGuard?.activateShieldWithBlurView({
+    await NativeScreenGuard?.activateShieldWithBlurView({
       radius,
       timeAfterResume,
     });
@@ -91,7 +91,7 @@ export default {
    * @param data ScreenGuardImageDataObject data object,
    * @version v1.0.2+
    */
-  registerWithImage(data: ScreenGuardData.ScreenGuardImageDataObject) {
+  async registerWithImage(data: ScreenGuardData.ScreenGuardImageDataObject) {
     let {
       source,
       width,
@@ -158,7 +158,7 @@ export default {
       alignment = ScreenGuardConstants.Alignment.center;
     }
 
-    NativeScreenGuard?.activateShieldWithImage({
+    await NativeScreenGuard?.activateShieldWithImage({
       source,
       defaultSource: newDefaultSource,
       width,
@@ -178,8 +178,8 @@ export default {
    * Clear all screen protector and event listening
    * @version v0.0.2+
    */
-  unregister() {
-    NativeScreenGuard?.deactivateShield();
+  async unregister() {
+    await NativeScreenGuard?.deactivateShield();
     if (screenShotEmitter != null) {
       screenShotEmitter.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
       screenShotEmitter = null;
@@ -199,13 +199,13 @@ export default {
    * @param callback callback after a screenshot has been triggered.
    * @version v0.3.6+
    */
-  registerScreenshotEventListener(
+  async registerScreenshotEventListener(
     getScreenShotPath: boolean,
     callback: (
       data?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
     ) => void
   ) {
-    NativeScreenGuard?.registerScreenshotEventListener(getScreenShotPath);
+    await NativeScreenGuard?.registerScreenshotEventListener(getScreenShotPath);
     screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
 
     const _onScreenCapture = (
@@ -228,13 +228,13 @@ export default {
    * Register for screen recording event listener
    * @version v0.3.6+
    */
-  registerScreenRecordingEventListener(
+  async registerScreenRecordingEventListener(
     callback: (
       res?: ScreenGuardData.ScreenGuardScreenRecordDataObject | null
     ) => void
   ) {
     if (Platform.OS === 'ios') {
-      NativeScreenGuard?.registerScreenRecordingEventListener();
+      await NativeScreenGuard?.registerScreenRecordingEventListener();
       screenRecordingEmitter?.removeAllListeners(
         ScreenGuardConstants.SCREEN_RECORDING_EVT
       );

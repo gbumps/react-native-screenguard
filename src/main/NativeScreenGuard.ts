@@ -22,8 +22,8 @@ export interface Spec extends TurboModule {
      * @defaultValue `1000`
      */
     timeAfterResume?: number;
-  }) => void;
-  activateShieldWithoutEffect: () => void;
+  }) => Promise<void>;
+  activateShieldWithoutEffect: () => Promise<void>;
   activateShieldWithBlurView: (data: {
     /**
      * The number of blur radius, in between 15 and 50.
@@ -50,7 +50,7 @@ export interface Spec extends TurboModule {
      * @defaultValue `1000`
      */
     timeAfterResume?: number;
-  }) => void;
+  }) => Promise<void>;
   activateShieldWithImage: (data: {
     /**
      * uri of network image which you want to show
@@ -179,10 +179,12 @@ export interface Spec extends TurboModule {
      * @defaultValue `1000`
      */
     timeAfterResume?: number;
-  }) => void;
-  deactivateShield: () => void;
-  registerScreenshotEventListener: (getScreenShotPath: boolean) => void;
-  registerScreenRecordingEventListener: () => void;
+  }) => Promise<void>;
+  deactivateShield: () => Promise<void>;
+  registerScreenshotEventListener: (
+    getScreenshotPath: boolean
+  ) => Promise<void>;
+  registerScreenRecordingEventListener: () => Promise<void>;
 }
 
 export default TurboModuleRegistry.get<Spec>('ScreenGuard');
