@@ -463,26 +463,34 @@ RCT_EXPORT_METHOD(activateShieldWithoutEffect) {
 
 //New Architecture entry point
 #ifdef RCT_NEW_ARCH_ENABLED
-- (void)activateShieldWithoutEffect {
-    RCTLogWarn(@"This function is for Android only, please use register, registerWithBlurView, registerWithImageInstead!");
+- (void)activateShieldWithoutEffect: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    NSString *s = @"This function is for Android only, please use register, registerWithBlurView, registerWithImageInstead!";
+    RCTLogWarn(@"%@", s);
+    NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+    reject(@"activateShieldWithoutEffect", s, error);
 }
 
-
-- (void)registerScreenRecordingEventListener {
+- (void)registerScreenRecordingEventListener: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] removeObserver: self
-                                                        name: UIScreenCapturedDidChangeNotification
-                                                      object: nil];
+        @try {
+            [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                            name: UIScreenCapturedDidChangeNotification
+                                                          object: nil];
+            
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(handleScreenRecordNotification:)
+                                                         name:UIScreenCapturedDidChangeNotification
+                                                       object:nil];
+            resolve(nil);
+        } @catch (NSException *e) {
+            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+            reject(@"registerScreenRecordingEventListener", e.reason, error);
+        }
         
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(handleScreenRecordNotification:)
-                                                     name:UIScreenCapturedDidChangeNotification
-                                                   object:nil];
     });
 }
 
-
-- (void)registerScreenshotEventListener:(BOOL)getScreenshotPath {
+- (void)registerScreenshotEventListener:(BOOL)getScreenshotPath resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] removeObserver: self
                                                         name: UIApplicationUserDidTakeScreenshotNotification
@@ -496,76 +504,99 @@ RCT_EXPORT_METHOD(activateShieldWithoutEffect) {
     });
 }
 
-- (void)activateShield:(JS::NativeScreenGuard::SpecActivateShieldData &)data {
-    NSString *screenshotBackgroundColor = data.backgroundColor();
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self secureViewWithBackgroundColor: screenshotBackgroundColor];
-    });
-}
-
-- (void)activateShieldWithBlurView:(JS::NativeScreenGuard::SpecActivateShieldWithBlurViewData &)data {
-    NSNumber *borderRadius = [NSNumber numberWithDouble: data.radius()];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self secureViewWithBlurView: borderRadius];
-    });
-}
-
-
-- (void)activateShieldWithImage:(JS::NativeScreenGuard::SpecActivateShieldWithImageData &)data {
-    NSDictionary *source = [[NSDictionary alloc] initWithObjectsAndKeys: data.source().uri(), @"uri", nil];
-    NSDictionary *defaultSource = [[NSDictionary alloc] initWithObjectsAndKeys: data.defaultSource().uri(), @"uri", nil];
-    NSNumber *width = [NSNumber numberWithDouble: data.width()];
-    NSNumber *height = [NSNumber numberWithDouble: data.height()];
-    NSString *backgroundColor = data.backgroundColor();
-    if (data.alignment().has_value()) {
-        NSInteger alignment = [[NSNumber numberWithDouble: data.alignment().value()] integerValue];
-        ScreenGuardImageAlignment dataAlignment = (ScreenGuardImageAlignment)alignment;
+- (void)activateShield:(JS::NativeScreenGuard::SpecActivateShieldData &)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+        NSString *screenshotBackgroundColor = data.backgroundColor();
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self secureViewWithImageAlignment: source
-                             withDefaultSource: defaultSource
-                                     withWidth: width
-                                    withHeight: height
-                                 withAlignment: dataAlignment
-                           withBackgroundColor: backgroundColor];
+            @try {
+                [self secureViewWithBackgroundColor: screenshotBackgroundColor];
+                resolve(nil);
+            } @catch (NSException *e) {
+                NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+                reject(@"activateShield", e.reason, error);
+            }
+            
         });
-    } else {
-        NSNumber *top = [NSNumber alloc];
-        NSNumber *left = [NSNumber alloc];
-        NSNumber *bottom = [NSNumber alloc];
-        NSNumber *right = [NSNumber alloc];
-        if (data.top().has_value()) {
-            top = [NSNumber numberWithDouble: data.top().value()];
+}
+
+- (void)activateShieldWithBlurView:(JS::NativeScreenGuard::SpecActivateShieldWithBlurViewData &)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+        NSNumber *borderRadius = [NSNumber numberWithDouble: data.radius()];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            @try {
+                [self secureViewWithBlurView: borderRadius];
+                resolve(nil);
+            } @catch (NSException *e) {
+                NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+                reject(@"activateShieldWithBlurView", e.reason, error);
+            }
+        });
+}
+
+- (void)activateShieldWithImage:(JS::NativeScreenGuard::SpecActivateShieldWithImageData &)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    @try {
+        NSDictionary *source = [[NSDictionary alloc] initWithObjectsAndKeys: data.source().uri(), @"uri", nil];
+        NSDictionary *defaultSource = [[NSDictionary alloc] initWithObjectsAndKeys: data.defaultSource().uri(), @"uri", nil];
+        NSNumber *width = [NSNumber numberWithDouble: data.width()];
+        NSNumber *height = [NSNumber numberWithDouble: data.height()];
+        NSString *backgroundColor = data.backgroundColor();
+        if (data.alignment().has_value()) {
+            NSInteger alignment = [[NSNumber numberWithDouble: data.alignment().value()] integerValue];
+            ScreenGuardImageAlignment dataAlignment = (ScreenGuardImageAlignment)alignment;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self secureViewWithImageAlignment: source
+                                 withDefaultSource: defaultSource
+                                         withWidth: width
+                                        withHeight: height
+                                     withAlignment: dataAlignment
+                               withBackgroundColor: backgroundColor];
+            });
+        } else {
+            NSNumber *top = [NSNumber alloc];
+            NSNumber *left = [NSNumber alloc];
+            NSNumber *bottom = [NSNumber alloc];
+            NSNumber *right = [NSNumber alloc];
+            if (data.top().has_value()) {
+                top = [NSNumber numberWithDouble: data.top().value()];
+            }
+            if (data.left().has_value()) {
+                left = [NSNumber numberWithDouble: data.left().value()];
+            }
+            if (data.bottom().has_value()) {
+                bottom = [NSNumber numberWithDouble: data.bottom().value()];
+            }
+            if (data.right().has_value()) {
+                right = [NSNumber numberWithDouble: data.right().value()];
+            }
+    
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self secureViewWithImagePosition: source
+                                withDefaultSource: defaultSource
+                                        withWidth: width
+                                       withHeight: height
+                                          withTop: top
+                                         withLeft: left
+                                       withBottom: bottom
+                                        withRight: right
+                              withBackgroundColor: backgroundColor];
+            });
         }
-        if (data.left().has_value()) {
-            left = [NSNumber numberWithDouble: data.left().value()];
-        }
-        if (data.bottom().has_value()) {
-            bottom = [NSNumber numberWithDouble: data.bottom().value()];
-        }
-        if (data.right().has_value()) {
-            right = [NSNumber numberWithDouble: data.right().value()];
-        }
+        resolve(nil);
+    } @catch (NSException *e) {
+        NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+        reject(@"activateShieldWithImage", e.reason, error);
+    }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self secureViewWithImagePosition: source
-                            withDefaultSource: defaultSource
-                                    withWidth: width
-                                   withHeight: height
-                                      withTop: top
-                                     withLeft: left
-                                   withBottom: bottom
-                                    withRight: right
-                          withBackgroundColor: backgroundColor];
-        });
-    }
-    }
+}
 
-
-- (void)deactivateShield {
+- (void)deactivateShield:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self removeScreenShot];
-        [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
-        [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
+        @try {
+            [self removeScreenShot];
+            [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
+            [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
+        } @catch (NSException *e) {
+            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+            reject(@"deactivateShield", e.reason, error);
+        }
     });
 }
 #endif
@@ -580,5 +611,6 @@ RCT_EXPORT_METHOD(activateShieldWithoutEffect) {
     return std::make_shared<facebook::react::NativeScreenGuardSpecJSI>(params);
 }
 #endif
+
 
 @end
