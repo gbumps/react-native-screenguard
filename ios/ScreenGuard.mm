@@ -350,29 +350,41 @@ UIScrollView *scrollView;
                     result = @{@"isRecording": @"false"};
                     [self emit:SCREEN_RECORDING_EVT body: result];
                 }
-                
             }
         });
     
 }
 
 #if !RCT_NEW_ARCH_ENABLED
-RCT_EXPORT_METHOD(activateShield: (nonnull NSDictionary *) data) {
+RCT_EXPORT_METHOD(activateShield: (nonnull NSDictionary *) data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     NSString *screenshotBackgroundColor = data[@"backgroundColor"];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self secureViewWithBackgroundColor: screenshotBackgroundColor];
+        @try {
+            [self secureViewWithBackgroundColor: screenshotBackgroundColor];
+            resolve(nil);
+        } @catch (NSException *e) {
+            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+            reject(@"activateShield", e.reason, error);
+        }
+    
     });
 }
 
 
-RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSDictionary *) data) {
+RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSDictionary *) data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     NSNumber *borderRadius = data[@"radius"];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self secureViewWithBlurView: borderRadius];
+        @try {
+            [self secureViewWithBlurView: borderRadius];
+            resolve(nil);
+        } @catch (NSException *e) {
+            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+            reject(@"activateShieldWithBlurView", e.reason, error);
+        }
     });
 }
 
-RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
+RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     if (![data isKindOfClass:[NSDictionary class]]) {
         return;
     }
@@ -411,24 +423,26 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
                           withBackgroundColor: backgroundColor];
         });
     }
-    
+    resolve(nil);
 }
 
-RCT_EXPORT_METHOD(deactivateShield) {
+RCT_EXPORT_METHOD(deactivateShield: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self removeScreenShot];
-        [[NSNotificationCenter defaultCenter] removeObserver: self
-                                                        name: UIApplicationUserDidTakeScreenshotNotification
-                                                      object: nil];
-        [[NSNotificationCenter defaultCenter] removeObserver: self
-                                                        name: UIScreenCapturedDidChangeNotification
-                                                      object: nil];
+        @try {
+            [self removeScreenShot];
+            [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
+            [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
+            resolve(nil);
+        } @catch (NSException *e) {
+            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+            reject(@"deactivateShield", e.reason, error);
+        }
     });
 }
 
 
 
-RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL) getScreenshotPath) {
+RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL)getScreenshotPath resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] removeObserver: self
                                                         name: UIApplicationUserDidTakeScreenshotNotification
@@ -443,21 +457,30 @@ RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL) getScreenshotPath) {
     
 }
 
-RCT_EXPORT_METHOD(registerScreenRecordingEventListener) {
+RCT_EXPORT_METHOD(registerScreenRecordingEventListener: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] removeObserver: self
-                                                        name: UIScreenCapturedDidChangeNotification
-                                                      object: nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(handleScreenRecordNotification:)
-                                                     name:UIScreenCapturedDidChangeNotification
-                                                   object:nil];
+        @try {
+            [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                            name: UIScreenCapturedDidChangeNotification
+                                                          object: nil];
+            
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(handleScreenRecordNotification:)
+                                                         name:UIScreenCapturedDidChangeNotification
+                                                       object:nil];
+            resolve(nil);
+        } @catch (NSException *e) {
+            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+            reject(@"registerScreenRecordingEventListener", e.reason, error);
+        }
     });
 }
 
-RCT_EXPORT_METHOD(activateShieldWithoutEffect) {
-    RCTLogWarn(@"This function is for Android only, please use register, registerWithBlurView, registerWithImageInstead!");
+RCT_EXPORT_METHOD(activateShieldWithoutEffect: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    NSString *s = @"This function is for Android only, please use register, registerWithBlurView, registerWithImageInstead!";
+    RCTLogWarn(@"%@", s);
+    NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+    reject(@"activateShieldWithoutEffect", s, error);
 }
 #endif
 
@@ -514,7 +537,7 @@ RCT_EXPORT_METHOD(activateShieldWithoutEffect) {
                 NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
                 reject(@"activateShield", e.reason, error);
             }
-            
+        
         });
 }
 
@@ -593,6 +616,7 @@ RCT_EXPORT_METHOD(activateShieldWithoutEffect) {
             [self removeScreenShot];
             [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
             [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
+            resolve(nil);
         } @catch (NSException *e) {
             NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
             reject(@"deactivateShield", e.reason, error);
