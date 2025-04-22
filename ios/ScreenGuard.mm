@@ -360,6 +360,7 @@ UIScrollView *scrollView;
     
 }
 
+//old architecture entry point
 #if !RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_METHOD(activateShield: (nonnull NSDictionary *) data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     NSString *screenshotBackgroundColor = data[@"backgroundColor"];
