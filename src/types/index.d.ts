@@ -50,17 +50,21 @@ declare const _default: {
         | null
         | undefined
     ) => void
-  ): Promise<void>;
+  ): () => void | undefined;
   /**
    * Screen recording event listener (iOS only)
    * Register for screen recording event listener
    * @version v0.3.6+
    */
   registerScreenRecordingEventListener(
+    getScreenRecordStatus: boolean,
     callback: (
-      res?: ScreenGuardData.ScreenGuardScreenRecordDataObject | null | undefined
+      data?:
+        | ScreenGuardData.ScreenGuardScreenRecordDataObject
+        | null
+        | undefined
     ) => void
-  ): Promise<void>;
+  ): () => void | undefined;
 };
 export default _default;
 export { ScreenGuardConstants };

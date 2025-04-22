@@ -63,17 +63,16 @@ class ScreenGuard extends NativeScreenGuardSpec {
     }
 
     @Override
-    public void registerScreenshotEventListener(boolean getScreenShotPath, Promise promise) {
+    public void registerScreenshotEventListener(boolean getScreenShotPath) {
         try {
             delegate.registerScreenShotEventListener(getScreenShotPath);
-            promise.resolve(null);
         } catch (Exception e) {
-            promise.reject("registerScreenshotEventListener", e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @Override
-    public void registerScreenRecordingEventListener(Promise promise) {
-        promise.reject("registerScreenshotEventListener", "Not yet supported!");
+    public void registerScreenRecordingEventListener(boolean getRecordingStatus) {
+        Log.d("ScreenGuard", "registerScreenRecordingEventListener not supported yet on Android!");
     }
 }

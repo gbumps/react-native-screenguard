@@ -1,4 +1,4 @@
-import { NativeEventEmitter, Platform, TurboModuleRegistry  } from 'react-native';
+import { NativeEventEmitter, Platform, TurboModuleRegistry } from 'react-native';
 import * as ScreenGuardConstants from './constant';
 
 const NativeScreenGuard = TurboModuleRegistry.get('ScreenGuard');
@@ -146,8 +146,8 @@ export default {
      * @param callback callback after a screenshot has been triggered.
      * @version v0.3.6+
      */
-    async registerScreenshotEventListener(getScreenShotPath, callback) {
-        await NativeScreenGuard?.registerScreenshotEventListener(getScreenShotPath);
+    registerScreenshotEventListener(getScreenShotPath, callback) {
+        NativeScreenGuard?.registerScreenshotEventListener(getScreenShotPath);
         screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
         const _onScreenCapture = (res) => {
             callback(res);
@@ -160,15 +160,13 @@ export default {
      * Register for screen recording event listener
      * @version v0.3.6+
      */
-    async registerScreenRecordingEventListener(callback) {
-        if (Platform.OS === 'ios') {
-            await NativeScreenGuard?.registerScreenRecordingEventListener();
-            screenRecordingEmitter?.removeAllListeners(ScreenGuardConstants.SCREEN_RECORDING_EVT);
-            const _onScreenRecording = (res) => {
-                callback(res);
-            };
-            screenRecordingEmitter?.addListener(ScreenGuardConstants.SCREEN_RECORDING_EVT, _onScreenRecording);
-        }
+    registerScreenRecordingEventListener(getScreenRecordStatus, callback) {
+        NativeScreenGuard?.registerScreenRecordingEventListener(getScreenRecordStatus ?? false);
+        screenRecordingEmitter?.removeAllListeners(ScreenGuardConstants.SCREEN_RECORDING_EVT);
+        const _onScreenRecording = (res) => {
+            callback(res);
+        };
+        screenRecordingEmitter?.addListener(ScreenGuardConstants.SCREEN_RECORDING_EVT, _onScreenRecording);
         return () => screenRecordingEmitter?.removeAllListeners(ScreenGuardConstants.SCREEN_RECORDING_EVT);
     },
 };

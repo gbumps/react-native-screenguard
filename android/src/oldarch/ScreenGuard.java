@@ -24,14 +24,19 @@ class ScreenGuard extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void registerScreenshotEventListener(Boolean isCaptureScreenshotFile, Promise promise) {
+    public void registerScreenshotEventListener(boolean getScreenShotPath) {
         try {
-            delegate.registerScreenShotEventListener(isCaptureScreenshotFile);
-            promise.resolve(null);
+            delegate.registerScreenShotEventListener(getScreenShotPath);
         } catch (Exception e) {
-            promise.reject("registerScreenshotEventListener", e.getMessage());
+            e.printStackTrace();
         }
     }
+
+    @ReactMethod
+    public void registerScreenRecordingEventListener(boolean getRecordingStatus) {
+        Log.d("ScreenGuard", "registerScreenRecordingEventListener not supported yet on Android!");
+    }
+
     
     @ReactMethod
     public void activateShieldWithBlurView(ReadableMap screenGuardBlurData, Promise promise) {

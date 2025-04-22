@@ -199,13 +199,13 @@ export default {
    * @param callback callback after a screenshot has been triggered.
    * @version v0.3.6+
    */
-  async registerScreenshotEventListener(
+  registerScreenshotEventListener(
     getScreenShotPath: boolean,
     callback: (
       data?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
     ) => void
   ) {
-    await NativeScreenGuard?.registerScreenshotEventListener(getScreenShotPath);
+    NativeScreenGuard?.registerScreenshotEventListener(getScreenShotPath);
     screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
 
     const _onScreenCapture = (
@@ -228,26 +228,27 @@ export default {
    * Register for screen recording event listener
    * @version v0.3.6+
    */
-  async registerScreenRecordingEventListener(
+  registerScreenRecordingEventListener(
+    getScreenRecordStatus: boolean,
     callback: (
-      res?: ScreenGuardData.ScreenGuardScreenRecordDataObject | null
+      data?: ScreenGuardData.ScreenGuardScreenRecordDataObject | null
     ) => void
   ) {
-    if (Platform.OS === 'ios') {
-      await NativeScreenGuard?.registerScreenRecordingEventListener();
-      screenRecordingEmitter?.removeAllListeners(
-        ScreenGuardConstants.SCREEN_RECORDING_EVT
-      );
-      const _onScreenRecording = (
-        res?: ScreenGuardData.ScreenGuardScreenRecordDataObject | null
-      ) => {
-        callback(res);
-      };
-      screenRecordingEmitter?.addListener(
-        ScreenGuardConstants.SCREEN_RECORDING_EVT,
-        _onScreenRecording
-      );
-    }
+    NativeScreenGuard?.registerScreenRecordingEventListener(
+      getScreenRecordStatus ?? false
+    );
+    screenRecordingEmitter?.removeAllListeners(
+      ScreenGuardConstants.SCREEN_RECORDING_EVT
+    );
+    const _onScreenRecording = (
+      res?: ScreenGuardData.ScreenGuardScreenRecordDataObject | null
+    ) => {
+      callback(res);
+    };
+    screenRecordingEmitter?.addListener(
+      ScreenGuardConstants.SCREEN_RECORDING_EVT,
+      _onScreenRecording
+    );
     return () =>
       screenRecordingEmitter?.removeAllListeners(
         ScreenGuardConstants.SCREEN_RECORDING_EVT

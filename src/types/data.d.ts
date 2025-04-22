@@ -192,7 +192,7 @@ export interface ScreenGuardScreenShotPathDataObject {
 }
 export interface ScreenGuardScreenRecordDataObject {
   /**
-   * Path of the image after captured
+   * status of the screen recording
    */
   isRecording?: boolean | false;
 }

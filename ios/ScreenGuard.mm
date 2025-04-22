@@ -8,6 +8,7 @@ NSString * const SCREENSHOT_EVT = @"onScreenShotCaptured";
 NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 
 static BOOL getScreenShotPath;
+static BOOL getScreenRecordingStatus;
 
 @implementation ScreenGuard
 RCT_EXPORT_MODULE(ScreenGuard)
@@ -341,14 +342,18 @@ UIScrollView *scrollView;
             BOOL isCaptured = [[UIScreen mainScreen] isCaptured];
             NSDictionary *result;
             if (isCaptured) {
-                if (hasListeners) {
+                if (hasListeners && getScreenRecordingStatus) {
                     result = @{@"isRecording": @"true"};
                     [self emit:SCREEN_RECORDING_EVT body: result];
+                } else {
+                    [self emit:SCREEN_RECORDING_EVT body: nil];
                 }
             } else {
-                if (hasListeners) {
+                if (hasListeners && getScreenRecordingStatus) {
                     result = @{@"isRecording": @"false"};
                     [self emit:SCREEN_RECORDING_EVT body: result];
+                } else {
+                    [self emit:SCREEN_RECORDING_EVT body: nil];
                 }
             }
         });
@@ -432,7 +437,6 @@ RCT_EXPORT_METHOD(deactivateShield: (RCTPromiseResolveBlock)resolve reject:(RCTP
             [self removeScreenShot];
             [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
             [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
-            resolve(nil);
         } @catch (NSException *e) {
             NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
             reject(@"deactivateShield", e.reason, error);
@@ -442,7 +446,7 @@ RCT_EXPORT_METHOD(deactivateShield: (RCTPromiseResolveBlock)resolve reject:(RCTP
 
 
 
-RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL)getScreenshotPath resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL)getScreenshotPath) {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] removeObserver: self
                                                         name: UIApplicationUserDidTakeScreenshotNotification
@@ -457,7 +461,7 @@ RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL)getScreenshotPath resol
     
 }
 
-RCT_EXPORT_METHOD(registerScreenRecordingEventListener: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(registerScreenRecordingEventListener: (BOOL)getRecordingStatus) {
     dispatch_async(dispatch_get_main_queue(), ^{
         @try {
             [[NSNotificationCenter defaultCenter] removeObserver: self
@@ -468,10 +472,9 @@ RCT_EXPORT_METHOD(registerScreenRecordingEventListener: (RCTPromiseResolveBlock)
                                                      selector:@selector(handleScreenRecordNotification:)
                                                          name:UIScreenCapturedDidChangeNotification
                                                        object:nil];
-            resolve(nil);
+            getScreenRecordingStatus = getRecordingStatus;
         } @catch (NSException *e) {
             NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
-            reject(@"registerScreenRecordingEventListener", e.reason, error);
         }
     });
 }
@@ -493,7 +496,7 @@ RCT_EXPORT_METHOD(activateShieldWithoutEffect: (RCTPromiseResolveBlock)resolve r
     reject(@"activateShieldWithoutEffect", s, error);
 }
 
-- (void)registerScreenRecordingEventListener: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+- (void)registerScreenRecordingEventListener: (BOOL)getRecordingStatus {
     dispatch_async(dispatch_get_main_queue(), ^{
         @try {
             [[NSNotificationCenter defaultCenter] removeObserver: self
@@ -504,16 +507,14 @@ RCT_EXPORT_METHOD(activateShieldWithoutEffect: (RCTPromiseResolveBlock)resolve r
                                                      selector:@selector(handleScreenRecordNotification:)
                                                          name:UIScreenCapturedDidChangeNotification
                                                        object:nil];
-            resolve(nil);
         } @catch (NSException *e) {
             NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
-            reject(@"registerScreenRecordingEventListener", e.reason, error);
         }
-        
+        getScreenRecordingStatus = getRecordingStatus;
     });
 }
 
-- (void)registerScreenshotEventListener:(BOOL)getScreenshotPath resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+- (void)registerScreenshotEventListener: (BOOL)getScreenshotPath {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] removeObserver: self
                                                         name: UIApplicationUserDidTakeScreenshotNotification
