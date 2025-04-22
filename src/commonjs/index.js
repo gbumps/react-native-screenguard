@@ -1,10 +1,9 @@
-import { NativeEventEmitter, Platform } from 'react-native';
-import NativeScreenGuard from './NativeScreenGuard';
+import { NativeEventEmitter, Platform, TurboModuleRegistry  } from 'react-native';
 import * as ScreenGuardConstants from './constant';
-var screenShotEmitter = new NativeEventEmitter();
-var screenRecordingEmitter = new NativeEventEmitter();
 
 const NativeScreenGuard = TurboModuleRegistry.get('ScreenGuard');
+var screenShotEmitter = new NativeEventEmitter(NativeScreenGuard);
+var screenRecordingEmitter = new NativeEventEmitter(NativeScreenGuard);
 
 export default {
     /**
