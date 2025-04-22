@@ -1,5 +1,7 @@
 package com.screenguard;
 
+import android.util.Log;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
@@ -63,16 +65,17 @@ class ScreenGuard extends NativeScreenGuardSpec {
     }
 
     @Override
-    public void registerScreenshotEventListener(boolean getScreenShotPath) {
+    public void registerScreenshotEventListener(boolean getScreenshotPath) {
         try {
-            delegate.registerScreenShotEventListener(getScreenShotPath);
+            delegate.registerScreenShotEventListener(getScreenshotPath);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("ScreenGuard", "registerScreenshotEventListener error: " + e.getMessage());
         }
     }
 
     @Override
     public void registerScreenRecordingEventListener(boolean getRecordingStatus) {
-        Log.d("ScreenGuard", "registerScreenRecordingEventListener not supported yet on Android!");
+        Log.e("ScreenGuard", "registerScreenRecordingEventListener not supported yet on Android!");
+
     }
 }
