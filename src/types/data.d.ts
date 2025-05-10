@@ -192,7 +192,9 @@ export interface ScreenGuardScreenShotPathDataObject {
 }
 export interface ScreenGuardScreenRecordDataObject {
   /**
-   * status of the screen recording
+   * recording status
+   * true: screen recording is started
+   * false: screen recording is stopped
    */
   isRecording?: boolean | false;
 }

@@ -26,10 +26,14 @@ export default {
       ScreenGuardConstants.REGEX.test(backgroundColor.trim().substring(1))
         ? ScreenGuardConstants.BLACK_COLOR
         : data.backgroundColor;
-    await NativeScreenGuard?.activateShield({
-      backgroundColor: currentColor,
-      timeAfterResume,
-    });
+    try {
+      await NativeScreenGuard?.activateShield({
+        backgroundColor: currentColor,
+        timeAfterResume,
+      });
+    } catch (error) {
+      console.error('Error register:', error);
+    }
   },
 
   /**
@@ -80,10 +84,15 @@ export default {
     ) {
       throw new Error('timeAfterResume must be > 0!');
     }
-    await NativeScreenGuard?.activateShieldWithBlurView({
-      radius,
-      timeAfterResume,
-    });
+
+    try {
+      await NativeScreenGuard?.activateShieldWithBlurView({
+        radius,
+        timeAfterResume,
+      });
+    } catch (error) {
+      console.error('Error registerWithBlurView:', error);
+    }
   },
 
   /**
@@ -158,19 +167,23 @@ export default {
       alignment = ScreenGuardConstants.Alignment.center;
     }
 
-    await NativeScreenGuard?.activateShieldWithImage({
-      source,
-      defaultSource: newDefaultSource,
-      width,
-      height,
-      top,
-      left,
-      bottom,
-      right,
-      alignment,
-      backgroundColor,
-      timeAfterResume,
-    });
+    try {
+      await NativeScreenGuard?.activateShieldWithImage({
+        source,
+        defaultSource: newDefaultSource,
+        width,
+        height,
+        top,
+        left,
+        bottom,
+        right,
+        alignment,
+        backgroundColor,
+        timeAfterResume,
+      });
+    } catch (error) {
+      console.error('Error registerWithImage:', error);
+    }
   },
 
   /**
@@ -179,16 +192,22 @@ export default {
    * @version v0.0.2+
    */
   async unregister() {
-    await NativeScreenGuard?.deactivateShield();
-    if (screenShotEmitter != null) {
-      screenShotEmitter.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
-      screenShotEmitter = null;
-    }
-    if (screenRecordingEmitter != null) {
-      screenRecordingEmitter.removeAllListeners(
-        ScreenGuardConstants.SCREEN_RECORDING_EVT
-      );
-      screenRecordingEmitter = null;
+    try {
+      await NativeScreenGuard?.deactivateShield();
+      if (screenShotEmitter != null) {
+        screenShotEmitter.removeAllListeners(
+          ScreenGuardConstants.SCREENSHOT_EVT
+        );
+        screenShotEmitter = null;
+      }
+      if (screenRecordingEmitter != null) {
+        screenRecordingEmitter.removeAllListeners(
+          ScreenGuardConstants.SCREEN_RECORDING_EVT
+        );
+        screenRecordingEmitter = null;
+      }
+    } catch (error) {
+      console.error('Error unregister:', error);
     }
   },
 

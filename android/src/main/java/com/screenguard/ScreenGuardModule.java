@@ -1,7 +1,10 @@
 package com.screenguard;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
@@ -11,9 +14,7 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.screenguard.helper.ScreenGuardHelper;
 import com.screenguard.model.ScreenGuardBlurData;
@@ -30,6 +31,10 @@ public class ScreenGuardModule {
     public static final String SCREENSHOT_EVT = "onScreenShotCaptured";
 
     public static final String SCREEN_RECORDING_EVT = "onScreenRecordingCaptured";
+
+    public static final String SCREENGUARD_COLOR_ACTIVITY_MANIFEST = "com.screenguard.ScreenGuardColorActivity";
+    
+    public static final Exception EXCEPTION_NOT_DECLARED = new Exception("Activity com.screenguard.ScreenGuardColorActivity is not declared in AndroidManifest.xml, refers to https://gbumps.github.io/react-native-screenguard/docs/getting-started/linking for more info and how to resolve");
 
     private ReactApplicationContext currentReactContext;
 
@@ -81,149 +86,147 @@ public class ScreenGuardModule {
         }
     }
 
-    
-    public void activateShieldWithBlurView(ReadableMap screenGuardBlurData) {
+    private boolean isActivityDeclared() {
         try {
-//            if (currentReactContext == null) {
-//                currentReactContext = getReactApplicationContext();
-//            }
-            Activity currentActivity = currentReactContext.getCurrentActivity();
-
-            if (currentActivity == null) {
-                return;
-            }
-            mainActivityRef = new WeakReference<>(currentActivity);
-
-            currentActivity.runOnUiThread(() ->
-                    currentActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-            );
-
-            currentActivity.runOnUiThread(() -> {
-                final View currentView =
-                        currentActivity.getWindow().getDecorView().getRootView();
-                currentView.setDrawingCacheEnabled(true);
-                Bitmap bitmap = ScreenGuardHelper.captureReactView(currentView);
-                String localPath = ScreenGuardHelper.saveBitmapToFile(currentReactContext, bitmap);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    Intent intent = new Intent(
-                            currentReactContext.getCurrentActivity(),
-                            ScreenGuardColorActivity.class
-                    );
-                    intent.putExtra(ScreenGuardBlurData.class.getName(), new ScreenGuardBlurData(
-                            screenGuardBlurData.getInt("radius"),
-                            localPath,
-                            screenGuardBlurData.getInt("timeAfterResume")
-                    ));
-                    currentActivity.startActivity(intent);
-
-                }
-            });
-        } catch (Exception e) {
-            Log.e(ScreenGuardModule.class.getName(), "activateShieldWithBlurView: " + e.getMessage());
+            PackageManager packageManager = currentReactContext.getPackageManager();
+            ComponentName componentName = new ComponentName(String.valueOf(this), SCREENGUARD_COLOR_ACTIVITY_MANIFEST);
+            ActivityInfo activityInfo = packageManager.getActivityInfo(componentName, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
         }
+    }
+    
+    public void activateShieldWithBlurView(ReadableMap screenGuardBlurData) throws Exception {
+        if (!isActivityDeclared()) {
+            throw EXCEPTION_NOT_DECLARED;
+        }
+            
+        Activity currentActivity = currentReactContext.getCurrentActivity();
+
+        if (currentActivity == null) {
+            return;
+        }
+        mainActivityRef = new WeakReference<>(currentActivity);
+
+        currentActivity.runOnUiThread(() ->
+                currentActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        );
+
+        currentActivity.runOnUiThread(() -> {
+            final View currentView =
+                    currentActivity.getWindow().getDecorView().getRootView();
+            currentView.setDrawingCacheEnabled(true);
+            Bitmap bitmap = ScreenGuardHelper.captureReactView(currentView);
+            String localPath = ScreenGuardHelper.saveBitmapToFile(currentReactContext, bitmap);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Intent intent = new Intent(
+                        currentReactContext.getCurrentActivity(),
+                        ScreenGuardColorActivity.class
+                );
+                intent.putExtra(ScreenGuardBlurData.class.getName(), new ScreenGuardBlurData(
+                        screenGuardBlurData.getInt("radius"),
+                        localPath,
+                        screenGuardBlurData.getInt("timeAfterResume")
+                ));
+                currentActivity.startActivity(intent);
+
+            }
+        });
     }
 
 
     
-    public void activateShieldWithImage(ReadableMap data) {
-        try {
-//            if (currentReactContext == null) {
-//                currentReactContext = getReactApplicationContext();
-//            }
-            Activity currentActivity = currentReactContext.getCurrentActivity();
-
-            if (currentActivity == null) {
-                return;
-            }
-            mainActivityRef = new WeakReference<>(currentActivity);
-
-            currentActivity.runOnUiThread(() ->
-                    currentActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-            );
-
-            currentActivity.runOnUiThread(() -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    Intent intent = new Intent(
-                            currentReactContext.getCurrentActivity(),
-                            ScreenGuardColorActivity.class
-                    );
-
-                    ReadableMap source = data.getMap("source");
-                    String uriImage = "";
-                    if (source != null) {
-                        uriImage = source.getString("uri");
-                    }
-                    String backgroundColor = data.getString("backgroundColor");
-                    double width = data.getDouble("width");
-                    double height = data.getDouble("height");
-                    int alignment = data.getInt("alignment");
-                    int timeAfterResume = data.getInt("timeAfterResume");
-                    intent.putExtra(ScreenGuardImageData.class.getName(), new ScreenGuardImageData(
-                            backgroundColor,
-                            uriImage,
-                            width,
-                            height,
-                            alignment,
-                            timeAfterResume
-                    ));
-
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    currentActivity.startActivity(intent);
-                }
-            });
-        } catch (Exception e) {
-            Log.e(ScreenGuardModule.class.getName(), "activateShieldWithImage: " + e.getMessage());
+    public void activateShieldWithImage(ReadableMap data) throws Exception {
+        if (!isActivityDeclared()) {
+            throw EXCEPTION_NOT_DECLARED;
         }
-    }
 
-    
-    public void activateShield(ReadableMap data) {
-        try {
-//            if (currentReactContext == null) {
-//                currentReactContext = getReactApplicationContext();
-//            }
-            Activity currentActivity = currentReactContext.getCurrentActivity();
+        Activity currentActivity = currentReactContext.getCurrentActivity();
 
-            if (currentActivity == null) {
-                return;
-            }
-            mainActivityRef = new WeakReference<>(currentActivity);
+        if (currentActivity == null) {
+            return;
+        }
+        mainActivityRef = new WeakReference<>(currentActivity);
 
-            currentActivity.runOnUiThread(() ->
-                    currentActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-            );
+        currentActivity.runOnUiThread(() ->
+                currentActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        );
 
-            currentActivity.runOnUiThread(() -> {
-                String hexColor = data.getString("backgroundColor");
+        currentActivity.runOnUiThread(() -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Intent intent = new Intent(
+                        currentReactContext.getCurrentActivity(),
+                        ScreenGuardColorActivity.class
+                );
+
+                ReadableMap source = data.getMap("source");
+                String uriImage = "";
+                if (source != null) {
+                    uriImage = source.getString("uri");
+                }
+                String backgroundColor = data.getString("backgroundColor");
+                double width = data.getDouble("width");
+                double height = data.getDouble("height");
+                int alignment = data.getInt("alignment");
                 int timeAfterResume = data.getInt("timeAfterResume");
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    Intent intent = new Intent(
-                            currentReactContext.getCurrentActivity(),
-                            ScreenGuardColorActivity.class
-                    );
-                    intent.putExtra(ScreenGuardColorData.class.getName(),
-                            new ScreenGuardColorData(
-                            hexColor, timeAfterResume
-                    ));
+                intent.putExtra(ScreenGuardImageData.class.getName(), new ScreenGuardImageData(
+                        backgroundColor,
+                        uriImage,
+                        width,
+                        height,
+                        alignment,
+                        timeAfterResume
+                ));
 
-                    intent.setPackage(currentReactContext.getPackageName());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                currentActivity.startActivity(intent);
+            }
+        });
+    }
 
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-
-                    currentActivity.startActivity(intent);
-                }
-            });
-        } catch (Exception e) {
-            Log.e(ScreenGuardModule.class.getName(), "activateShield exception: " + e.getMessage());
+    
+    public void activateShield(ReadableMap data) throws Exception {
+        if (!isActivityDeclared()) {
+            throw EXCEPTION_NOT_DECLARED;
         }
+
+        Activity currentActivity = currentReactContext.getCurrentActivity();
+
+        if (currentActivity == null) {
+            return;
+        }
+        mainActivityRef = new WeakReference<>(currentActivity);
+
+        currentActivity.runOnUiThread(() ->
+                currentActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        );
+
+        currentActivity.runOnUiThread(() -> {
+            String hexColor = data.getString("backgroundColor");
+            int timeAfterResume = data.getInt("timeAfterResume");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Intent intent = new Intent(
+                        currentReactContext.getCurrentActivity(),
+                        ScreenGuardColorActivity.class
+                );
+                intent.putExtra(ScreenGuardColorData.class.getName(),
+                        new ScreenGuardColorData(
+                        hexColor, timeAfterResume
+                ));
+
+                intent.setPackage(currentReactContext.getPackageName());
+
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+                currentActivity.startActivity(intent);
+            }
+        });
     }
 
     
     public void activateShieldWithoutEffect() {
         try {
-//            if (currentReactContext == null) {
-//                currentReactContext = getReactApplicationContext();
-//            }
             Activity currentActivity = currentReactContext.getCurrentActivity();
 
             mainActivityRef = new WeakReference<>(currentActivity);
@@ -239,34 +242,30 @@ public class ScreenGuardModule {
     }
 
     
-    public void deactivateShield() {
-        try {
-            Activity mainActivity = mainActivityRef != null ? mainActivityRef.get() : null;
-            if (mainActivity != null) {
-                mainActivity.runOnUiThread(() ->
-                        mainActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-                );
-            }
+    public void deactivateShield() throws Exception {
+        Activity mainActivity = mainActivityRef != null ? mainActivityRef.get() : null;
+        if (mainActivity != null) {
+            mainActivity.runOnUiThread(() ->
+                    mainActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            );
+        }
 
-            Activity currentActivity = currentReactContext.getCurrentActivity();
+        Activity currentActivity = currentReactContext.getCurrentActivity();
 
-            if (currentActivity == null) {
-                throw new NullPointerException("Current Activity is null!");
-            }
+        if (currentActivity == null) {
+            throw new NullPointerException("Current Activity is null!");
+        }
 
-            if (Build.VERSION.SDK_INT >= 33) {
-                if (currentActivity instanceof ScreenGuardColorActivity) {
-                    currentActivity.finish();
-                }
-            } else {
-                currentReactContext.sendBroadcast(
-                        new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE));
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (currentActivity instanceof ScreenGuardColorActivity) {
+                currentActivity.finish();
             }
-            if (mScreenGuard != null) {
-                mScreenGuard.unregister();
-            }
-        } catch (Exception e) {
-            Log.e(ScreenGuardModule.class.getName(), "deactivateShield exception: " + e.getMessage());
+        } else {
+            currentReactContext.sendBroadcast(
+                    new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE));
+        }
+        if (mScreenGuard != null) {
+            mScreenGuard.unregister();
         }
     }
 
