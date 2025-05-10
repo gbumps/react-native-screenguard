@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.source_files = "ios/**/*.{h,m,mm}"
 
   s.dependency "React-Core"
-  s.dependency 'SDWebImage', '~> 5.19.4'
+  s.dependency 'SDWebImage', '~> 5.21.0'
 
   # Don't install the dependencies when we run `pod install` in the old architecture.
   if respond_to?(:install_modules_dependencies, true)
