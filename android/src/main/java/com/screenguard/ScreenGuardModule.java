@@ -34,7 +34,7 @@ public class ScreenGuardModule {
 
     public static final String SCREENGUARD_COLOR_ACTIVITY_MANIFEST = "com.screenguard.ScreenGuardColorActivity";
     
-    public static final Exception EXCEPTION_NOT_DECLARED = new Exception("Activity com.screenguard.ScreenGuardColorActivity is not declared in AndroidManifest.xml, refers to https://gbumps.github.io/react-native-screenguard/docs/getting-started/linking for more info and how to resolve");
+    public static final Exception EXCEPTION_NOT_DECLARED = new Exception("Activity com.screenguard.ScreenGuardColorActivity is not declared in AndroidManifest.xml, refers to https://gbumps.github.io/react-native-screenguard/docs/getting-started/linking for more info and how to resolve, or you can use registerWithoutEffect method to activate the screen guard without effect!");
 
     private ReactApplicationContext currentReactContext;
 
