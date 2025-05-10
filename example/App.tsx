@@ -10,7 +10,6 @@ import * as React from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   Modal,
-  Alert,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -36,7 +35,7 @@ type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
-function Section({children, title}: SectionProps): JSX.Element {
+function Section({children, title}: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -62,7 +61,7 @@ function Section({children, title}: SectionProps): JSX.Element {
   );
 }
 
-function App(): JSX.Element {
+function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const [currentState, setCurrentState] = React.useState('');
 
@@ -120,13 +119,17 @@ function App(): JSX.Element {
               ScreenGuardModule.register({
                 backgroundColor: color,
                 timeAfterResume: 2000,
+              }).then(res => {
+
+              // ScreenGuardModule.registerScreenshotEventListener(false, _ =>
+              //   Alert.alert(`register screenshot,`),
+              // );
+                console.log('register success:', res);
+                // Alert.alert('register success');
               });
-              ScreenGuardModule.registerScreenshotEventListener(false, event =>
-                Alert.alert(`register screenshot,`),
-              );
-              ScreenGuardModule.registerScreenRecordingEventListener(_ =>
-                Alert.alert('register screen record'),
-              );
+              // ScreenGuardModule.registerScreenRecordingEventListener(_ =>
+              //   Alert.alert('register screen record'),
+              // );
               setCurrentState('1');
             }}>
             <Text
@@ -156,13 +159,11 @@ function App(): JSX.Element {
           <View style={{height: 72}} />
           <Pressable
             onPress={() => {
-              ScreenGuardModule.registerScreenshotEventListener(true, data => {
-                if (data != null) {
-                  console.log('register screenshot listener', data.path);
-                  console.log('register screenshot file name', data.name);
-                  console.log('register screenshot file type', data.type);
-                }
-              });
+              ScreenGuardModule.registerScreenshotEventListener(true,
+                res => {
+                  console.log('screenshot path ', res);
+                },
+              );
               setCurrentState('2');
             }}>
             <Text
@@ -175,8 +176,8 @@ function App(): JSX.Element {
           <View style={{height: 72}} />
           <Pressable
             onPress={() => {
-              ScreenGuardModule.registerScreenRecordingEventListener(_ => {
-                Alert.alert('register screen recording listener');
+              ScreenGuardModule.registerScreenRecordingEventListener(false, res => {
+                console.log('screen record path ', res);
               });
               setCurrentState('3');
             }}>
@@ -189,8 +190,8 @@ function App(): JSX.Element {
           </Pressable>
           <View style={{height: 72}} />
           <Pressable
-            onPress={() => {
-              ScreenGuardModule.unregister();
+            onPress={ async () => {
+              await ScreenGuardModule.unregister();
               setCurrentState('4');
             }}>
             <Text
@@ -213,13 +214,13 @@ function App(): JSX.Element {
           />
           <View style={{height: 72}} />
           <Pressable
-            onPress={() => {
+            onPress={async () => {
               const data = {
                 radius: 34,
                 timeAfterResume: 1000,
               };
               console.log('blur view');
-              ScreenGuardModule.registerWithBlurView(data);
+              await ScreenGuardModule.registerWithBlurView(data);
               setCurrentState(() => '5');
             }}>
             <Text
@@ -231,8 +232,8 @@ function App(): JSX.Element {
           </Pressable>
           <View style={{height: 72}} />
           <Pressable
-            onPress={() => {
-              ScreenGuardModule.registerWithImage({
+            onPress={async () => {
+              await ScreenGuardModule.registerWithImage({
                 height: 150,
                 width: 200,
                 top: 0,
@@ -242,7 +243,6 @@ function App(): JSX.Element {
                   uri: 'https://www.icegif.com/wp-content/uploads/2022/09/icegif-386.gif',
                 },
                 alignment: ScreenGuardConstants.Alignment.topCenter,
-                defaultSource: require('./images/ahihi.jpg'),
                 timeAfterResume: 2000,
                 backgroundColor: color,
               });
@@ -258,8 +258,8 @@ function App(): JSX.Element {
           </Pressable>
           <View style={{height: 72}} />
           <Pressable
-            onPress={() => {
-              ScreenGuardModule.registerWithoutEffect();
+            onPress={async () => {
+              await ScreenGuardModule.registerWithoutEffect();
               console.log('Android only');
               setCurrentState('7');
             }}>
