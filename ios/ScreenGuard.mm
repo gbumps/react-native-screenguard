@@ -4,11 +4,11 @@
 #import <React/RCTComponent.h>
 #import <React/RCTImageLoader.h>
 
-NSString * const SCREENSHOT_EVT = @"onScreenShotCaptured";
-NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
-
-static BOOL getScreenShotPath;
-static BOOL getScreenRecordingStatus;
+//NSString * const SCREENSHOT_EVT = @"onScreenShotCaptured";
+//NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
+//
+//static BOOL getScreenShotPath;
+//static BOOL getScreenRecordingStatus;
 
 @implementation ScreenGuard
 RCT_EXPORT_MODULE(ScreenGuard)
@@ -20,7 +20,7 @@ UIImageView *imageView;
 UIScrollView *scrollView;
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[SCREENSHOT_EVT, SCREEN_RECORDING_EVT];
+    return @[];
 }
 
 - (void)startObserving {
@@ -311,54 +311,53 @@ UIScrollView *scrollView;
     scrollView.contentSize = CGSizeMake(contentWidth, contentHeight);
 }
 
-- (void)handleScreenshotNotification:(NSNotification *)notification {
-    if (hasListeners && getScreenShotPath) {
-        UIViewController *presentedViewController = RCTPresentedViewController();
-        UIImage *image = [self convertViewToImage:presentedViewController.view.superview];
-        NSData *data = UIImagePNGRepresentation(image);
-        if (!data) {
-            [self emit:SCREENSHOT_EVT body:nil];
-            return;
-        }
-        NSString *tempDir = NSTemporaryDirectory();
-        NSString *fileName = [[NSUUID UUID] UUIDString];
-        NSString *filePath = [tempDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", fileName]];
-        NSError *error = nil;
-        NSDictionary *result;
-        BOOL success = [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
-        if (!success) {
-            result = @{@"path": @"Error retrieving file", @"name": @"", @"type": @""};
-        } else {
-            result = @{@"path": filePath, @"name": fileName, @"type": @"PNG"};
-        }
-        [self emit:SCREENSHOT_EVT body:result];
-    } else if (hasListeners) {
-        [self emit:SCREENSHOT_EVT body:nil];
-    }
-}
-
-- (void)handleScreenRecordNotification:(NSNotification *)notification {
-    dispatch_async(dispatch_get_main_queue(), ^{
-            BOOL isCaptured = [[UIScreen mainScreen] isCaptured];
-            NSDictionary *result;
-            if (isCaptured) {
-                if (hasListeners && getScreenRecordingStatus) {
-                    result = @{@"isRecording": @"true"};
-                    [self emit:SCREEN_RECORDING_EVT body: result];
-                } else {
-                    [self emit:SCREEN_RECORDING_EVT body: nil];
-                }
-            } else {
-                if (hasListeners && getScreenRecordingStatus) {
-                    result = @{@"isRecording": @"false"};
-                    [self emit:SCREEN_RECORDING_EVT body: result];
-                } else {
-                    [self emit:SCREEN_RECORDING_EVT body: nil];
-                }
-            }
-        });
-    
-}
+//- (void)handleScreenshotNotification:(NSNotification *)notification {
+//    if (hasListeners && getScreenShotPath) {
+//        UIViewController *presentedViewController = RCTPresentedViewController();
+//        UIImage *image = [self convertViewToImage:presentedViewController.view.superview];
+//        NSData *data = UIImagePNGRepresentation(image);
+//        if (!data) {
+//            [self emit:SCREENSHOT_EVT body:nil];
+//            return;
+//        }
+//        NSString *tempDir = NSTemporaryDirectory();
+//        NSString *fileName = [[NSUUID UUID] UUIDString];
+//        NSString *filePath = [tempDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", fileName]];
+//        NSError *error = nil;
+//        NSDictionary *result;
+//        BOOL success = [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
+//        if (!success) {
+//            result = @{@"path": @"Error retrieving file", @"name": @"", @"type": @""};
+//        } else {
+//            result = @{@"path": filePath, @"name": fileName, @"type": @"PNG"};
+//        }
+//        [self emit:SCREENSHOT_EVT body:result];
+//    } else if (hasListeners) {
+//        [self emit:SCREENSHOT_EVT body:nil];
+//    }
+//}
+//
+//- (void)handleScreenRecordNotification:(NSNotification *)notification {
+//            BOOL isCaptured = [[UIScreen mainScreen] isCaptured];
+//            NSDictionary *result;
+//            if (isCaptured) {
+//                if (hasListeners && getScreenRecordingStatus) {
+//                    result = @{@"isRecording": @"true"};
+//                    [self emit:SCREEN_RECORDING_EVT body: result];
+//                } else {
+//                    [self emit:SCREEN_RECORDING_EVT body: nil];
+//                }
+//            } else {
+//                if (hasListeners && getScreenRecordingStatus) {
+//                    result = @{@"isRecording": @"false"};
+//                    [self emit:SCREEN_RECORDING_EVT body: result];
+//                } else {
+//                    [self emit:SCREEN_RECORDING_EVT body: nil];
+//                }
+//            }
+//        
+//    
+//}
 
 //old architecture entry point
 #if !RCT_NEW_ARCH_ENABLED
@@ -442,41 +441,7 @@ RCT_EXPORT_METHOD(deactivateShield: (RCTPromiseResolveBlock)resolve reject:(RCTP
             NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
             reject(@"deactivateShield", e.reason, error);
         }
-    });
-}
-
-
-
-RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL)getScreenshotPath) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] removeObserver: self
-                                                        name: UIApplicationUserDidTakeScreenshotNotification
-                                                      object: nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(handleScreenshotNotification:)
-                                                     name:UIApplicationUserDidTakeScreenshotNotification
-                                                   object:nil];
-        getScreenShotPath = getScreenshotPath;
-    });
-    
-}
-
-RCT_EXPORT_METHOD(registerScreenRecordingEventListener: (BOOL)getRecordingStatus) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        @try {
-            [[NSNotificationCenter defaultCenter] removeObserver: self
-                                                            name: UIScreenCapturedDidChangeNotification
-                                                          object: nil];
-            
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(handleScreenRecordNotification:)
-                                                         name:UIScreenCapturedDidChangeNotification
-                                                       object:nil];
-            getScreenRecordingStatus = getRecordingStatus;
-        } @catch (NSException *e) {
-            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
-        }
+        [self stopObserving];
     });
 }
 
@@ -497,38 +462,34 @@ RCT_EXPORT_METHOD(activateShieldWithoutEffect: (RCTPromiseResolveBlock)resolve r
     reject(@"activateShieldWithoutEffect", s, error);
 }
 
-- (void)registerScreenRecordingEventListener: (BOOL)getRecordingStatus {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        @try {
-            [[NSNotificationCenter defaultCenter] removeObserver: self
-                                                            name: UIScreenCapturedDidChangeNotification
-                                                          object: nil];
-            
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(handleScreenRecordNotification:)
-                                                         name:UIScreenCapturedDidChangeNotification
-                                                       object:nil];
-        } @catch (NSException *e) {
-            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
-        }
-        getScreenRecordingStatus = getRecordingStatus;
-    });
-}
-
-- (void)registerScreenshotEventListener: (BOOL)getScreenshotPath {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] removeObserver: self
-                                                        name: UIApplicationUserDidTakeScreenshotNotification
-                                                      object: nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(handleScreenshotNotification:)
-                                                     name:UIApplicationUserDidTakeScreenshotNotification
-                                                   object:nil];
-        getScreenShotPath = getScreenshotPath;
-    });
-}
-
+//- (void)registerScreenRecordingEventListener: (BOOL)getRecordingStatus {
+//        @try {
+//            [[NSNotificationCenter defaultCenter] removeObserver: self
+//                                                            name: UIScreenCapturedDidChangeNotification
+//                                                          object: nil];
+//            
+//            [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                     selector:@selector(handleScreenRecordNotification:)
+//                                                         name:UIScreenCapturedDidChangeNotification
+//                                                       object:nil];
+//        } @catch (NSException *e) {
+//            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+//        }
+//        getScreenRecordingStatus = getRecordingStatus;
+//}
+//
+//- (void)registerScreenshotEventListener: (BOOL)getScreenshotPath {
+//        [[NSNotificationCenter defaultCenter] removeObserver: self
+//                                                        name: UIApplicationUserDidTakeScreenshotNotification
+//                                                      object: nil];
+//        
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                 selector:@selector(handleScreenshotNotification:)
+//                                                     name:UIApplicationUserDidTakeScreenshotNotification
+//                                                   object:nil];
+//        getScreenShotPath = getScreenshotPath;
+//}
+//
 - (void)activateShield:(JS::NativeScreenGuard::SpecActivateShieldData &)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
         NSString *screenshotBackgroundColor = data.backgroundColor();
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -613,17 +574,15 @@ RCT_EXPORT_METHOD(activateShieldWithoutEffect: (RCTPromiseResolveBlock)resolve r
 }
 
 - (void)deactivateShield:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    dispatch_async(dispatch_get_main_queue(), ^{
         @try {
             [self removeScreenShot];
-            [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
-            [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
+//            [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
+//            [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
             resolve(nil);
         } @catch (NSException *e) {
             NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
             reject(@"deactivateShield", e.reason, error);
         }
-    });
 }
 #endif
 

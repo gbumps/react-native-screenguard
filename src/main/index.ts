@@ -1,12 +1,18 @@
 import { NativeEventEmitter, Platform } from 'react-native';
 import * as ScreenGuardData from './data';
 import NativeScreenGuard from './NativeScreenGuard';
+import NativeSGScreenshot from './NativeSGScreenshot';
+import NativeSGScreenRecord from './NativeSGScreenRecord';
+
 import * as ScreenGuardConstants from './constant';
 
-var screenShotEmitter: NativeEventEmitter | null = new NativeEventEmitter();
+var screenShotEmitter: NativeEventEmitter | null = new NativeEventEmitter(
+  NativeSGScreenshot
+);
 
-var screenRecordingEmitter: NativeEventEmitter | null =
-  new NativeEventEmitter();
+var screenRecordingEmitter: NativeEventEmitter | null = new NativeEventEmitter(
+  NativeSGScreenRecord
+);
 
 export default {
   /**
@@ -198,12 +204,14 @@ export default {
         screenShotEmitter.removeAllListeners(
           ScreenGuardConstants.SCREENSHOT_EVT
         );
+        NativeSGScreenshot?.removeScreenshotEventListener();
         screenShotEmitter = null;
       }
       if (screenRecordingEmitter != null) {
         screenRecordingEmitter.removeAllListeners(
           ScreenGuardConstants.SCREEN_RECORDING_EVT
         );
+        NativeSGScreenRecord?.removeScreenRecordingEventListener();
         screenRecordingEmitter = null;
       }
     } catch (error) {
@@ -224,22 +232,20 @@ export default {
       data?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
     ) => void
   ) {
-    NativeScreenGuard?.registerScreenshotEventListener(getScreenShotPath);
-    screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
-
+    NativeSGScreenshot?.registerScreenshotEventListener(getScreenShotPath);
     const _onScreenCapture = (
       res?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
     ) => {
       callback(res);
     };
-    screenShotEmitter?.addListener(
+    const subscription = screenShotEmitter?.addListener(
       ScreenGuardConstants.SCREENSHOT_EVT,
       _onScreenCapture
     );
-    return () =>
-      screenShotEmitter?.removeAllListeners(
-        ScreenGuardConstants.SCREENSHOT_EVT
-      );
+    return () => subscription?.remove();
+    // screenShotEmitter?.removeAllListeners(
+    // ScreenGuardConstants.SCREENSHOT_EVT
+    // );
   },
 
   /**
@@ -256,22 +262,22 @@ export default {
     NativeScreenGuard?.registerScreenRecordingEventListener(
       getScreenRecordStatus ?? false
     );
-    screenRecordingEmitter?.removeAllListeners(
-      ScreenGuardConstants.SCREEN_RECORDING_EVT
-    );
+    // screenRecordingEmitter?.removeAllListeners(
+    // ScreenGuardConstants.SCREEN_RECORDING_EVT
+    // );
     const _onScreenRecording = (
       res?: ScreenGuardData.ScreenGuardScreenRecordDataObject | null
     ) => {
       callback(res);
     };
-    screenRecordingEmitter?.addListener(
+    const subscription = screenRecordingEmitter?.addListener(
       ScreenGuardConstants.SCREEN_RECORDING_EVT,
       _onScreenRecording
     );
-    return () =>
-      screenRecordingEmitter?.removeAllListeners(
-        ScreenGuardConstants.SCREEN_RECORDING_EVT
-      );
+    return () => subscription?.remove();
+    // screenRecordingEmitter?.removeAllListeners(
+    // ScreenGuardConstants.SCREEN_RECORDING_EVT
+    // );
   },
 };
 
