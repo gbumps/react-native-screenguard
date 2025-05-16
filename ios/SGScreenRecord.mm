@@ -6,10 +6,6 @@
 //
 
 #import "SGScreenRecord.h"
-#import "SDWebImage/SDWebImage.h"
-#import <React/RCTRootView.h>
-#import <React/RCTComponent.h>
-#import <React/RCTImageLoader.h>
 
 NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 
