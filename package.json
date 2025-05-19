@@ -113,7 +113,7 @@
     "type": "all",
     "jsSrcsDir": "./src/main",
     "android": {
-      "javaPackageName": "com.screenguard"
+      "javaPackageName": "com.screenguardspec"
     }
   },
   "homepage": "https://gbumps.github.io/react-native-screenguard",
