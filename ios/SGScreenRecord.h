@@ -13,7 +13,7 @@
 #endif
 
 #if RCT_NEW_ARCH_ENABLED
-#import "SGScreenRecordSpec.h"
+#import "ScreenGuardSpec.h"
 #endif
 
 

@@ -10,7 +10,7 @@ static BOOL getScreenShotPath;
 @implementation SGScreenshot
 RCT_EXPORT_MODULE(SGScreenshot)
 
-bool hasListeners;
+static bool hasListeners = NO;
 
 - (NSArray<NSString *> *)supportedEvents {
     return @[SCREENSHOT_EVT];
@@ -89,8 +89,12 @@ RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL)getScreenshotPath) {
                                                    object:nil];
         getScreenShotPath = getScreenshotPath;
 }
-#endif
 
+- (void)removeScreenshotEventListener { 
+    
+}
+
+#endif
 
 
 // // Don't compile this code when we build for the old architecture.

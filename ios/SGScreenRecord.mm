@@ -12,7 +12,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 @implementation SGScreenRecord
 RCT_EXPORT_MODULE(SGScreenRecord)
 
-bool hasListeners;
+static bool hasListeners = NO;
 static BOOL getScreenRecordingStatus;
 
 - (NSArray<NSString *> *)supportedEvents {
@@ -64,6 +64,15 @@ RCT_EXPORT_METHOD(registerScreenRecordingEventListener: (BOOL)getRecordingStatus
             NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
         }
 }
+
+RCT_EXPORT_METHOD(removeScreenRecordingEventListener) {
+    [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                    name: UIScreenCapturedDidChangeNotification
+                                                  object: nil];
+    [self stopObserving];
+    
+}
+
 #endif
 
 //New Architecture entry point
@@ -83,6 +92,14 @@ RCT_EXPORT_METHOD(registerScreenRecordingEventListener: (BOOL)getRecordingStatus
         }
         getScreenRecordingStatus = getRecordingStatus;
 }
+
+- (void)removeScreenRecordingEventListener { 
+    [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                    name: UIScreenCapturedDidChangeNotification
+                                                  object: nil];
+    [self stopObserving];
+}
+
 #endif
 
 
