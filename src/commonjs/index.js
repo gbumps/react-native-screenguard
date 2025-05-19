@@ -6,6 +6,8 @@ const NativeSGScreenshot = TurboModuleRegistry.get('SGScreenshot');
 const NativeSGScreenRecord = TurboModuleRegistry.get('SGScreenRecord');
 
 var screenShotEmitter = new NativeEventEmitter(NativeSGScreenshot);
+var screenshotSubscription = null;
+var screenRecordingSubscription = null;
 var screenRecordingEmitter = new NativeEventEmitter(NativeSGScreenRecord);
 
 export default {
@@ -176,11 +178,8 @@ export default {
         const _onScreenCapture = (res) => {
             callback(res);
         };
-        const subscription = screenShotEmitter?.addListener(ScreenGuardConstants.SCREENSHOT_EVT, _onScreenCapture);
-        return () => subscription?.remove();
-        // screenShotEmitter?.removeAllListeners(
-        // ScreenGuardConstants.SCREENSHOT_EVT
-        // );
+        screenshotSubscription = screenShotEmitter?.addListener(ScreenGuardConstants.SCREENSHOT_EVT, _onScreenCapture);
+        return () => this.removeScreenshotEventListener();
     },
     /**
      * Screen recording event listener (iOS only)
@@ -188,18 +187,44 @@ export default {
      * @version v0.3.6+
      */
     registerScreenRecordingEventListener(getScreenRecordStatus, callback) {
-        NativeScreenGuard?.registerScreenRecordingEventListener(getScreenRecordStatus ?? false);
-        // screenRecordingEmitter?.removeAllListeners(
-        // ScreenGuardConstants.SCREEN_RECORDING_EVT
-        // );
+        if (Platform.OS === 'android') {
+            console.warn('Screen recording event listener is only available on iOS!');
+            return;
+        }
+        NativeSGScreenRecord?.registerScreenRecordingEventListener(getScreenRecordStatus ?? false);
         const _onScreenRecording = (res) => {
             callback(res);
         };
-        const subscription = screenRecordingEmitter?.addListener(ScreenGuardConstants.SCREEN_RECORDING_EVT, _onScreenRecording);
-        return () => subscription?.remove();
-        // screenRecordingEmitter?.removeAllListeners(
-        // ScreenGuardConstants.SCREEN_RECORDING_EVT
-        // );
+        screenRecordingSubscription = screenRecordingEmitter?.addListener(ScreenGuardConstants.SCREEN_RECORDING_EVT, _onScreenRecording);
+        return () => this.removeRecordingEventListener();
+    },
+    /**
+     * Remove screen recording event listener
+     * @version v1.0.8+
+     */
+    removeRecordingEventListener() {
+        if (Platform.OS === 'android') {
+            console.warn('Screen recording event listener is only available on iOS!');
+            return;
+        }
+        NativeSGScreenRecord?.removeScreenRecordingEventListener();
+        screenRecordingEmitter?.removeAllListeners(ScreenGuardConstants.SCREEN_RECORDING_EVT);
+        if (screenRecordingSubscription != null) {
+            screenRecordingSubscription.remove();
+            screenRecordingSubscription = null;
+        }
+    },
+    /**
+     * Remove screenshot event listener
+     * @version v1.0.8+
+     */
+    removeScreenshotEventListener() {
+        NativeSGScreenshot?.removeScreenshotEventListener();
+        screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
+        if (screenshotSubscription != null) {
+            screenshotSubscription.remove();
+            screenshotSubscription = null;
+        }
     },
 };
 export { ScreenGuardConstants };

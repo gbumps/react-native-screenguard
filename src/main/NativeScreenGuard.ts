@@ -181,8 +181,6 @@ export interface Spec extends TurboModule {
     timeAfterResume?: number;
   }) => Promise<void>;
   deactivateShield: () => Promise<void>;
-  registerScreenshotEventListener: (getScreenshotPath: boolean) => void;
-  registerScreenRecordingEventListener: (getRecordingStatus: boolean) => void;
 }
 
 export default TurboModuleRegistry.get<Spec>('ScreenGuard');
