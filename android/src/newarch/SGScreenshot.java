@@ -1,10 +1,11 @@
-package com.screenguardspec;
+package com.screenguard;
 
 import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
+import com.screenguard.ScreenGuardModule;
 
 public class SGScreenshot extends NativeSGScreenshotSpec {
     private final ScreenGuardModule delegate;
@@ -30,6 +31,16 @@ public class SGScreenshot extends NativeSGScreenshotSpec {
 		} catch (Exception e) {
 			Log.e("ScreenGuard", "removeScreenshotEventListener error: " + e.getMessage());
 		}
+
+    }
+
+    @Override
+    public void addListener(String eventName) {
+
+    }
+
+    @Override
+    public void removeListeners(double count) {
 
     }
 }

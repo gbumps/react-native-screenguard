@@ -136,6 +136,12 @@ public class ScreenGuardModule {
     }
 
 
+    public void removeScreenShotEventListener() {
+        if (mScreenGuard != null) {
+            mScreenGuard.unregister();
+            mScreenGuard = null;
+        }
+    }
     
     public void activateShieldWithImage(ReadableMap data) throws Exception {
         if (!isActivityDeclared()) {

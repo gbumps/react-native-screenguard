@@ -1,4 +1,4 @@
-package com.screenguardspec;
+package com.screenguard;
 
 import android.util.Log;
 

@@ -1,4 +1,4 @@
-package com.screenguardspec;
+package com.screenguard;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -20,28 +20,31 @@ public class SGScreenRecord extends ReactContextBaseJavaModule {
         return SGScreenRecord.NAME;
     }
     
-    public SGScreenshot(ReactApplicationContext context) {
+    public SGScreenRecord(ReactApplicationContext context) {
         super(context);
         delegate = new ScreenGuardModule(context);
     }
 
-    @Override
-    public void registerScreenshotEventListener(boolean getScreenshotPath) {
-        try {
-            delegate.registerScreenShotEventListener(getScreenshotPath);
-        } catch (Exception e) {
-            Log.e("ScreenGuard", "registerScreenshotEventListener error: " + e.getMessage());
-        }
+    @ReactMethod
+    public void registerScreenRecordEventListener(boolean getScreenshotPath) {
+        //Will be implemented in future release!
     }
 
-    @Override
-    public void removeScreenshotEventListener() {
-		try {
-			delegate.removeScreenShotEventListener();
-		} catch (Exception e) {
-			Log.e("ScreenGuard", "removeScreenshotEventListener error: " + e.getMessage());
-		}
+    @ReactMethod
+    public void removeScreenRecordEventListener() {
+        //Will be implemented in future release!
+    }
+
+
+    @ReactMethod
+    public void addListener() {
 
     }
-	
+
+
+    @ReactMethod
+    public void removeListeners() {
+
+    }
+
 }

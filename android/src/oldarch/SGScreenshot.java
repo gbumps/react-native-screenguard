@@ -1,13 +1,11 @@
-package com.screenguardspec;
+package com.screenguard;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
 
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
 
 
 public class SGScreenshot extends ReactContextBaseJavaModule {
@@ -25,8 +23,9 @@ public class SGScreenshot extends ReactContextBaseJavaModule {
     public String getName() {
         return SGScreenshot.NAME;
     }
-    
-    @Override
+
+
+    @ReactMethod
     public void registerScreenshotEventListener(boolean getScreenshotPath) {
         try {
             delegate.registerScreenShotEventListener(getScreenshotPath);
@@ -35,7 +34,7 @@ public class SGScreenshot extends ReactContextBaseJavaModule {
         }
     }
 
-    @Override
+    @ReactMethod
     public void removeScreenshotEventListener() {
 		try {
 			delegate.removeScreenShotEventListener();
@@ -44,4 +43,16 @@ public class SGScreenshot extends ReactContextBaseJavaModule {
 		}
 
     }
+
+    @ReactMethod
+    public void addListener() {
+
+    }
+
+
+    @ReactMethod
+    public void removeListeners() {
+
+    }
+
 }
