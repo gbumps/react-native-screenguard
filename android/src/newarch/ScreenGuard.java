@@ -1,4 +1,4 @@
-package com.screenguard;
+package com.screenguardspec;
 
 import android.util.Log;
 
@@ -62,20 +62,5 @@ class ScreenGuard extends NativeScreenGuardSpec {
         } catch (Exception e) {
             promise.reject("deactivateShield", e.getMessage());
         }
-    }
-
-    @Override
-    public void registerScreenshotEventListener(boolean getScreenshotPath) {
-        try {
-            delegate.registerScreenShotEventListener(getScreenshotPath);
-        } catch (Exception e) {
-            Log.e("ScreenGuard", "registerScreenshotEventListener error: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void registerScreenRecordingEventListener(boolean getRecordingStatus) {
-        Log.e("ScreenGuard", "registerScreenRecordingEventListener not supported yet on Android!");
-
     }
 }
