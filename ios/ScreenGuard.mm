@@ -179,23 +179,25 @@ UIScrollView *scrollView;
 
 
 - (void)removeScreenShot {
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    if (textField != nil) {
-        if (imageView != nil) {
-            [imageView setImage: nil];
-            [imageView removeFromSuperview];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+        if (textField != nil) {
+            if (imageView != nil) {
+                [imageView setImage: nil];
+                [imageView removeFromSuperview];
+            }
+            if (scrollView != nil) {
+                [scrollView removeFromSuperview];
+            }
+            [textField setSecureTextEntry: FALSE];
+            [textField setBackgroundColor: [UIColor clearColor]];
+            [textField setBackground: nil];
+            CALayer *textFieldLayer = textField.layer.sublayers.firstObject;
+            if ([window.layer.superlayer.sublayers containsObject:textFieldLayer]) {
+                [textFieldLayer removeFromSuperlayer];
+            }
         }
-        if (scrollView != nil) {
-            [scrollView removeFromSuperview];
-        }
-        [textField setSecureTextEntry: FALSE];
-        [textField setBackgroundColor: [UIColor clearColor]];
-        [textField setBackground: nil];
-        CALayer *textFieldLayer = textField.layer.sublayers.firstObject;
-        if ([window.layer.superlayer.sublayers containsObject:textFieldLayer]) {
-            [textFieldLayer removeFromSuperlayer];
-        }
-    }
+    });
 }
 
 - (UIColor *)colorFromHexString:(NSString *)hexString {
@@ -368,17 +370,13 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data resolve:
 }
 
 RCT_EXPORT_METHOD(deactivateShield: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
-    dispatch_async(dispatch_get_main_queue(), ^{
         @try {
             [self removeScreenShot];
-            [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
-            [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
+            resolve(nil);
         } @catch (NSException *e) {
             NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
             reject(@"deactivateShield", e.reason, error);
         }
-        [self stopObserving];
-    });
 }
 
 RCT_EXPORT_METHOD(activateShieldWithoutEffect: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
