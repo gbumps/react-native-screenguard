@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.screenguard.helper.ScreenGuardClassName;
 import com.screenguard.helper.ScreenGuardHelper;
 import com.screenguard.model.ScreenGuardBlurData;
 import com.screenguard.model.ScreenGuardColorData;
@@ -25,16 +26,6 @@ import java.lang.ref.WeakReference;
 
 public class ScreenGuardModule {
     private WeakReference<Activity> mainActivityRef = null;
-
-    public static final String NAME = "ScreenGuard";
-
-    public static final String SCREENSHOT_EVT = "onScreenShotCaptured";
-
-    public static final String SCREEN_RECORDING_EVT = "onScreenRecordingCaptured";
-
-    public static final String SCREENGUARD_COLOR_ACTIVITY_MANIFEST = "com.screenguard.ScreenGuardColorActivity";
-    
-    public static final Exception EXCEPTION_NOT_DECLARED = new Exception("Activity com.screenguard.ScreenGuardColorActivity is not declared in AndroidManifest.xml, refers to https://gbumps.github.io/react-native-screenguard/docs/getting-started/linking for more info and how to resolve, or you can use registerWithoutEffect method to activate the screen guard without effect!");
 
     private ReactApplicationContext currentReactContext;
 
@@ -47,10 +38,10 @@ public class ScreenGuardModule {
 
     @NonNull
     public String getName() {
-        return NAME;
+        return ScreenGuardClassName.SCREENGUARD;
     }
 
-    
+
     public void registerScreenShotEventListener(Boolean isCaptureScreenshotFile) {
         if (mScreenGuard == null) {
             mScreenGuard = new ScreenGuardListener(
@@ -58,13 +49,13 @@ public class ScreenGuardModule {
                     isCaptureScreenshotFile,
                     (url) -> currentReactContext.getJSModule(
                           DeviceEventManagerModule.RCTDeviceEventEmitter.class
-                    ).emit(ScreenGuardModule.SCREENSHOT_EVT, url)
+                    ).emit(ScreenGuardClassName.SCREENSHOT_EVT, url)
             );
         }
         mScreenGuard.register();
     }
 
-    
+
     public void addListener(String eventName) {
 //        if (mScreenGuard == null) {
 //            mScreenGuard = new ScreenGuard(
@@ -78,7 +69,7 @@ public class ScreenGuardModule {
         // Keep: Required for RN built in Event Emitter Calls.
     }
 
-    
+
     public void removeListeners(int count) {
         if (mScreenGuard != null) {
             mScreenGuard.unregister();
@@ -89,19 +80,19 @@ public class ScreenGuardModule {
     private boolean isActivityDeclared() {
         try {
             PackageManager packageManager = currentReactContext.getPackageManager();
-            ComponentName componentName = new ComponentName(String.valueOf(this), SCREENGUARD_COLOR_ACTIVITY_MANIFEST);
+            ComponentName componentName = new ComponentName(String.valueOf(this), ScreenGuardClassName.SCREENGUARD_COLOR_ACTIVITY_MANIFEST);
             ActivityInfo activityInfo = packageManager.getActivityInfo(componentName, 0);
             return true;
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
     }
-    
+
     public void activateShieldWithBlurView(ReadableMap screenGuardBlurData) throws Exception {
         if (!isActivityDeclared()) {
-            throw EXCEPTION_NOT_DECLARED;
+            throw ScreenGuardClassName.EXCEPTION_NOT_DECLARED;
         }
-            
+
         Activity currentActivity = currentReactContext.getCurrentActivity();
 
         if (currentActivity == null) {
@@ -142,10 +133,10 @@ public class ScreenGuardModule {
             mScreenGuard = null;
         }
     }
-    
+
     public void activateShieldWithImage(ReadableMap data) throws Exception {
         if (!isActivityDeclared()) {
-            throw EXCEPTION_NOT_DECLARED;
+            throw ScreenGuardClassName.EXCEPTION_NOT_DECLARED;
         }
 
         Activity currentActivity = currentReactContext.getCurrentActivity();
@@ -191,10 +182,10 @@ public class ScreenGuardModule {
         });
     }
 
-    
+
     public void activateShield(ReadableMap data) throws Exception {
         if (!isActivityDeclared()) {
-            throw EXCEPTION_NOT_DECLARED;
+            throw ScreenGuardClassName.EXCEPTION_NOT_DECLARED;
         }
 
         Activity currentActivity = currentReactContext.getCurrentActivity();
@@ -230,7 +221,7 @@ public class ScreenGuardModule {
         });
     }
 
-    
+
     public void activateShieldWithoutEffect() {
         try {
             Activity currentActivity = currentReactContext.getCurrentActivity();
@@ -247,7 +238,7 @@ public class ScreenGuardModule {
         }
     }
 
-    
+
     public void deactivateShield() throws Exception {
         Activity mainActivity = mainActivityRef != null ? mainActivityRef.get() : null;
         if (mainActivity != null) {
@@ -266,13 +257,10 @@ public class ScreenGuardModule {
             if (currentActivity instanceof ScreenGuardColorActivity) {
                 currentActivity.finish();
             }
-        } else {
+        }  else {
             currentReactContext.sendBroadcast(
-                    new Intent(ScreenGuardColorActivity.SCREENGUARD_COLOR_ACTIVITY_CLOSE));
-        }
-        if (mScreenGuard != null) {
-            mScreenGuard.unregister();
-        }
+                    new Intent(ScreenGuardClassName.SCREENGUARD_COLOR_ACTIVITY_CLOSE));
+        }  
     }
 
 }
