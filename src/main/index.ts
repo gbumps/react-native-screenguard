@@ -288,9 +288,9 @@ export default {
       return;
     }
     NativeSGScreenRecord?.removeScreenRecordingEventListener();
-    screenRecordingEmitter?.removeAllListeners(
-      ScreenGuardConstants.SCREEN_RECORDING_EVT
-    );
+    // screenRecordingEmitter?.removeAllListeners(
+    // ScreenGuardConstants.SCREEN_RECORDING_EVT
+    // );
     if (screenRecordingSubscription != null) {
       screenRecordingSubscription.remove();
       screenRecordingSubscription = null;
@@ -303,7 +303,7 @@ export default {
    */
   removeScreenshotEventListener() {
     NativeSGScreenshot?.removeScreenshotEventListener();
-    screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
+    // screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
     if (screenshotSubscription != null) {
       screenshotSubscription.remove();
       screenshotSubscription = null;
