@@ -69,7 +69,6 @@ RCT_EXPORT_METHOD(removeScreenRecordingEventListener) {
     [[NSNotificationCenter defaultCenter] removeObserver: self
                                                     name: UIScreenCapturedDidChangeNotification
                                                   object: nil];
-    [self stopObserving];
     
 }
 
@@ -97,7 +96,6 @@ RCT_EXPORT_METHOD(removeScreenRecordingEventListener) {
     [[NSNotificationCenter defaultCenter] removeObserver: self
                                                     name: UIScreenCapturedDidChangeNotification
                                                   object: nil];
-    // [self stopObserving];
 }
 
 #endif

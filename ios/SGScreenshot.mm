@@ -74,6 +74,12 @@ RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL)getScreenshotPath) {
     
 }
 
+RCT_EXPORT_METHOD(removeScreenshotEventListener) {
+    [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                    name: UIApplicationUserDidTakeScreenshotNotification
+                                                  object: nil];
+}
+
 #endif
 
 //New Architecture entry point
@@ -94,7 +100,6 @@ RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL)getScreenshotPath) {
    [[NSNotificationCenter defaultCenter] removeObserver: self
                                                         name: UIApplicationUserDidTakeScreenshotNotification
                                                       object: nil]; 
-//    [self stopObserving];
 }
 
 #endif
