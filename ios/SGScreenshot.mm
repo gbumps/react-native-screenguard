@@ -94,7 +94,7 @@ RCT_EXPORT_METHOD(registerScreenshotEventListener: (BOOL)getScreenshotPath) {
    [[NSNotificationCenter defaultCenter] removeObserver: self
                                                         name: UIApplicationUserDidTakeScreenshotNotification
                                                       object: nil]; 
-    [self stopObserving];
+//    [self stopObserving];
 }
 
 #endif

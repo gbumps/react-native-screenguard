@@ -88,7 +88,7 @@ RCT_EXPORT_METHOD(removeScreenRecordingEventListener) {
                                                          name:UIScreenCapturedDidChangeNotification
                                                        object:nil];
         } @catch (NSException *e) {
-            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+            NSError *error = [NSError errorWithDomain:@"SGScreenRecord" code: -1 userInfo:nil];
         }
         getScreenRecordingStatus = getRecordingStatus;
 }
@@ -97,7 +97,7 @@ RCT_EXPORT_METHOD(removeScreenRecordingEventListener) {
     [[NSNotificationCenter defaultCenter] removeObserver: self
                                                     name: UIScreenCapturedDidChangeNotification
                                                   object: nil];
-    [self stopObserving];
+    // [self stopObserving];
 }
 
 #endif
