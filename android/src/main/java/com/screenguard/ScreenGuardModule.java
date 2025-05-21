@@ -77,22 +77,7 @@ public class ScreenGuardModule {
         }
     }
 
-    private boolean isActivityDeclared() {
-        try {
-            PackageManager packageManager = currentReactContext.getPackageManager();
-            ComponentName componentName = new ComponentName(String.valueOf(this), ScreenGuardClassName.SCREENGUARD_COLOR_ACTIVITY_MANIFEST);
-            ActivityInfo activityInfo = packageManager.getActivityInfo(componentName, 0);
-            return true;
-        } catch (PackageManager.NameNotFoundException e) {
-            return false;
-        }
-    }
-
     public void activateShieldWithBlurView(ReadableMap screenGuardBlurData) throws Exception {
-        if (!isActivityDeclared()) {
-            throw ScreenGuardClassName.EXCEPTION_NOT_DECLARED;
-        }
-
         Activity currentActivity = currentReactContext.getCurrentActivity();
 
         if (currentActivity == null) {
@@ -135,10 +120,6 @@ public class ScreenGuardModule {
     }
 
     public void activateShieldWithImage(ReadableMap data) throws Exception {
-        if (!isActivityDeclared()) {
-            throw ScreenGuardClassName.EXCEPTION_NOT_DECLARED;
-        }
-
         Activity currentActivity = currentReactContext.getCurrentActivity();
 
         if (currentActivity == null) {
@@ -184,10 +165,6 @@ public class ScreenGuardModule {
 
 
     public void activateShield(ReadableMap data) throws Exception {
-        if (!isActivityDeclared()) {
-            throw ScreenGuardClassName.EXCEPTION_NOT_DECLARED;
-        }
-
         Activity currentActivity = currentReactContext.getCurrentActivity();
 
         if (currentActivity == null) {
