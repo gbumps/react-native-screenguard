@@ -203,20 +203,6 @@ export default {
   async unregister() {
     try {
       await NativeScreenGuard?.deactivateShield();
-      if (screenShotEmitter != null) {
-        screenShotEmitter.removeAllListeners(
-          ScreenGuardConstants.SCREENSHOT_EVT
-        );
-        NativeSGScreenshot?.removeScreenshotEventListener();
-        screenShotEmitter = null;
-      }
-      if (screenRecordingEmitter != null) {
-        screenRecordingEmitter.removeAllListeners(
-          ScreenGuardConstants.SCREEN_RECORDING_EVT
-        );
-        NativeSGScreenRecord?.removeScreenRecordingEventListener();
-        screenRecordingEmitter = null;
-      }
     } catch (error) {
       console.error('Error unregister:', error);
     }
