@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 import com.facebook.react.ReactActivity;
 import com.screenguard.enums.ScreenGuardActionEnum;
+import com.screenguard.helper.ScreenGuardClassName;
 import com.screenguard.helper.ScreenGuardImagePosition;
 import com.screenguard.model.ScreenGuardBlurData;
 import com.screenguard.model.ScreenGuardColorData;
@@ -34,9 +35,6 @@ import jp.wasabeef.blurry.Blurry;
 
 
 public class ScreenGuardColorActivity extends ReactActivity  {
-
-    public static final String SCREENGUARD_COLOR_ACTIVITY_CLOSE = 
-            "com.screenguard.ScreenGuardColorActivity.close";
 
     private ScreenGuardBlurData screenGuardBlurData;
 
@@ -90,7 +88,7 @@ public class ScreenGuardColorActivity extends ReactActivity  {
             }
         }
         overridePendingTransition(0, 0);
-        IntentFilter intentFilter = new IntentFilter(SCREENGUARD_COLOR_ACTIVITY_CLOSE);
+        IntentFilter intentFilter = new IntentFilter(ScreenGuardClassName.SCREENGUARD_COLOR_ACTIVITY_CLOSE);
         if (Build.VERSION.SDK_INT >= 33) {
             registerReceiver(closeReceiver, intentFilter, RECEIVER_NOT_EXPORTED);
         } else {

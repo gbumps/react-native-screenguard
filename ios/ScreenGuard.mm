@@ -4,70 +4,56 @@
 #import <React/RCTComponent.h>
 #import <React/RCTImageLoader.h>
 
-NSString * const SCREENSHOT_EVT = @"onScreenShotCaptured";
-NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
-
-
 @implementation ScreenGuard
 RCT_EXPORT_MODULE(ScreenGuard)
-
-bool hasListeners;
 
 UITextField *textField;
 UIImageView *imageView;
 UIScrollView *scrollView;
 
 - (NSArray<NSString *> *)supportedEvents {
-  return @[SCREENSHOT_EVT, SCREEN_RECORDING_EVT];
-}
-
-- (void)startObserving {
-  hasListeners = YES;
-}
-
-- (void)stopObserving {
-  hasListeners = NO;
+    return @[];
 }
 
 - (void)secureViewWithBackgroundColor: (NSString *)color {
-  if (@available(iOS 13.0, *)) {
-    if (textField == nil) {
-      [self initTextField];
-    }
-    [textField setSecureTextEntry: TRUE];
-    [textField setBackgroundColor: [self colorFromHexString: color]];
-  } else return;
+    if (@available(iOS 13.0, *)) {
+        if (textField == nil) {
+            [self initTextField];
+        }
+        [textField setSecureTextEntry: TRUE];
+        [textField setBackgroundColor: [self colorFromHexString: color]];
+    } else return;
 }
 
 - (void)secureViewWithBlurView: (nonnull NSNumber *)radius {
-  if (@available(iOS 13.0, *)) {
-    if (textField == nil) {
-      [self initTextField];
-    }
-      
-    [textField setBackgroundColor: [UIColor clearColor]];
-    [textField setSecureTextEntry: TRUE];
-    UIViewController *presentedViewController = RCTPresentedViewController();
-    UIImage *imageView = [self convertViewToImage:presentedViewController.view.superview];
-    CIImage *inputImage = [CIImage imageWithCGImage:imageView.CGImage];
-    
-    CIContext *context = [CIContext contextWithOptions:nil];
-    
-    CIFilter *blurFilter = [CIFilter filterWithName:@"CIGaussianBlur"];
-    [blurFilter setValue:inputImage forKey:kCIInputImageKey];
-    [blurFilter setValue:radius forKey:kCIInputRadiusKey];
-          
-    CIImage *outputImage = [blurFilter valueForKey:kCIOutputImageKey];
-          
-    CGImageRef cgImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
-    
-    UIImage *blurredImage = [UIImage imageWithCGImage:cgImage];
-          
-    CGImageRelease(cgImage);
-      
-    [textField setBackground: blurredImage];
-    
-  } else return;
+    if (@available(iOS 13.0, *)) {
+        if (textField == nil) {
+            [self initTextField];
+        }
+        
+        [textField setBackgroundColor: [UIColor clearColor]];
+        [textField setSecureTextEntry: TRUE];
+        UIViewController *presentedViewController = RCTPresentedViewController();
+        UIImage *imageView = [self convertViewToImage:presentedViewController.view.superview];
+        CIImage *inputImage = [CIImage imageWithCGImage:imageView.CGImage];
+        
+        CIContext *context = [CIContext contextWithOptions:nil];
+        
+        CIFilter *blurFilter = [CIFilter filterWithName:@"CIGaussianBlur"];
+        [blurFilter setValue:inputImage forKey:kCIInputImageKey];
+        [blurFilter setValue:radius forKey:kCIInputRadiusKey];
+        
+        CIImage *outputImage = [blurFilter valueForKey:kCIOutputImageKey];
+        
+        CGImageRef cgImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
+        
+        UIImage *blurredImage = [UIImage imageWithCGImage:cgImage];
+        
+        CGImageRelease(cgImage);
+        
+        [textField setBackground: blurredImage];
+        
+    } else return;
 }
 
 - (void)secureViewWithImageAlignment: (nonnull NSDictionary *) source
@@ -77,47 +63,47 @@ UIScrollView *scrollView;
                        withAlignment: (ScreenGuardImageAlignment) alignment
                  withBackgroundColor: (nonnull NSString *) backgroundColor
 {
-  if (@available(iOS 13.0, *)) {
-    if (textField == nil) {
-      [self initTextField];
-    }
-
-    [textField setSecureTextEntry: TRUE];
-    [textField setContentMode: UIViewContentModeCenter];
-    
-    imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
+    if (@available(iOS 13.0, *)) {
+        if (textField == nil) {
+            [self initTextField];
+        }
         
-    imageView.translatesAutoresizingMaskIntoConstraints = NO;
-    [imageView setClipsToBounds:YES];
-    
-    if (source[@"uri"] != nil) {
-        NSString *uriImage = source[@"uri"];
-        NSString *uriDefaultSource = defaultSource[@"uri"];
+        [textField setSecureTextEntry: TRUE];
+        [textField setContentMode: UIViewContentModeCenter];
         
-        NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
+        imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
         
-        SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
+        imageView.translatesAutoresizingMaskIntoConstraints = NO;
+        [imageView setClipsToBounds:YES];
         
-        UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
+        if (source[@"uri"] != nil) {
+            NSString *uriImage = source[@"uri"];
+            NSString *uriDefaultSource = defaultSource[@"uri"];
+            
+            NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
+            
+            SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
+            
+            UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
+            
+            [imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
+                         placeholderImage: thumbnailImage
+                                  options: downloaderOptions
+                                completed: ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            }];
+        }
+        if (scrollView == nil) {
+            scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+            scrollView.showsHorizontalScrollIndicator = NO;
+            scrollView.showsVerticalScrollIndicator = NO;
+            scrollView.scrollEnabled = false;
+        }
+        [self setImageView: alignment];
+        [textField addSubview: scrollView];
+        [textField sendSubviewToBack: scrollView];
+        [textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
         
-        [imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
-                     placeholderImage: thumbnailImage
-                              options: downloaderOptions
-                            completed: ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-        }];
-    }
-      if (scrollView == nil) {
-        scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        scrollView.showsHorizontalScrollIndicator = NO;
-        scrollView.showsVerticalScrollIndicator = NO;
-        scrollView.scrollEnabled = false;
-      }
-      [self setImageView: alignment];
-      [textField addSubview: scrollView];
-      [textField sendSubviewToBack: scrollView];
-      [textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
-
-  } else return;
+    } else return;
 }
 
 - (void)secureViewWithImagePosition: (nonnull NSDictionary *) source
@@ -130,85 +116,88 @@ UIScrollView *scrollView;
                           withRight: (NSNumber *) right
                 withBackgroundColor: (nonnull NSString *) backgroundColor
 {
- if (@available(iOS 13.0, *)) {
-   if (textField == nil) {
-     [self initTextField];
-   }
-   [textField setSecureTextEntry: TRUE];
-   [textField setContentMode: UIViewContentModeCenter];
-     
-   if (scrollView == nil) {
-     scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-     scrollView.showsHorizontalScrollIndicator = NO;
-     scrollView.showsVerticalScrollIndicator = NO;
-     scrollView.scrollEnabled = false;
-   }
-   
-   imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
-     
-   imageView.translatesAutoresizingMaskIntoConstraints = NO;
-     
-   [imageView setClipsToBounds: TRUE];
-
-   if (source[@"uri"] != nil) {
-       NSString *uriImage = source[@"uri"];
-       NSString *uriDefaultSource = defaultSource[@"uri"];
-       
-       NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
-       
-       SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
-       
-       UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
-       
-       [imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
-                    placeholderImage: thumbnailImage
-                             options: downloaderOptions
-                           completed: ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-       }];
-   }
-   [self setImageViewBasedOnPosition:[top doubleValue] left:[left doubleValue] bottom:[bottom doubleValue] right:[right doubleValue]];
-     
-   [textField addSubview: scrollView];
-   [textField sendSubviewToBack: scrollView];
-   [textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
- } else return;
+    if (@available(iOS 13.0, *)) {
+        if (textField == nil) {
+            [self initTextField];
+        }
+        [textField setSecureTextEntry: TRUE];
+        [textField setContentMode: UIViewContentModeCenter];
+        
+        if (scrollView == nil) {
+            scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+            scrollView.showsHorizontalScrollIndicator = NO;
+            scrollView.showsVerticalScrollIndicator = NO;
+            scrollView.scrollEnabled = false;
+        }
+        
+        imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = NO;
+        
+        [imageView setClipsToBounds: TRUE];
+        
+        if (source[@"uri"] != nil) {
+            NSString *uriImage = source[@"uri"];
+            NSString *uriDefaultSource = defaultSource[@"uri"];
+            
+            NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
+            
+            SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
+            
+            UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
+            
+            [imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
+                         placeholderImage: thumbnailImage
+                                  options: downloaderOptions
+                                completed: ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            }];
+        }
+        [self setImageViewBasedOnPosition:[top doubleValue] left:[left doubleValue] bottom:[bottom doubleValue] right:[right doubleValue]];
+        
+        [textField addSubview: scrollView];
+        [textField sendSubviewToBack: scrollView];
+        [textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
+    } else return;
 }
- - (void) initTextField {
+
+- (void) initTextField {
     CGRect screenRect = [[UIScreen mainScreen] bounds];
-     textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, screenRect.size.width, screenRect.size.height)];
-     textField.translatesAutoresizingMaskIntoConstraints = NO;
-     
-     [textField setTextAlignment:NSTextAlignmentCenter];
-     [textField setUserInteractionEnabled: NO];
-
-     UIWindow *window = [UIApplication sharedApplication].keyWindow;
-     [window makeKeyAndVisible];
-     [window.layer.superlayer addSublayer:textField.layer];
-
-     if (textField.layer.sublayers.firstObject) {
-         [textField.layer.sublayers.firstObject addSublayer: window.layer];
-     }
+    textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, screenRect.size.width, screenRect.size.height)];
+    textField.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [textField setTextAlignment:NSTextAlignmentCenter];
+    [textField setUserInteractionEnabled: NO];
+    
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    [window makeKeyAndVisible];
+    [window.layer.superlayer addSublayer:textField.layer];
+    
+    if (textField.layer.sublayers.firstObject) {
+        [textField.layer.sublayers.firstObject addSublayer: window.layer];
+    }
 }
 
 
 - (void)removeScreenShot {
-  UIWindow *window = [UIApplication sharedApplication].keyWindow;
-  if (textField != nil) {
-      if (imageView != nil) {
-          [imageView setImage: nil];
-          [imageView removeFromSuperview];
-      }
-      if (scrollView != nil) {
-          [scrollView removeFromSuperview];
-      }
-    [textField setSecureTextEntry: FALSE];
-    [textField setBackgroundColor: [UIColor clearColor]];
-    [textField setBackground: nil];
-    CALayer *textFieldLayer = textField.layer.sublayers.firstObject;
-    if ([window.layer.superlayer.sublayers containsObject:textFieldLayer]) {
-       [textFieldLayer removeFromSuperlayer];
-    }
-  }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+        if (textField != nil) {
+            if (imageView != nil) {
+                [imageView setImage: nil];
+                [imageView removeFromSuperview];
+            }
+            if (scrollView != nil) {
+                [scrollView removeFromSuperview];
+            }
+            [textField setSecureTextEntry: FALSE];
+            [textField setBackgroundColor: [UIColor clearColor]];
+            [textField setBackground: nil];
+            CALayer *textFieldLayer = textField.layer.sublayers.firstObject;
+            if ([window.layer.superlayer.sublayers containsObject:textFieldLayer]) {
+                [textFieldLayer removeFromSuperlayer];
+            }
+        }
+    });
 }
 
 - (UIColor *)colorFromHexString:(NSString *)hexString {
@@ -244,9 +233,9 @@ UIScrollView *scrollView;
     CGFloat scrollViewHeight = scrollView.bounds.size.height;
     CGFloat imageViewWidth = imageView.bounds.size.width;
     CGFloat imageViewHeight = imageView.bounds.size.height;
-
+    
     CGPoint imageViewOrigin;
-
+    
     switch (alignment) {
         case AlignmentTopLeft:
             imageViewOrigin = CGPointMake(0, 0);
@@ -279,9 +268,9 @@ UIScrollView *scrollView;
             imageViewOrigin = CGPointZero;
             break;
     }
-
+    
     imageView.frame = CGRectMake(imageViewOrigin.x, imageViewOrigin.y, imageViewWidth, imageViewHeight);
-
+    
     CGFloat contentWidth = MAX(scrollViewWidth, imageViewOrigin.x + imageViewWidth);
     CGFloat contentHeight = MAX(scrollViewHeight, imageViewOrigin.y + imageViewHeight);
     scrollView.contentSize = CGSizeMake(contentWidth, contentHeight);
@@ -294,47 +283,61 @@ UIScrollView *scrollView;
     CGFloat scrollViewHeight = scrollView.bounds.size.height;
     CGFloat imageViewWidth = imageView.bounds.size.width;
     CGFloat imageViewHeight = imageView.bounds.size.height;
-
+    
     CGFloat centerX = scrollViewWidth / 2;
     CGFloat centerY = scrollViewHeight / 2;
-
+    
     CGFloat imageViewX = centerX + left - right - (imageViewWidth / 2);
     CGFloat imageViewY = centerY + top - bottom - (imageViewHeight / 2);
-
+    
     imageView.frame = CGRectMake(imageViewX, imageViewY, imageViewWidth, imageViewHeight);
-
+    
     CGFloat contentWidth = MAX(scrollViewWidth, fabs(left - right) + imageViewWidth);
     CGFloat contentHeight = MAX(scrollViewHeight, fabs(top - bottom) + imageViewHeight);
     scrollView.contentSize = CGSizeMake(contentWidth, contentHeight);
 }
 
-RCT_EXPORT_METHOD(activateShield: (NSString *)screenshotBackgroundColor) {
-  dispatch_async(dispatch_get_main_queue(), ^{
-      [self secureViewWithBackgroundColor: screenshotBackgroundColor];
-  });
-}
-
-RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSNumber *)borderRadius) {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self secureViewWithBlurView: borderRadius];
-  });
-}
-
-RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
-  if (![data isKindOfClass:[NSDictionary class]]) {
-    return;
-  }
+//old architecture entry point
+#if !RCT_NEW_ARCH_ENABLED
+RCT_EXPORT_METHOD(activateShield: (nonnull NSDictionary *) data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    NSString *screenshotBackgroundColor = data[@"backgroundColor"];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @try {
+            [self secureViewWithBackgroundColor: screenshotBackgroundColor];
+            resolve(nil);
+        } @catch (NSException *e) {
+            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+            reject(@"activateShield", e.reason, error);
+        }
     
-  NSDictionary *source = data[@"source"];
-  NSDictionary *defaultSource = data[@"defaultSource"];
-  NSNumber *width = data[@"width"];
-  NSNumber *height = data[@"height"];
-  NSNumber *top = data[@"top"];
-  NSNumber *left = data[@"left"];
-  NSNumber *bottom = data[@"bottom"];
-  NSNumber *right = data[@"right"];
-  NSString *backgroundColor = data[@"backgroundColor"];
-  NSNumber *alignment = data[@"alignment"];
+    });
+}
+
+
+RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSDictionary *) data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    NSNumber *borderRadius = data[@"radius"];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @try {
+            [self secureViewWithBlurView: borderRadius];
+            resolve(nil);
+        } @catch (NSException *e) {
+            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+            reject(@"activateShieldWithBlurView", e.reason, error);
+        }
+    });
+}
+
+RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    if (![data isKindOfClass:[NSDictionary class]]) {
+        return;
+    }
+    
+    NSDictionary *source = data[@"source"];
+    NSDictionary *defaultSource = data[@"defaultSource"];
+    NSNumber *width = data[@"width"];
+    NSNumber *height = data[@"height"];
+    NSString *backgroundColor = data[@"backgroundColor"];
+    NSNumber *alignment = data[@"alignment"];
     if (alignment != nil) {
         NSInteger alignment = [data[@"alignment"] integerValue];
         ScreenGuardImageAlignment dataAlignment = (ScreenGuardImageAlignment)alignment;
@@ -347,6 +350,10 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
                            withBackgroundColor: backgroundColor];
         });
     } else {
+        NSNumber *top = data[@"top"];
+        NSNumber *left = data[@"left"];
+        NSNumber *bottom = data[@"bottom"];
+        NSNumber *right = data[@"right"];
         dispatch_async(dispatch_get_main_queue(), ^{
             [self secureViewWithImagePosition: source
                             withDefaultSource: defaultSource
@@ -359,94 +366,138 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data) {
                           withBackgroundColor: backgroundColor];
         });
     }
+    resolve(nil);
+}
+
+RCT_EXPORT_METHOD(deactivateShield: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+        @try {
+            [self removeScreenShot];
+            resolve(nil);
+        } @catch (NSException *e) {
+            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+            reject(@"deactivateShield", e.reason, error);
+        }
+}
+
+RCT_EXPORT_METHOD(activateShieldWithoutEffect: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    NSString *s = @"This function is for Android only, please use register, registerWithBlurView, registerWithImageInstead!";
+    RCTLogWarn(@"%@", s);
+    NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+    reject(@"activateShieldWithoutEffect", s, error);
+}
+#endif
+
+//New Architecture entry point
+#ifdef RCT_NEW_ARCH_ENABLED
+- (void)activateShieldWithoutEffect: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    NSString *s = @"This function is for Android only, please use register, registerWithBlurView, registerWithImageInstead!";
+    RCTLogWarn(@"%@", s);
+    NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+    reject(@"activateShieldWithoutEffect", s, error);
+}
+
+- (void)activateShield:(JS::NativeScreenGuard::SpecActivateShieldData &)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+        NSString *screenshotBackgroundColor = data.backgroundColor();
+        dispatch_async(dispatch_get_main_queue(), ^{
+            @try {
+                [self secureViewWithBackgroundColor: screenshotBackgroundColor];
+                resolve(nil);
+            } @catch (NSException *e) {
+                NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+                reject(@"activateShield", e.reason, error);
+            }
+        
+        });
+}
+
+- (void)activateShieldWithBlurView:(JS::NativeScreenGuard::SpecActivateShieldWithBlurViewData &)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+        NSNumber *borderRadius = [NSNumber numberWithDouble: data.radius()];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            @try {
+                [self secureViewWithBlurView: borderRadius];
+                resolve(nil);
+            } @catch (NSException *e) {
+                NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+                reject(@"activateShieldWithBlurView", e.reason, error);
+            }
+        });
+}
+
+- (void)activateShieldWithImage:(JS::NativeScreenGuard::SpecActivateShieldWithImageData &)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    @try {
+        NSDictionary *source = [[NSDictionary alloc] initWithObjectsAndKeys: data.source().uri(), @"uri", nil];
+        NSDictionary *defaultSource = [[NSDictionary alloc] initWithObjectsAndKeys: data.defaultSource().uri(), @"uri", nil];
+        NSNumber *width = [NSNumber numberWithDouble: data.width()];
+        NSNumber *height = [NSNumber numberWithDouble: data.height()];
+        NSString *backgroundColor = data.backgroundColor();
+        if (data.alignment().has_value()) {
+            NSInteger alignment = [[NSNumber numberWithDouble: data.alignment().value()] integerValue];
+            ScreenGuardImageAlignment dataAlignment = (ScreenGuardImageAlignment)alignment;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self secureViewWithImageAlignment: source
+                                 withDefaultSource: defaultSource
+                                         withWidth: width
+                                        withHeight: height
+                                     withAlignment: dataAlignment
+                               withBackgroundColor: backgroundColor];
+            });
+        } else {
+            NSNumber *top = [NSNumber alloc];
+            NSNumber *left = [NSNumber alloc];
+            NSNumber *bottom = [NSNumber alloc];
+            NSNumber *right = [NSNumber alloc];
+            if (data.top().has_value()) {
+                top = [NSNumber numberWithDouble: data.top().value()];
+            }
+            if (data.left().has_value()) {
+                left = [NSNumber numberWithDouble: data.left().value()];
+            }
+            if (data.bottom().has_value()) {
+                bottom = [NSNumber numberWithDouble: data.bottom().value()];
+            }
+            if (data.right().has_value()) {
+                right = [NSNumber numberWithDouble: data.right().value()];
+            }
     
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self secureViewWithImagePosition: source
+                                withDefaultSource: defaultSource
+                                        withWidth: width
+                                       withHeight: height
+                                          withTop: top
+                                         withLeft: left
+                                       withBottom: bottom
+                                        withRight: right
+                              withBackgroundColor: backgroundColor];
+            });
+        }
+        resolve(nil);
+    } @catch (NSException *e) {
+        NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+        reject(@"activateShieldWithImage", e.reason, error);
+    }
+        
 }
 
-RCT_EXPORT_METHOD(deactivateShield) {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self removeScreenShot];
-    [[NSNotificationCenter defaultCenter]removeObserver:UIApplicationUserDidTakeScreenshotNotification];
-    [[NSNotificationCenter defaultCenter]removeObserver:UIScreenCapturedDidChangeNotification];
-  });
+- (void)deactivateShield:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+        @try {
+            [self removeScreenShot];
+            resolve(nil);
+        } @catch (NSException *e) {
+            NSError *error = [NSError errorWithDomain:@"ScreenGuard" code: -1 userInfo:nil];
+            reject(@"deactivateShield", e.reason, error);
+        }
 }
+#endif
 
-RCT_EXPORT_METHOD(registerScreenShotEventListener: (BOOL) getScreenShotPath) {
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
-    [center removeObserver:self
-                      name:UIApplicationUserDidTakeScreenshotNotification
-                    object:nil];
-    [center addObserverForName:UIApplicationUserDidTakeScreenshotNotification
-                        object:nil
-                         queue:mainQueue
-                    usingBlock:^(NSNotification *notification) {
-      
-      if (hasListeners && getScreenShotPath) {
-          UIViewController *presentedViewController = RCTPresentedViewController();
-
-          UIImage *image = [self convertViewToImage:presentedViewController.view.superview];
-                  NSData *data = UIImagePNGRepresentation(image);
-                  if (!data) {
-                      [self emit:SCREENSHOT_EVT body: nil];
-                    // reject(@"error", @"Failed to convert image to PNG", nil);
-                    return;
-                  }
-
-                  NSString *tempDir = NSTemporaryDirectory();
-                  NSString *fileName = [[NSUUID UUID] UUIDString];
-                  NSString *filePath = [tempDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", fileName]];
-
-                  NSError *error = nil;
-                  NSDictionary *result;
-                  BOOL success = [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
-                  if (!success) {
-                      result = @{@"path": @"Error retrieving file", @"name": @"", @"type": @""};
-                  } else {
-                    result = @{@"path": filePath, @"name": fileName, @"type": @"PNG"};
-                  }
-          [self emit:SCREENSHOT_EVT body: result];
-      } else if (hasListeners) {
-          [self emit:SCREENSHOT_EVT body: nil];
-      }
-    }];
+// // Don't compile this code when we build for the old architecture.
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+    return std::make_shared<facebook::react::NativeScreenGuardSpecJSI>(params);
 }
-
-RCT_EXPORT_METHOD(registerScreenRecordingEventListener) {
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
-    [center removeObserver:self
-                      name:UIScreenCapturedDidChangeNotification
-                    object:nil];
-    [center addObserverForName:UIScreenCapturedDidChangeNotification
-                        object:nil
-                         queue:mainQueue
-                    usingBlock:^(NSNotification *notification) {
-      
-      if (hasListeners) {
-        [self emit:SCREEN_RECORDING_EVT body:nil];
-      }
-    }];
-}
-
-RCT_EXPORT_METHOD(removeEvent) {
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
-    [center removeObserver:self
-                      name:UIApplicationUserDidTakeScreenshotNotification
-                    object:nil];
-    [center removeObserver:self
-                      name:UIScreenCapturedDidChangeNotification
-                    object:nil];
-}
+#endif
 
 
 @end
-
-// // Don't compile this code when we build for the old architecture.
-// #ifdef RCT_NEW_ARCH_ENABLED
-// - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
-//     (const facebook::react::ObjCTurboModule::InitParams &)params
-// {
-//     return std::make_shared<facebook::react::NativeScreenguardSpecJSI>(params);
-// }
-// #endif

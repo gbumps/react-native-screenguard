@@ -1,26 +1,36 @@
-import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+import { NativeEventEmitter, Platform, TurboModuleRegistry } from 'react-native';
 import * as ScreenGuardConstants from './constant';
-const { ScreenGuard } = NativeModules;
-var screenShotEmitter = null;
-var screenRecordingEmitter = null;
+
+const NativeScreenGuard = TurboModuleRegistry.get('ScreenGuard');
+const NativeSGScreenshot = TurboModuleRegistry.get('SGScreenshot');
+const NativeSGScreenRecord = TurboModuleRegistry.get('SGScreenRecord');
+
+var screenShotEmitter = new NativeEventEmitter(NativeSGScreenshot);
+var screenshotSubscription = null;
+var screenRecordingSubscription = null;
+var screenRecordingEmitter = new NativeEventEmitter(NativeSGScreenRecord);
+
 export default {
     /**
      * activate screenshot blocking with a color effect (iOS 13+, Android 8+)
      * @param data ScreenGuardColorData object
      * @version v0.0.2+
      */
-    register(data) {
+    async register(data) {
         let { backgroundColor = ScreenGuardConstants.BLACK_COLOR, timeAfterResume = ScreenGuardConstants.TIME_DELAYED, } = data;
         let currentColor = backgroundColor.trim().length === 0 ||
             !backgroundColor.trim().startsWith('#') ||
             ScreenGuardConstants.REGEX.test(backgroundColor.trim().substring(1))
             ? ScreenGuardConstants.BLACK_COLOR
             : data.backgroundColor;
-        if (Platform.OS === 'ios') {
-            ScreenGuard.activateShield(currentColor);
+        try {
+            await NativeScreenGuard?.activateShield({
+                backgroundColor: currentColor,
+                timeAfterResume,
+            });
         }
-        else {
-            ScreenGuard.activateShield(currentColor, timeAfterResume);
+        catch (error) {
+            console.error('Error register:', error);
         }
     },
     /**
@@ -28,9 +38,9 @@ export default {
      * any effect (blur, image, color) on Android (Android 5+)
      * @version v1.0.0+
      */
-    registerWithoutEffect() {
+    async registerWithoutEffect() {
         if (Platform.OS === 'android') {
-            ScreenGuard.activateShieldWithoutEffect();
+            await NativeScreenGuard?.activateShieldWithoutEffect();
         }
     },
     /**
@@ -38,7 +48,7 @@ export default {
      * @param data ScreenGuardBlurDataObject data object
      * @version v0.1.2+
      */
-    registerWithBlurView(data) {
+    async registerWithBlurView(data) {
         const { radius = ScreenGuardConstants.RADIUS_DEFAULT, timeAfterResume = ScreenGuardConstants.TIME_DELAYED, } = data;
         if (typeof radius !== 'number') {
             throw new Error('radius must be a number and bigger than 1');
@@ -59,11 +69,14 @@ export default {
             (timeAfterResume < 0 || isNaN(timeAfterResume))) {
             throw new Error('timeAfterResume must be > 0!');
         }
-        if (Platform.OS === 'ios') {
-            ScreenGuard.activateShieldWithBlurView(radius);
+        try {
+            await NativeScreenGuard?.activateShieldWithBlurView({
+                radius,
+                timeAfterResume,
+            });
         }
-        else {
-            ScreenGuard.activateShieldWithBlurView({ radius, timeAfterResume });
+        catch (error) {
+            console.error('Error registerWithBlurView:', error);
         }
     },
     /**
@@ -71,7 +84,7 @@ export default {
      * @param data ScreenGuardImageDataObject data object,
      * @version v1.0.2+
      */
-    registerWithImage(data) {
+    async registerWithImage(data) {
         let { source, width, height, top, left, bottom, right, backgroundColor = ScreenGuardConstants.BLACK_COLOR, alignment, timeAfterResume = ScreenGuardConstants.TIME_DELAYED, defaultSource, } = data;
         let newDefaultSource = null;
         if (typeof source === 'object' && 'uri' in source) {
@@ -111,34 +124,36 @@ export default {
                 Platform.OS === 'android')) {
             alignment = ScreenGuardConstants.Alignment.center;
         }
-        ScreenGuard.activateShieldWithImage({
-            source,
-            defaultSource: newDefaultSource,
-            width,
-            height,
-            top,
-            left,
-            bottom,
-            right,
-            alignment,
-            backgroundColor,
-            timeAfterResume,
-        });
+        try {
+            await NativeScreenGuard?.activateShieldWithImage({
+                source,
+                defaultSource: newDefaultSource,
+                width,
+                height,
+                top,
+                left,
+                bottom,
+                right,
+                alignment,
+                backgroundColor,
+                timeAfterResume,
+            });
+        }
+        catch (error) {
+            console.error('Error registerWithImage:', error);
+        }
     },
     /**
      * Deactivate screenguard
      * Clear all screen protector and event listening
      * @version v0.0.2+
      */
-    unregister() {
-        ScreenGuard.deactivateShield();
-        if (screenShotEmitter != null) {
-            screenShotEmitter.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
-            screenShotEmitter = null;
+    async unregister() {
+        try {
+            await NativeScreenGuard?.deactivateShield();
         }
-        if (screenRecordingEmitter != null) {
-            screenRecordingEmitter.removeAllListeners(ScreenGuardConstants.SCREEN_RECORDING_EVT);
-            screenRecordingEmitter = null;
+        catch (error) {
+            console.error('Error unregister:', error);
         }
     },
     /**
@@ -148,37 +163,59 @@ export default {
      * @param callback callback after a screenshot has been triggered.
      * @version v0.3.6+
      */
-    registerScreenshotEventListener(getScreenShotPath = false, callback) {
-        ScreenGuard.registerScreenShotEventListener(getScreenShotPath);
-        if (screenShotEmitter == null) {
-            screenShotEmitter = new NativeEventEmitter(ScreenGuard);
-        }
+    registerScreenshotEventListener(getScreenShotPath, callback) {
+        NativeSGScreenshot?.registerScreenshotEventListener(getScreenShotPath);
         const _onScreenCapture = (res) => {
             callback(res);
         };
-        const listenerCount = screenShotEmitter.listenerCount(ScreenGuardConstants.SCREENSHOT_EVT);
-        if (!listenerCount) {
-            screenShotEmitter.addListener(ScreenGuardConstants.SCREENSHOT_EVT, _onScreenCapture);
-        }
+        screenshotSubscription = screenShotEmitter?.addListener(ScreenGuardConstants.SCREENSHOT_EVT, _onScreenCapture);
+        return () => this.removeScreenshotEventListener();
     },
     /**
      * Screen recording event listener (iOS only)
      * Register for screen recording event listener
      * @version v0.3.6+
      */
-    registerScreenRecordingEventListener(callback) {
-        if (Platform.OS === 'ios') {
-            ScreenGuard.registerScreenRecordingEventListener();
-            if (screenRecordingEmitter == null) {
-                screenRecordingEmitter = new NativeEventEmitter(ScreenGuard);
-            }
-            const _onScreenRecording = (res) => {
-                callback(res);
-            };
-            const listenerCount = screenRecordingEmitter.listenerCount(ScreenGuardConstants.SCREEN_RECORDING_EVT);
-            if (!listenerCount) {
-                screenRecordingEmitter.addListener(ScreenGuardConstants.SCREEN_RECORDING_EVT, _onScreenRecording);
-            }
+    registerScreenRecordingEventListener(getScreenRecordStatus, callback) {
+        if (Platform.OS === 'android') {
+            console.warn('Screen recording event listener is only available on iOS!');
+            return;
+        }
+        NativeSGScreenRecord?.registerScreenRecordingEventListener(getScreenRecordStatus ?? false);
+        const _onScreenRecording = (res) => {
+            callback(res);
+        };
+        screenRecordingSubscription = screenRecordingEmitter?.addListener(ScreenGuardConstants.SCREEN_RECORDING_EVT, _onScreenRecording);
+        return () => this.removeRecordingEventListener();
+    },
+    /**
+     * Remove screen recording event listener
+     * @version v1.0.8+
+     */
+    removeRecordingEventListener() {
+        if (Platform.OS === 'android') {
+            console.warn('Screen recording event listener is only available on iOS!');
+            return;
+        }
+        NativeSGScreenRecord?.removeScreenRecordingEventListener();
+        // screenRecordingEmitter?.removeAllListeners(
+        // ScreenGuardConstants.SCREEN_RECORDING_EVT
+        // );
+        if (screenRecordingSubscription != null) {
+            screenRecordingSubscription.remove();
+            screenRecordingSubscription = null;
+        }
+    },
+    /**
+     * Remove screenshot event listener
+     * @version v1.0.8+
+     */
+    removeScreenshotEventListener() {
+        NativeSGScreenshot?.removeScreenshotEventListener();
+        // screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
+        if (screenshotSubscription != null) {
+            screenshotSubscription.remove();
+            screenshotSubscription = null;
         }
     },
 };
