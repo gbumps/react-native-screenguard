@@ -57,15 +57,6 @@ public class ScreenGuardModule {
 
 
     public void addListener(String eventName) {
-//        if (mScreenGuard == null) {
-//            mScreenGuard = new ScreenGuard(
-//                    currentReactContext,
-//                    (url) -> currentReactContext.getJSModule(
-//                            DeviceEventManagerModule.RCTDeviceEventEmitter.class
-//                    ).emit(eventName, url)
-//            );
-//        }
-//        mScreenGuard.register();
         // Keep: Required for RN built in Event Emitter Calls.
     }
 

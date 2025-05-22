@@ -1,4 +1,4 @@
-package com.screenguardspec;
+package com.screenguard;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -21,7 +21,7 @@ class ScreenGuard extends ReactContextBaseJavaModule {
     @NonNull
     @Override
     public String getName() {
-        return ScreenGuardModule.NAME;
+        return ScreenGuard.NAME;
     }
 
     // @ReactMethod
