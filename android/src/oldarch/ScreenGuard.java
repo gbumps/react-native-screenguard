@@ -24,21 +24,6 @@ class ScreenGuard extends ReactContextBaseJavaModule {
         return ScreenGuard.NAME;
     }
 
-    // @ReactMethod
-    // public void registerScreenshotEventListener(boolean getScreenshotPath) {
-    //     try {
-    //         delegate.registerScreenShotEventListener(getScreenshotPath);
-    //     } catch (Exception e) {
-    //         Log.e("ScreenGuard", "registerScreenshotEventListener error: " + e.getMessage());
-    //     }
-    // }
-
-    // @ReactMethod
-    // public void registerScreenRecordingEventListener(boolean getRecordingStatus) {
-    //     Log.e("ScreenGuard", "registerScreenRecordingEventListener not supported yet on Android!");
-    // }
-
-    
     @ReactMethod
     public void activateShieldWithBlurView(ReadableMap screenGuardBlurData, Promise promise) {
         try {
