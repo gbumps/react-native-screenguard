@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.BaseReactPackage;
+import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -13,7 +14,7 @@ import com.screenguard.helper.ScreenGuardClassName;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ScreenGuardPackage extends BaseReactPackage {
+public class ScreenGuardPackage extends TurboReactPackage {
 
   @Nullable
   @Override
