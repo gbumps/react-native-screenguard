@@ -36,12 +36,12 @@ public class SGScreenRecord extends ReactContextBaseJavaModule {
     }
 
 
-    @Override
+    @ReactMethod
     public void addListener(String eventName) {
 
     }
 
-    @Override
+    @ReactMethod
     public void removeListeners(double count) {
 
     }
