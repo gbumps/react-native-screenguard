@@ -44,12 +44,12 @@ public class SGScreenshot extends ReactContextBaseJavaModule {
 
     }
 
-    @Override
+    @ReactMethod
     public void addListener(String eventName) {
         // Keep: Required for RN built in Event Emitter Calls.
     }
 
-    @Override
+    @ReactMethod
     public void removeListeners(double count) {
         // Keep: Required for RN built in Event Emitter Calls.
     }
