@@ -15,6 +15,8 @@ You can find full documentation and how to use [here](https://gbumps.github.io/r
 
 Web docs repo (for contribution) [here](https://github.com/gbumps/rn-screenguard-docs)
 
+<b>For Flutter dev</b>: If you want to implement some of features from this library, please check it out here [flutter_screenguard](https://pub.dev/packages/flutter_screenguard) for more infos.
+
 # Get started
 
 <!--ts-->
