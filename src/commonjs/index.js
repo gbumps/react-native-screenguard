@@ -107,7 +107,7 @@ export default {
         if (defaultSource == null) {
             console.warn('Consider adding a default source to display image that cannot be loaded from uri!');
             newDefaultSource = {
-                uri: ScreenGuardConstants.resolveAssetSource(require('../images/screenshot_blocking.webp')),
+                uri: ScreenGuardConstants.resolveAssetSource(require('../images/screenshot_blocking.jpg')),
             };
         }
         else {
