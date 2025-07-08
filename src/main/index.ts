@@ -29,12 +29,12 @@ export default {
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
     } = data;
 
-    let currentColor =
-      backgroundColor.trim().length === 0 ||
-      !backgroundColor.trim().startsWith('#') ||
-      ScreenGuardConstants.REGEX.test(backgroundColor.trim().substring(1))
-        ? ScreenGuardConstants.BLACK_COLOR
-        : data.backgroundColor;
+    let trimmedColor = (backgroundColor || '').trim();
+
+    let currentColor = ScreenGuardConstants.REGEX.test(trimmedColor)
+      ? trimmedColor
+      : ScreenGuardConstants.BLACK_COLOR;
+
     try {
       await NativeScreenGuard?.activateShield({
         backgroundColor: currentColor,
@@ -176,6 +176,12 @@ export default {
       alignment = ScreenGuardConstants.Alignment.center;
     }
 
+    let trimmedColor = (backgroundColor || '').trim();
+
+    let currentColor = ScreenGuardConstants.REGEX.test(trimmedColor)
+      ? trimmedColor
+      : ScreenGuardConstants.BLACK_COLOR;
+
     try {
       await NativeScreenGuard?.activateShieldWithImage({
         source,
@@ -187,7 +193,7 @@ export default {
         bottom,
         right,
         alignment,
-        backgroundColor,
+        backgroundColor: currentColor,
         timeAfterResume,
       });
     } catch (error) {
