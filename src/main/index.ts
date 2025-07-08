@@ -151,7 +151,7 @@ export default {
       );
       newDefaultSource = {
         uri: ScreenGuardConstants.resolveAssetSource(
-          require('../images/screenshot_blocking.webp')
+          require('../images/screenshot_blocking.jpg')
         ),
       };
     } else {
