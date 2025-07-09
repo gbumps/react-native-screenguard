@@ -1,6 +1,6 @@
 import { NativeEventEmitter, Platform, TurboModuleRegistry } from 'react-native';
 import * as ScreenGuardConstants from './constant';
-
+import * as ScreenGuardHelper from './helper';
 const NativeScreenGuard = TurboModuleRegistry.get('ScreenGuard');
 const NativeSGScreenshot = TurboModuleRegistry.get('SGScreenshot');
 const NativeSGScreenRecord = TurboModuleRegistry.get('SGScreenRecord');
@@ -18,10 +18,7 @@ export default {
      */
     async register(data) {
         let { backgroundColor = ScreenGuardConstants.BLACK_COLOR, timeAfterResume = ScreenGuardConstants.TIME_DELAYED, } = data;
-        let trimmedColor = (backgroundColor || '').trim();
-        let currentColor = ScreenGuardConstants.REGEX.test(trimmedColor)
-            ? trimmedColor
-            : ScreenGuardConstants.BLACK_COLOR;
+        let currentColor = ScreenGuardHelper.resolveColorString(backgroundColor);
         try {
             await NativeScreenGuard?.activateShield({
                 backgroundColor: currentColor,
@@ -101,17 +98,17 @@ export default {
             }
         }
         else if (typeof source === 'number') {
-            source = { uri: ScreenGuardConstants.resolveAssetSource(data.source) };
+            source = { uri: ScreenGuardHelper.resolveAssetSource(data.source) };
         }
         if (defaultSource == null) {
             console.warn('Consider adding a default source to display image that cannot be loaded from uri!');
             newDefaultSource = {
-                uri: ScreenGuardConstants.resolveAssetSource(require('../images/screenshot_blocking.jpg')),
+                uri: ScreenGuardHelper.resolveAssetSource(require('../images/screenshot_blocking.jpg')),
             };
         }
         else {
             newDefaultSource = {
-                uri: ScreenGuardConstants.resolveAssetSource(data.source),
+                uri: ScreenGuardHelper.resolveAssetSource(data.source),
             };
         }
         if (alignment != null &&
@@ -123,10 +120,7 @@ export default {
                 Platform.OS === 'android')) {
             alignment = ScreenGuardConstants.Alignment.center;
         }
-        let trimmedColor = (backgroundColor || '').trim();
-        let currentColor = ScreenGuardConstants.REGEX.test(trimmedColor)
-            ? trimmedColor
-            : ScreenGuardConstants.BLACK_COLOR;
+        let currentColor = ScreenGuardHelper.resolveColorString(backgroundColor);
         try {
             await NativeScreenGuard?.activateShieldWithImage({
                 source,
