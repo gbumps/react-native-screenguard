@@ -5,6 +5,7 @@ import NativeSGScreenshot from './NativeSGScreenshot';
 import NativeSGScreenRecord from './NativeSGScreenRecord';
 
 import * as ScreenGuardConstants from './constant';
+import * as ScreenGuardHelper from './helper';
 
 var screenShotEmitter: NativeEventEmitter | null = new NativeEventEmitter(
   NativeSGScreenshot
@@ -29,11 +30,7 @@ export default {
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
     } = data;
 
-    let trimmedColor = (backgroundColor || '').trim();
-
-    let currentColor = ScreenGuardConstants.REGEX.test(trimmedColor)
-      ? trimmedColor
-      : ScreenGuardConstants.BLACK_COLOR;
+    let currentColor = ScreenGuardHelper.resolveColorString(backgroundColor);
 
     try {
       await NativeScreenGuard?.activateShield({
@@ -142,7 +139,7 @@ export default {
         );
       }
     } else if (typeof source === 'number') {
-      source = { uri: ScreenGuardConstants.resolveAssetSource(data.source) };
+      source = { uri: ScreenGuardHelper.resolveAssetSource(data.source) };
     }
 
     if (defaultSource == null) {
@@ -150,13 +147,13 @@ export default {
         'Consider adding a default source to display image that cannot be loaded from uri!'
       );
       newDefaultSource = {
-        uri: ScreenGuardConstants.resolveAssetSource(
+        uri: ScreenGuardHelper.resolveAssetSource(
           require('../images/screenshot_blocking.jpg')
         ),
       };
     } else {
       newDefaultSource = {
-        uri: ScreenGuardConstants.resolveAssetSource(data.source),
+        uri: ScreenGuardHelper.resolveAssetSource(data.source),
       };
     }
     if (
@@ -176,11 +173,7 @@ export default {
       alignment = ScreenGuardConstants.Alignment.center;
     }
 
-    let trimmedColor = (backgroundColor || '').trim();
-
-    let currentColor = ScreenGuardConstants.REGEX.test(trimmedColor)
-      ? trimmedColor
-      : ScreenGuardConstants.BLACK_COLOR;
+    let currentColor = ScreenGuardHelper.resolveColorString(backgroundColor);
 
     try {
       await NativeScreenGuard?.activateShieldWithImage({
