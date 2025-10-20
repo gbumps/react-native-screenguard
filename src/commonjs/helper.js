@@ -1,5 +1,5 @@
 import { Image } from 'react-native';
-import { ScreenGuardConstants } from '.';
+import * as ScreenGuardConstants from './constant';
 const resolveAssetSource = (defaultSource) => {
     if (!defaultSource) {
         return null;
