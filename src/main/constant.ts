@@ -1,5 +1,6 @@
 const SCREENSHOT_EVT = 'onScreenShotCaptured';
 const SCREEN_RECORDING_EVT = 'onScreenRecordingCaptured';
+const SCREEN_GUARD_EVT = 'onScreenGuardEvent';
 const BLACK_COLOR = '#000000';
 const REGEX = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
 const IMAGE_REGEX = /\.(jpg|jpeg|png|gif|bmp|webp|svg|tiff|heic|svg)$/i;
@@ -21,6 +22,7 @@ const Alignment = {
 export {
   SCREENSHOT_EVT,
   SCREEN_RECORDING_EVT,
+  SCREEN_GUARD_EVT,
   BLACK_COLOR,
   REGEX,
   IMAGE_REGEX,

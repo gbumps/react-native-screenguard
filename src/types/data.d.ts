@@ -198,3 +198,37 @@ export interface ScreenGuardScreenRecordDataObject {
    */
   isRecording?: boolean | false;
 }
+export interface ScreenGuardHookData {
+  /**
+   * check if screenguard is activated
+   * @defaultValue false
+   */
+  isActivated: boolean;
+  /**
+   * Method of screenguard activation
+   * @defaultValue '' (empty string)
+   */
+  method: string;
+  /**
+   * Current screenguard settings
+   * @defaultValue default settings
+   */
+  currentSettings: ScreenGuardSettingsData;
+}
+export interface ScreenGuardSettingsData {
+  /**
+   * Enable or disable screen capture option
+   * @defaultValue false
+   */
+  enableCapture?: boolean | false;
+  /**
+   * Enable or disable screen recording option
+   * @defaultValue false
+   */
+  enableRecord?: boolean | false;
+  /**
+   * Enable or disable content while multitasking (App Switcher / Recent Apps)
+   * @defaultValue false
+   */
+  enableContentMultitask?: boolean | false;
+}

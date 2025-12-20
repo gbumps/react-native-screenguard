@@ -3,6 +3,7 @@ import * as ScreenGuardData from './data';
 import NativeScreenGuard from './NativeScreenGuard';
 import NativeSGScreenshot from './NativeSGScreenshot';
 import NativeSGScreenRecord from './NativeSGScreenRecord';
+import { useScreenGuard } from './hooks';
 
 import * as ScreenGuardConstants from './constant';
 import * as ScreenGuardHelper from './helper';
@@ -19,6 +20,14 @@ var screenRecordingEmitter: NativeEventEmitter | null = new NativeEventEmitter(
 );
 
 export default {
+  async init(data?: ScreenGuardData.ScreenGuardSettingsData | null) {
+    let currentSettings = {
+      enableCapture: data?.enableCapture ?? false,
+      enableRecord: data?.enableRecord ?? false,
+      enableContentMultitask: data?.enableContentMultitask ?? false,
+    };
+    await NativeScreenGuard?.initSettings(currentSettings);
+  },
   /**
    * activate screenshot blocking with a color effect (iOS 13+, Android 8+)
    * @param data ScreenGuardColorData object
@@ -50,6 +59,10 @@ export default {
   async registerWithoutEffect() {
     if (Platform.OS === 'android') {
       await NativeScreenGuard?.activateShieldWithoutEffect();
+    } else {
+      console.warn(
+        'registerWithoutEffect is only available on Android platform!'
+      );
     }
   },
 
@@ -244,10 +257,6 @@ export default {
       data?: ScreenGuardData.ScreenGuardScreenRecordDataObject | null
     ) => void
   ) {
-    if (Platform.OS === 'android') {
-      console.warn('Screen recording event listener is only available on iOS!');
-      return;
-    }
     NativeSGScreenRecord?.registerScreenRecordingEventListener(
       getScreenRecordStatus ?? false
     );
@@ -296,4 +305,4 @@ export default {
   },
 };
 
-export { ScreenGuardConstants };
+export { ScreenGuardConstants, useScreenGuard };

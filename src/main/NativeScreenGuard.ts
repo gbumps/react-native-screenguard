@@ -1,6 +1,29 @@
 import { TurboModule, TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
+  initSettings: (data: {
+    /**
+     * enable screenshot capture
+     *
+     * @defaultValue `false`
+     *
+     */
+    enableCapture: boolean;
+    /**
+     * enable screen recording
+     *
+     * @defaultValue `false`
+     *
+     */
+    enableRecord: boolean;
+    /**
+     * enable content visibility in multitask mode
+     *
+     * @defaultValue `false`
+     *
+     */
+    enableContentMultitask: boolean;
+  }) => Promise<void>;
   activateShield: (data: {
     /**
      * hex color of the background

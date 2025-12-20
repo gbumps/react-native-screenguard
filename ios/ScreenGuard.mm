@@ -4,6 +4,10 @@
 #import <React/RCTComponent.h>
 #import <React/RCTImageLoader.h>
 
+static bool hasListeners = NO;
+
+NSString * const SCREEN_GUARD_EVT = @"onScreenGuardEvt";
+
 @implementation ScreenGuard
 RCT_EXPORT_MODULE(ScreenGuard)
 
@@ -12,8 +16,17 @@ UIImageView *imageView;
 UIScrollView *scrollView;
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[];
+    return @[SCREEN_GUARD_EVT];
 }
+
+- (void)startObserving {
+    hasListeners = YES;
+}
+
+- (void)stopObserving {
+    hasListeners = NO;
+}
+
 
 - (void)secureViewWithBackgroundColor: (NSString *)color {
     if (@available(iOS 13.0, *)) {

@@ -1,5 +1,6 @@
 declare const SCREENSHOT_EVT = 'onScreenShotCaptured';
 declare const SCREEN_RECORDING_EVT = 'onScreenRecordingCaptured';
+declare const SCREEN_GUARD_EVT = 'ScreenGuardEvent';
 declare const BLACK_COLOR = '#000000';
 declare const REGEX: RegExp;
 declare const IMAGE_REGEX: RegExp;
@@ -19,6 +20,7 @@ declare const Alignment: {
 export {
   SCREENSHOT_EVT,
   SCREEN_RECORDING_EVT,
+  SCREEN_GUARD_EVT,
   BLACK_COLOR,
   REGEX,
   IMAGE_REGEX,

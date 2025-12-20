@@ -174,10 +174,6 @@ export default {
      * @version v0.3.6+
      */
     registerScreenRecordingEventListener(getScreenRecordStatus, callback) {
-        if (Platform.OS === 'android') {
-            console.warn('Screen recording event listener is only available on iOS!');
-            return;
-        }
         NativeSGScreenRecord?.registerScreenRecordingEventListener(getScreenRecordStatus ?? false);
         const _onScreenRecording = (res) => {
             callback(res);
@@ -190,10 +186,6 @@ export default {
      * @version v1.0.8+
      */
     removeRecordingEventListener() {
-        if (Platform.OS === 'android') {
-            console.warn('Screen recording event listener is only available on iOS!');
-            return;
-        }
         NativeSGScreenRecord?.removeScreenRecordingEventListener();
         // screenRecordingEmitter?.removeAllListeners(
         // ScreenGuardConstants.SCREEN_RECORDING_EVT
@@ -216,4 +208,4 @@ export default {
         }
     },
 };
-export { ScreenGuardConstants };
+export { ScreenGuardConstants, useScreenGuard };

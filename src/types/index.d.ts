@@ -1,4 +1,5 @@
 import * as ScreenGuardData from './data';
+import { useScreenGuard } from './hooks';
 import * as ScreenGuardConstants from './constant';
 declare const _default: {
   /**
@@ -64,7 +65,7 @@ declare const _default: {
         | null
         | undefined
     ) => void
-  ): (() => void) | undefined;
+  ): () => void;
   /**
    * Remove screen recording event listener
    * @version v1.0.8+
@@ -77,4 +78,4 @@ declare const _default: {
   removeScreenshotEventListener(): void;
 };
 export default _default;
-export { ScreenGuardConstants };
+export { ScreenGuardConstants, useScreenGuard };
