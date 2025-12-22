@@ -9,14 +9,14 @@ import * as ScreenGuardConstants from './constant';
 import * as ScreenGuardHelper from './helper';
 
 var screenShotEmitter: NativeEventEmitter | null = new NativeEventEmitter(
-  NativeSGScreenshot
+  NativeSGScreenshot as any
 );
 
 var screenshotSubscription: any = null;
 var screenRecordingSubscription: any = null;
 
 var screenRecordingEmitter: NativeEventEmitter | null = new NativeEventEmitter(
-  NativeSGScreenRecord
+  NativeSGScreenRecord as any
 );
 
 export default {

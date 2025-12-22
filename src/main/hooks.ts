@@ -14,7 +14,7 @@ export function useScreenGuard() {
   useEffect(() => {
     if (!NativeScreenGuard) return;
 
-    screenGuardEmitter = new NativeEventEmitter(NativeScreenGuard);
+    screenGuardEmitter = new NativeEventEmitter(NativeScreenGuard as any);
 
     screenGuardSubscription = screenGuardEmitter.addListener(
       ScreenGuardConstants.SCREEN_GUARD_EVT,
