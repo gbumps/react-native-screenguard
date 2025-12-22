@@ -1,5 +1,10 @@
-
 {
   "extends": "./tsconfig",
-  "exclude": ["example", "node_modules"]
+  "exclude": [
+    "example",
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "declarationDir": "lib/typescript"
+  }
 }
