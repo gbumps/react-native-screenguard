@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/favicon.ico"><title>JFrog Landing</title><link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,800&display=swap" rel="stylesheet"><script>VERSION = "3.1.20251202";
+      API_PROXY_URL = "https://landing-api.jfrog.com/api/v1/";
+      API_PROXY_URL_V2 = "https://landing-api.jfrog.com/api/v2/";
+      MYJFROG_UI_URL = "https://my.jfrog.com";
+      COOKIES_DOMAIN = "jfrog.com";
+      AWS_PROX_URL = "https://aws.amazon.com/marketplace/pp/B0819LTNJR";
+      DRIFT_EMBED_ID = "gebxvrgwfyr7";
+      GOOGLE_CLIENT_ID = "527996402582-i2kl20du99gjd8dnr3cce1a8ao0sgou7.apps.googleusercontent.com";
+      PLATFORM_DOMAIN = "jfrog.io";
+      CONNECT_DOMAIN = "https://connect.jfrog.io";
+      ENABLE_GCP_PRIVATE_LINK = "true";
+      HEAP_PROJECT_ID = "1702671756";
+      HEAP_ALLOWED_URLS = "https://landing.jfrog.com/mp-unified/";
+      GITHUB_CLIENT_ID = "83db76bbde6d1d9c7140";
+      GITHUB_SSO_REDIRECT_URL = "https://landing.jfrog.com/register/STEP_PLACEHOLDER";
+      RATE_PLAN_ID_PRO_MONTHLY= "8a12862986e9fbda01870499deb37044";
+      RATE_PLAN_ID_ENT_X_MONTHLY= "8a1290f186ea14aa0187048fc33e5334";
+      MAINTENANCE_MODE= "false";</script><script>if (window.MAINTENANCE_MODE === "true" && window.location.href.indexOf("maintenance") === -1) {
+        window.location.href = "/maintenance";
+      }</script><script>MYJFROG_STATE = {};</script><script>(function(w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-N3P9XVQ");</script><script>(function(w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-T6MF8M");</script><script src="https://accounts.google.com/gsi/client" async defer></script><script>(function() {
+        var didInit = false;
+        function initMunchkin() {
+          if (didInit === false) {
+            didInit = true;
+            Munchkin.init("256-FNZ-187");
+          }
+        }
+        var s = document.createElement("script");
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "//munchkin.marketo.net/munchkin.js";
+        s.onreadystatechange = function () {
+          if (this.readyState === "complete" || this.readyState === "loaded") {
+            initMunchkin();
+          }
+        };
+        s.onload = initMunchkin;
+        document.getElementsByTagName("head")[0].appendChild(s);
+      })();</script><script>const currentUrl = window.location.href;
+      const heapAllowedUrls = HEAP_ALLOWED_URLS;
+      let enableHeap = false;
+      const urls = heapAllowedUrls.split(",");
+      for(const allowedUrl of urls){
+        if(allowedUrl && currentUrl.indexOf(allowedUrl)>-1){
+          enableHeap = true;
+        }
+      }
+
+      if (enableHeap) {
+        window.heap = window.heap || [], heap.load = function (e, t) {
+          window.heap.appid = e, window.heap.config = t = t || {};
+          var r = document.createElement("script");
+          r.type = "text/javascript", r.async = !0, r.src = "https://cdn.heapanalytics.com/js/heap-" + e + ".js";
+          var a = document.getElementsByTagName("script")[0];
+          a.parentNode.insertBefore(r, a);
+          for (var n = function (e) {
+            return function () {
+              heap.push([e].concat(Array.prototype.slice.call(arguments, 0)))
+            }
+          }, p = ["addEventProperties", "addUserProperties", "clearEventProperties", "identify", "resetIdentity", "removeEventProperty", "setEventProperties", "track", "unsetEventProperty"], o = 0; o < p.length; o++) heap[p[o]] = n(p[o])
+        };
+
+        heap.load("1702671756");
+      }</script><link href="/css/chunk-04677092.1a354d09.css" rel="prefetch"><link href="/css/chunk-0513e1c1.0bd40812.css" rel="prefetch"><link href="/css/chunk-1068f83c.0a542980.css" rel="prefetch"><link href="/css/chunk-12b6b26f.95b938ae.css" rel="prefetch"><link href="/css/chunk-148b227a.1a354d09.css" rel="prefetch"><link href="/css/chunk-1757042f.1f165cbb.css" rel="prefetch"><link href="/css/chunk-18071eef.2e6bf75f.css" rel="prefetch"><link href="/css/chunk-1a015bbd.5b3c826f.css" rel="prefetch"><link href="/css/chunk-1ff64d98.3798d290.css" rel="prefetch"><link href="/css/chunk-2c185c30.ac66e9b1.css" rel="prefetch"><link href="/css/chunk-317395a4.1890e70a.css" rel="prefetch"><link href="/css/chunk-31da8e23.f91fd2df.css" rel="prefetch"><link href="/css/chunk-33d9a224.5bc476bc.css" rel="prefetch"><link href="/css/chunk-3420a2c9.6b5c42f5.css" rel="prefetch"><link href="/css/chunk-381827b0.81b19452.css" rel="prefetch"><link href="/css/chunk-39618514.1f9e29b5.css" rel="prefetch"><link href="/css/chunk-3c564152.03291ac0.css" rel="prefetch"><link href="/css/chunk-3caf3b81.8fcd7454.css" rel="prefetch"><link href="/css/chunk-3ce4f4ad.0b152cec.css" rel="prefetch"><link href="/css/chunk-3d58e4c9.00bd86a6.css" rel="prefetch"><link href="/css/chunk-4746d5a8.31f54e92.css" rel="prefetch"><link href="/css/chunk-4a4253d3.04bb01f9.css" rel="prefetch"><link href="/css/chunk-4b52d6f9.48d9dedf.css" rel="prefetch"><link href="/css/chunk-50de8675.9d2899f2.css" rel="prefetch"><link href="/css/chunk-50f50b53.b29ac503.css" rel="prefetch"><link href="/css/chunk-5373bc52.e621a177.css" rel="prefetch"><link href="/css/chunk-54b2cb72.7e85bc6f.css" rel="prefetch"><link href="/css/chunk-568d7eca.2d7f5384.css" rel="prefetch"><link href="/css/chunk-58b69de0.4edc0677.css" rel="prefetch"><link href="/css/chunk-5992bc6f.7d2788b3.css" rel="prefetch"><link href="/css/chunk-5b7729f7.2f0e820a.css" rel="prefetch"><link href="/css/chunk-5f676ef6.a0165a89.css" rel="prefetch"><link href="/css/chunk-611fed26.8094c7fa.css" rel="prefetch"><link href="/css/chunk-62250f32.d4a113a2.css" rel="prefetch"><link href="/css/chunk-62a7dd00.a0cdf461.css" rel="prefetch"><link href="/css/chunk-67296aa6.3ffe749a.css" rel="prefetch"><link href="/css/chunk-6b09c278.1d5d32c1.css" rel="prefetch"><link href="/css/chunk-7c731679.348194d7.css" rel="prefetch"><link href="/css/chunk-7ec8e372.87773602.css" rel="prefetch"><link href="/css/chunk-8aae8b36.7d2cd02e.css" rel="prefetch"><link href="/css/chunk-91fa9824.069d8018.css" rel="prefetch"><link href="/css/chunk-a8a61f36.677a2402.css" rel="prefetch"><link href="/css/chunk-aafdb71e.f14be58a.css" rel="prefetch"><link href="/css/chunk-b4abecc2.a326e93a.css" rel="prefetch"><link href="/css/chunk-ce1225f8.e88302cb.css" rel="prefetch"><link href="/css/chunk-dc2cb30e.759abff0.css" rel="prefetch"><link href="/css/chunk-f6dbd184.2c728934.css" rel="prefetch"><link href="/css/chunk-f7c81e10.8edf82e0.css" rel="prefetch"><link href="/js/chunk-04677092.f1d20c2b.js" rel="prefetch"><link href="/js/chunk-0513e1c1.228473c9.js" rel="prefetch"><link href="/js/chunk-1068f83c.6bd79e15.js" rel="prefetch"><link href="/js/chunk-12b6b26f.7350cbb6.js" rel="prefetch"><link href="/js/chunk-148b227a.b72299f7.js" rel="prefetch"><link href="/js/chunk-1757042f.67f885a7.js" rel="prefetch"><link href="/js/chunk-18071eef.0dc4a212.js" rel="prefetch"><link href="/js/chunk-1a015bbd.2b01fa27.js" rel="prefetch"><link href="/js/chunk-1bb05a92.2c9b7df7.js" rel="prefetch"><link href="/js/chunk-1ff64d98.d9d3a387.js" rel="prefetch"><link href="/js/chunk-2c185c30.8938796b.js" rel="prefetch"><link href="/js/chunk-2d0b2916.fa43be4f.js" rel="prefetch"><link href="/js/chunk-2d0ddbee.d269ca87.js" rel="prefetch"><link href="/js/chunk-2d208668.09425d11.js" rel="prefetch"><link href="/js/chunk-2d20f68c.c180fac8.js" rel="prefetch"><link href="/js/chunk-2d230855.73166be9.js" rel="prefetch"><link href="/js/chunk-2d230df6.fb398f15.js" rel="prefetch"><link href="/js/chunk-317395a4.60aa0f73.js" rel="prefetch"><link href="/js/chunk-31da8e23.788cbdb4.js" rel="prefetch"><link href="/js/chunk-33d9a224.66d1080c.js" rel="prefetch"><link href="/js/chunk-3420a2c9.3defa945.js" rel="prefetch"><link href="/js/chunk-381827b0.3535c47b.js" rel="prefetch"><link href="/js/chunk-39618514.fb755329.js" rel="prefetch"><link href="/js/chunk-3c564152.7994e977.js" rel="prefetch"><link href="/js/chunk-3caf3b81.acae4d49.js" rel="prefetch"><link href="/js/chunk-3ce4f4ad.e9abb4c7.js" rel="prefetch"><link href="/js/chunk-3d58e4c9.2726c84d.js" rel="prefetch"><link href="/js/chunk-4746d5a8.a2503e26.js" rel="prefetch"><link href="/js/chunk-4a4253d3.1eb3d2c4.js" rel="prefetch"><link href="/js/chunk-4b52d6f9.caf93780.js" rel="prefetch"><link href="/js/chunk-50de8675.4c87d217.js" rel="prefetch"><link href="/js/chunk-50f50b53.f42562b1.js" rel="prefetch"><link href="/js/chunk-5373bc52.055d54ec.js" rel="prefetch"><link href="/js/chunk-54b2cb72.73d996c9.js" rel="prefetch"><link href="/js/chunk-568d7eca.53a6d866.js" rel="prefetch"><link href="/js/chunk-58b69de0.96cde633.js" rel="prefetch"><link href="/js/chunk-5992bc6f.14e48009.js" rel="prefetch"><link href="/js/chunk-5b7729f7.e5a583a0.js" rel="prefetch"><link href="/js/chunk-5f676ef6.d93a19e8.js" rel="prefetch"><link href="/js/chunk-611fed26.bd44e8d1.js" rel="prefetch"><link href="/js/chunk-62250f32.e38a949b.js" rel="prefetch"><link href="/js/chunk-62a7dd00.9d7c9600.js" rel="prefetch"><link href="/js/chunk-67296aa6.11ae13be.js" rel="prefetch"><link href="/js/chunk-6b09c278.0a3231da.js" rel="prefetch"><link href="/js/chunk-7c731679.9bda7ef9.js" rel="prefetch"><link href="/js/chunk-7ec8e372.af8cf35d.js" rel="prefetch"><link href="/js/chunk-8aae8b36.5ffff94a.js" rel="prefetch"><link href="/js/chunk-91fa9824.df32991b.js" rel="prefetch"><link href="/js/chunk-a8a61f36.249b2baa.js" rel="prefetch"><link href="/js/chunk-aafdb71e.499f3b68.js" rel="prefetch"><link href="/js/chunk-b4abecc2.31abcbd3.js" rel="prefetch"><link href="/js/chunk-ce1225f8.33dc526f.js" rel="prefetch"><link href="/js/chunk-dc2cb30e.981282b4.js" rel="prefetch"><link href="/js/chunk-f6dbd184.2860fb4d.js" rel="prefetch"><link href="/js/chunk-f7c81e10.1418455b.js" rel="prefetch"><link href="/css/app.c9214289.css" rel="preload" as="style"><link href="/css/chunk-vendors.8d0ab741.css" rel="preload" as="style"><link href="/js/app.752c5d0c.js" rel="preload" as="script"><link href="/js/chunk-vendors.b34998fb.js" rel="preload" as="script"><link href="/css/chunk-vendors.8d0ab741.css" rel="stylesheet"><link href="/css/app.c9214289.css" rel="stylesheet"></head><body><noscript><strong>MyJFrog doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N3P9XVQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript><div id="app"></div><script src="/js/chunk-vendors.b34998fb.js"></script><script src="/js/app.752c5d0c.js"></script></body></html>
