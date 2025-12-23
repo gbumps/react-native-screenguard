@@ -8,8 +8,7 @@
 
 ![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue)
 
-
-https://github.com/gbumps/react-native-screenguard/assets/16846439/26d8ac37-9bc3-4d5b-8ad5-93525fb90a72
+https://github-production-user-asset-6210df.s3.amazonaws.com/16846439/246678740-26d8ac37-9bc3-4d5b-8ad5-93525fb90a72.mp4
 
 You can find full documentation and how to use [here](https://gbumps.github.io/react-native-screenguard)
 
