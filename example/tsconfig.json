@@ -12,7 +12,11 @@
         "noEmit": true,
         "strict": true,
         "target": "esnext",
+        "baseUrl": ".",
         "paths": {
+            "react-native-screenguard": [
+                "../src/main"
+            ],
             "react": [
                 "./node_modules/react"
             ],

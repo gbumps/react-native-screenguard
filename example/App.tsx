@@ -24,7 +24,7 @@ import {
     LearnMoreLinks,
     ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import ScreenGuardModule from '../';
+import ScreenGuardModule from 'react-native-screenguard';
 
 type SectionProps = {
     children: React.ReactNode;
