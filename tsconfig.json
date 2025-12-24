@@ -2,18 +2,22 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "react-native-screenguard": ["./src/commonjs/index"],
+      "react-native-screenguard": [
+        "./src/main/index"
+      ],
     },
-    "outDir": "./src/commonjs",      
-    "declaration": true,             
-    "declarationDir": "./src/types", 
-    "rootDir": "./src/main",         
-    "esModuleInterop": true,         
+    "outDir": "./src/commonjs",
+    "declaration": true,
+    "declarationDir": "./src/types",
+    "rootDir": "./src/main",
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "jsx": "react",
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
@@ -29,7 +33,12 @@
     "target": "esnext",
   },
   "include": [
-    "src/main/**/*.ts"  // Include all TypeScript files in the main folder for compilation
-, "src/main/NativeScreenGuard.ts"  ],
-  "exclude": ["example", "node_modules"]
+    "src/main/**/*.ts"
+    ,
+    "src/main/NativeScreenGuard.ts"
+  ],
+  "exclude": [
+    "example",
+    "node_modules"
+  ]
 }

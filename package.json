@@ -33,17 +33,17 @@
   },
   "peerDependencies": {
     "react": ">=17 <19",
-    "react-native": ">=0.70 <0.78"
+    "react-native": ">=0.68.0"
   },
   "engines": {
     "node": ">= 16.0.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "pre": "npm pack --dry-run",
-    "pub": "npm publish",
+    "pub": "bob build && npm publish",
     "prepare": "bob build",
-    "build": "bob build",
+    "build": "rm -rf lib && bob build",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
@@ -54,10 +54,14 @@
     "screenguard",
     "detector",
     "screen-capture",
-    "capture",
+    "capturing",
     "protection",
     "prevent",
     "screenshot",
+    "secure",
+    "security",
+    "privacy",
+    "screen-capture",
     "capture-protection",
     "screenshot-prevent",
     "screenshot-blocker",
@@ -118,8 +122,7 @@
         {
           "project": "tsconfig.build.json"
         }
-      ],
-      "flow"
+      ]
     ]
   }
 }
