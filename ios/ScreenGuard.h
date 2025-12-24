@@ -6,6 +6,7 @@
 #import <React/RCTComponent.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTConvert.h>
+#import <React/RCTInvalidating.h>
 
 #if __has_include(<React/RCTBridgeModule.h>)
 #import <React/RCTBridgeModule.h>
@@ -29,23 +30,17 @@ typedef NS_ENUM(NSInteger, ScreenGuardImageAlignment) {
     AlignmentBottomRight
 };
 
+
 NSString* _Nullable NSStringFromAlignment(ScreenGuardImageAlignment alignment);
 
 #if RCT_NEW_ARCH_ENABLED
-@interface ScreenGuard: EventEmitter <NativeScreenGuardSpec>
+@interface ScreenGuard: EventEmitter <NativeScreenGuardSpec, RCTInvalidating>
+@property (nonatomic, strong, readonly) NSDictionary *config;
 @end
 #else
-@interface ScreenGuard : EventEmitter <RCTBridgeModule>
-- (void)secureViewWithBackgroundColor: (NSString *_Nonnull)color;
-- (void)secureViewWithBlurView: (nonnull NSNumber *)radius;
-- (void)secureViewWithImage: (nonnull NSDictionary *) source
-          withDefaultSource: (nullable NSDictionary *) defaultSource
-                  withWidth: (nonnull NSNumber *) width
-                 withHeight: (nonnull NSNumber *) height
-              withAlignment: (ScreenGuardImageAlignment) alignment
-        withBackgroundColor: (nonnull NSString *) backgroundColor;
-- (void)removeScreenShot;
-- (UIColor *_Nonnull)colorFromHexString:(NSString *_Nonnull)hexString;
-- (UIImage *_Nonnull)convertViewToImage:(UIView *_Nonnull)view;
+@interface ScreenGuard : EventEmitter <RCTBridgeModule, RCTInvalidating>
+@property (nonatomic, strong, readonly) NSDictionary *config;
++ (instancetype) shared;
+- (void)configureWithParams: (NSDictionary *)params;
 @end
 #endif
