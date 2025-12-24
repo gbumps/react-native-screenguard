@@ -201,20 +201,15 @@ export interface ScreenGuardScreenRecordDataObject {
 
 export interface ScreenGuardHookData {
   /**
-   * check if screenguard is activated
-   * @defaultValue false
-   */
-  isActivated: boolean;
-  /**
-   * Method of screenguard activation
+   * Method of screenguard activation (blur, image, color)
    * @defaultValue '' (empty string)
    */
   method: string;
   /**
-   * Current screenguard settings
-   * @defaultValue default settings
-   */
-  currentSettings: ScreenGuardSettingsData;
+  * check if screenguard is currently securing the screen
+  * @defaultValue false
+  */
+  isProtected: boolean;
 }
 
 export interface ScreenGuardSettingsData {
@@ -233,4 +228,48 @@ export interface ScreenGuardSettingsData {
    * @defaultValue false
    */
   enableContentMultitask?: boolean | false;
+  /**
+   * When enabled, the screen guard will be displayed over the app if user capture the screen 
+   * for a time period based on the timeAfterResume property. If user recording, the screen guard
+   * will be displayed over the app and disappear after user stop recording.
+   * 
+   * WARNING: USE AT YOUR OWN RISK! ONLY ENABLE IF IT'S NOT AFFECTING UI/UX OR APP'S BUSINESS LOGIC;
+   * @defaultValue false
+   */
+  displayOverlay?: boolean | false;
+  /**
+   * Time for displaying the screenguard overlay after user captured the screen (in milliseconds)
+   * 
+   * Work when displayOverlay = true
+   *
+   * @exception when < 0 or not a number
+   *
+   * @defaultValue `1000`
+   */
+  timeAfterResume?: number | 1000;
+  /**
+   * Get screenshot path after user capture the screen
+   * @defaultValue false
+  */
+  getScreenshotPath?: boolean | false;
+  /**
+   * Limit the number of screenshot events triggered
+   * 
+   * null or 0: trigger every time
+   * > 0: trigger after n times
+   * @defaultValue null
+   */
+  limitCaptureEvtCount?: number | null;
+  /**
+   * Allow to recording log in native storage
+   * @defaultValue false
+   */
+  trackingLog?: boolean | false;
+}
+
+export interface ScreenGuardLogEntry {
+  timestamp: number;
+  action: string;
+  isProtected: boolean;
+  method: string;
 }
