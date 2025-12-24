@@ -23,6 +23,35 @@ export interface Spec extends TurboModule {
      *
      */
     enableContentMultitask: boolean;
+    /**
+     * when enabled, the screen guard will be displayed over the app if user capture the screen
+     * for a time period based on the timeAfterResume property.
+     *
+     * @defaultValue `false`
+     */
+    displayOverlay?: boolean;
+    /**
+     * time after resume to display the screen guard overlay (in milliseconds)
+     *
+     * @defaultValue `1000`
+     */
+    timeAfterResume?: number;
+    /**
+     * get screenshot path after captured
+     *
+     * @defaultValue `false`
+     */
+    getScreenshotPath?: boolean;
+    /**
+     * Limit the number of screenshot events triggered
+     * @defaultValue `null`
+     */
+    limitCaptureEvtCount?: number;
+    /**
+     * Allow to record log in native storage
+     * @defaultValue `false`
+     */
+    trackingLog?: boolean;
   }) => Promise<void>;
   activateShield: (data: {
     /**
@@ -204,6 +233,12 @@ export interface Spec extends TurboModule {
     timeAfterResume?: number;
   }) => Promise<void>;
   deactivateShield: () => Promise<void>;
+  getScreenGuardLogs: (maxCount: number) => Promise<Array<{
+    timestamp: number;
+    action: string;
+    isProtected: boolean;
+    method: string;
+  }>>;
 }
 
 export default TurboModuleRegistry.get<Spec>('ScreenGuard');

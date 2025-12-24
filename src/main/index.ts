@@ -1,32 +1,36 @@
-import { NativeEventEmitter, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import * as ScreenGuardData from './data';
 import NativeScreenGuard from './NativeScreenGuard';
-import NativeSGScreenshot from './NativeSGScreenshot';
-import NativeSGScreenRecord from './NativeSGScreenRecord';
-import { useScreenGuard } from './hooks';
+import { useScreenGuard } from './useScreenGuard';
+import { useSGScreenShot } from './useSGScreenShot';
+import { useSGScreenRecord } from './useSGScreenRecord';
 
 import * as ScreenGuardConstants from './constant';
 import * as ScreenGuardHelper from './helper';
 
-var screenShotEmitter: NativeEventEmitter | null = new NativeEventEmitter(
-  NativeSGScreenshot as any
-);
 
-var screenshotSubscription: any = null;
-var screenRecordingSubscription: any = null;
 
-var screenRecordingEmitter: NativeEventEmitter | null = new NativeEventEmitter(
-  NativeSGScreenRecord as any
-);
+let _isInitialized = false;
 
 export default {
-  async init(data?: ScreenGuardData.ScreenGuardSettingsData | null) {
+  /**
+   * initialize the screen guard with settings
+   * @param data ScreenGuardSettingsData
+   * @version v0.0.2+
+   */
+  async initSettings(data?: ScreenGuardData.ScreenGuardSettingsData | null) {
     let currentSettings = {
       enableCapture: data?.enableCapture ?? false,
       enableRecord: data?.enableRecord ?? false,
       enableContentMultitask: data?.enableContentMultitask ?? false,
+      displayOverlay: data?.displayOverlay ?? false,
+      timeAfterResume: data?.timeAfterResume ?? ScreenGuardConstants.TIME_DELAYED,
+      getScreenshotPath: data?.getScreenshotPath ?? false,
+      limitCaptureEvtCount: data?.limitCaptureEvtCount ?? undefined,
+      trackingLog: data?.trackingLog ?? false,
     };
     await NativeScreenGuard?.initSettings(currentSettings);
+    _isInitialized = true;
   },
   /**
    * activate screenshot blocking with a color effect (iOS 13+, Android 8+)
@@ -34,6 +38,9 @@ export default {
    * @version v0.0.2+
    */
   async register(data: ScreenGuardData.ScreenGuardColorData) {
+    if (!_isInitialized) {
+      throw new Error('ScreenGuard is not initialized. Please call initSettings() first!');
+    }
     let {
       backgroundColor = ScreenGuardConstants.BLACK_COLOR,
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
@@ -57,6 +64,9 @@ export default {
    * @version v1.0.0+
    */
   async registerWithoutEffect() {
+    if (!_isInitialized) {
+      throw new Error('ScreenGuard is not initialized. Please call initSettings() first!');
+    }
     if (Platform.OS === 'android') {
       await NativeScreenGuard?.activateShieldWithoutEffect();
     } else {
@@ -72,6 +82,9 @@ export default {
    * @version v0.1.2+
    */
   async registerWithBlurView(data: ScreenGuardData.ScreenGuardBlurDataObject) {
+    if (!_isInitialized) {
+      throw new Error('ScreenGuard is not initialized. Please call initSettings() first!');
+    }
     const {
       radius = ScreenGuardConstants.RADIUS_DEFAULT,
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
@@ -120,6 +133,9 @@ export default {
    * @version v1.0.2+
    */
   async registerWithImage(data: ScreenGuardData.ScreenGuardImageDataObject) {
+    if (!_isInitialized) {
+      throw new Error('ScreenGuard is not initialized. Please call initSettings() first!');
+    }
     let {
       source,
       width,
@@ -221,88 +237,18 @@ export default {
   },
 
   /**
-   * Screenshot event listener
-   * Register for screenshot event listener
-   * @param getScreenShotPath if true, callback will return a ScreenGuardScreenShotPathDataObject containing info of an image after captured, null otherwise. Default = false
-   * @param callback callback after a screenshot has been triggered.
-   * @version v0.3.6+
+   * Get the current logs of screenguard
+   * @param maxCount maximum number of logs to retrieve
+   * @version v2.1+
    */
-  registerScreenshotEventListener(
-    getScreenShotPath: boolean,
-    callback: (
-      data?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
-    ) => void
-  ) {
-    NativeSGScreenshot?.registerScreenshotEventListener(getScreenShotPath);
-    const _onScreenCapture = (
-      res?: ScreenGuardData.ScreenGuardScreenShotPathDataObject | null
-    ) => {
-      callback(res);
-    };
-    screenshotSubscription = screenShotEmitter?.addListener(
-      ScreenGuardConstants.SCREENSHOT_EVT,
-      _onScreenCapture
-    );
-    return () => this.removeScreenshotEventListener();
-  },
-
-  /**
-   * Screen recording event listener (iOS only)
-   * Register for screen recording event listener
-   * @version v0.3.6+
-   */
-  registerScreenRecordingEventListener(
-    getScreenRecordStatus: boolean,
-    callback: (
-      data?: ScreenGuardData.ScreenGuardScreenRecordDataObject | null
-    ) => void
-  ) {
-    NativeSGScreenRecord?.registerScreenRecordingEventListener(
-      getScreenRecordStatus ?? false
-    );
-    const _onScreenRecording = (
-      res?: ScreenGuardData.ScreenGuardScreenRecordDataObject | null
-    ) => {
-      callback(res);
-    };
-    screenRecordingSubscription = screenRecordingEmitter?.addListener(
-      ScreenGuardConstants.SCREEN_RECORDING_EVT,
-      _onScreenRecording
-    );
-    return () => this.removeRecordingEventListener();
-  },
-
-  /**
-   * Remove screen recording event listener
-   * @version v1.0.8+
-   */
-  removeRecordingEventListener() {
-    if (Platform.OS === 'android') {
-      console.warn('Screen recording event listener is only available on iOS!');
-      return;
-    }
-    NativeSGScreenRecord?.removeScreenRecordingEventListener();
-    // screenRecordingEmitter?.removeAllListeners(
-    // ScreenGuardConstants.SCREEN_RECORDING_EVT
-    // );
-    if (screenRecordingSubscription != null) {
-      screenRecordingSubscription.remove();
-      screenRecordingSubscription = null;
-    }
-  },
-
-  /**
-   * Remove screenshot event listener
-   * @version v1.0.8+
-   */
-  removeScreenshotEventListener() {
-    NativeSGScreenshot?.removeScreenshotEventListener();
-    // screenShotEmitter?.removeAllListeners(ScreenGuardConstants.SCREENSHOT_EVT);
-    if (screenshotSubscription != null) {
-      screenshotSubscription.remove();
-      screenshotSubscription = null;
+  async getScreenGuardLogs(maxCount = 10) {
+    try {
+      return await NativeScreenGuard?.getScreenGuardLogs(maxCount);
+    } catch (error) {
+      console.error('Error getScreenGuardLogs:', error);
+      return [];
     }
   },
 };
 
-export { ScreenGuardConstants, useScreenGuard };
+export { ScreenGuardConstants, useScreenGuard, useSGScreenShot, useSGScreenRecord };
