@@ -25,6 +25,11 @@ class ScreenGuard extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void initSettings(ReadableMap data) {
+        delegate.initSettings(data);
+    }
+
+    @ReactMethod
     public void activateShieldWithBlurView(ReadableMap screenGuardBlurData, Promise promise) {
         try {
             delegate.activateShieldWithBlurView(screenGuardBlurData);
@@ -72,6 +77,11 @@ class ScreenGuard extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             promise.reject("deactivateShield", e.getMessage());
         }
+    }
+
+    @ReactMethod
+    public void getScreenGuardLogs(double maxCount, Promise promise) {
+        delegate.getScreenGuardLogs(maxCount, promise);
     }
 
 }

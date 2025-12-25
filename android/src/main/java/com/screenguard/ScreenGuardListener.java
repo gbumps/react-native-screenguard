@@ -17,13 +17,13 @@ public class ScreenGuardListener {
     private final ContentResolver mContentResolver;
     private final ContentObserver mContentObserver;
 
-    public ScreenGuardListener(ReactApplicationContext context, Boolean getScreenShot, Listener listener) {
+    public ScreenGuardListener(ReactApplicationContext context, Boolean getScreenShot, int limitCount, Listener listener) {
         mHandlerThread = new HandlerThread(NAME);
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
         mContentResolver = context.getContentResolver();
         mContentObserver = new ScreenGuardObserver(
-                context, mHandler, mContentResolver, listener, getScreenShot);
+                context, mHandler, mContentResolver, listener, getScreenShot, limitCount);
     }
 
     public void register() {

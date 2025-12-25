@@ -20,19 +20,23 @@ public class ScreenGuardObserver extends ContentObserver {
     private ContentResolver mContentResolver;
     private final ScreenGuardListener.Listener mListener;
     private Boolean getScreenShotPath;
+    private int mLimitCount = 0;
+    private int mCurrentCount = 0;
 
     public ScreenGuardObserver(
             ReactApplicationContext context, 
             Handler handler, 
             ContentResolver contentResolver, 
             ScreenGuardListener.Listener listener,
-            Boolean isGetScreenShotPath
+            Boolean isGetScreenShotPath,
+            int limitCount
     ) {
         super(handler);
         mContext = context;
         mContentResolver = contentResolver;
         mListener = listener;
         getScreenShotPath = isGetScreenShotPath;
+        mLimitCount = limitCount;
     }
 
     @Override
@@ -48,6 +52,12 @@ public class ScreenGuardObserver extends ContentObserver {
     @Override
     public void onChange(boolean selfChange, Uri uri) {
         super.onChange(selfChange, uri);
+        
+        mCurrentCount++;
+        if (mLimitCount > 0 && mCurrentCount < mLimitCount) {
+            return;
+        }
+
         WritableMap map = Arguments.createMap();
         Activity currentActivity = mContext.getCurrentActivity();
         if (currentActivity != null && getScreenShotPath) {
