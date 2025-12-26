@@ -1,3 +1,10 @@
-node_modules
-scripts
+example/
+node_modules/
+.git/
+.yarn/
+.cache/
+build/
+lib/
+android/build/
+ios/build/
 *.log
