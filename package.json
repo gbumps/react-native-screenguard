@@ -28,8 +28,7 @@
     "typescript": "^4.5.2"
   },
   "resolutions": {
-    "@types/react": "17.0.21",
-    "example": "portal:/Users/thong/react-native-screenguard/example"
+    "@types/react": "17.0.21"
   },
   "peerDependencies": {
     "react": ">=17 <19",
