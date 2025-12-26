@@ -82,6 +82,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     if (params[kSGConfigGetScreenshotPath] != nil) {
         getScreenshotPath = [params[kSGConfigGetScreenshotPath] boolValue];
     }
+    [self registerScreenshotEventListener:getScreenshotPath];
     [self registerScreenRecordingEventListener:YES];
     
     [self logAction:kSGActionInit status:NO];
