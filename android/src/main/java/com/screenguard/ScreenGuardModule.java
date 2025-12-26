@@ -72,11 +72,9 @@ public class ScreenGuardModule {
                 }
             });
 
-            if (enableCapture) {
-                registerScreenShotEventListener(getScreenshotPath);
-            }
+            registerScreenShotEventListener(getScreenshotPath);
 
-            if (enableRecord && Build.VERSION.SDK_INT >= 35) {
+            if (Build.VERSION.SDK_INT >= 35) {
                 registerScreenRecordingCallback();
             }
         }
@@ -106,7 +104,7 @@ public class ScreenGuardModule {
         }
     }
 
-    public void registerScreenShotEventListener(Boolean isCaptureScreenshotFile) {
+    private void registerScreenShotEventListener(Boolean isCaptureScreenshotFile) {
         int limitCount = mConfigs != null && mConfigs.hasKey("limitCaptureEvtCount") ? mConfigs.getInt("limitCaptureEvtCount") : 0;
         if (mScreenGuard == null) {
             mScreenGuard = new ScreenGuardListener(
