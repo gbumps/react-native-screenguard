@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.facebook.react.ReactActivity;
 import com.screenguard.enums.ScreenGuardActionEnum;
 import com.screenguard.helper.ScreenGuardClassName;
+import com.screenguard.helper.ScreenGuardConstants;
 import com.screenguard.helper.ScreenGuardImagePosition;
 import com.screenguard.model.ScreenGuardBlurData;
 import com.screenguard.model.ScreenGuardColorData;
@@ -47,6 +48,8 @@ public class ScreenGuardColorActivity extends ReactActivity  {
     private ScreenGuardActionEnum currentActionType;
 
     private static final int COLOR_TRANS = 0x00000004;
+    
+    private boolean allowBackpress = false;
 
     private final BroadcastReceiver closeReceiver = new BroadcastReceiver() {
         @Override
@@ -86,6 +89,7 @@ public class ScreenGuardColorActivity extends ReactActivity  {
                 screenGuardImageData = dataImage;
                 currentActionType = ScreenGuardActionEnum.image;
             }
+             allowBackpress = intent.getBooleanExtra(ScreenGuardConstants.ALLOW_BACKPRESS, false);
         }
         overridePendingTransition(0, 0);
         IntentFilter intentFilter = new IntentFilter(ScreenGuardClassName.SCREENGUARD_COLOR_ACTIVITY_CLOSE);
@@ -134,6 +138,10 @@ public class ScreenGuardColorActivity extends ReactActivity  {
 
     @Override
     public void onBackPressed() {
+        if (allowBackpress) {
+            super.onBackPressed();
+            return;
+        }
         doCoverByAction();
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);

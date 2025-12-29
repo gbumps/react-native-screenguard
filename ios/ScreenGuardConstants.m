@@ -39,4 +39,5 @@ NSString *const kSGErrorActivateShieldBlur = @"activateShieldWithBlurView";
 NSString *const kSGErrorActivateShieldImage = @"activateShieldWithImage";
 NSString *const kSGErrorDeactivateShield = @"deactivateShield";
 NSString *const kSGErrorActivateShieldNoEffect = @"activateShieldWithoutEffect";
-NSString *const kSGErrorInvalidParams = @"EINVAL";
+NSString *const kSGErrorInvalidParams = @"SG_ERROR_INVALID_PARAMS";
+NSString *const kSGErrorNotInitialized = @"SG_ERROR_NOT_INITIALIZED";

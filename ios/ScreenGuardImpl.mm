@@ -179,18 +179,32 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 }
 
 - (void)removeOverlay {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    if ([NSThread isMainThread]) {
         if (self->_overlayView) {
             [self->_overlayView removeFromSuperview];
             self->_overlayView = nil;
         }
-    });
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self removeOverlay];
+        });
+    }
 }
 
 
 #pragma mark - Secure View Methods
 
 - (void)initTextField {
+    UIWindow *window = RCTKeyWindow();
+    if (window == nil) {
+        window = [UIApplication sharedApplication].keyWindow;
+    }
+    
+    if (window == nil) {
+        RCTLogInfo(@"ScreenGuard: Window not found, retrying...");
+        return;
+    }
+
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     _textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, screenRect.size.width, screenRect.size.height)];
     _textField.translatesAutoresizingMaskIntoConstraints = NO;
@@ -198,56 +212,82 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     [_textField setTextAlignment:NSTextAlignmentCenter];
     [_textField setUserInteractionEnabled: NO];
     
-    UIWindow *window = RCTKeyWindow();
-    [window makeKeyAndVisible];
-    [window.layer.superlayer addSublayer:_textField.layer];
+    // Set default secure status based on config if available
+    BOOL shouldSecure = YES;
+    if (_config != nil) {
+        shouldSecure = ![_config[kSGConfigEnableCapture] boolValue] || ![_config[kSGConfigEnableRecord] boolValue];
+    }
+    [_textField setSecureTextEntry:shouldSecure];
     
-    if (_textField.layer.sublayers.firstObject) {
+    [window makeKeyAndVisible];
+    
+    if (window.layer.superlayer) {
+        [window.layer.superlayer addSublayer:_textField.layer];
+    } else {
+        [window addSubview:_textField];
+    }
+    
+    if (_textField.layer.sublayers.count > 0) {
         [_textField.layer.sublayers.firstObject addSublayer: window.layer];
     }
 }
 
 - (void)secureViewWithBackgroundColor:(NSString *)color {
+    if (_config == nil) {
+        RCTLogWarn(@"ScreenGuard: initSettings must be called before register");
+        return;
+    }
     if (@available(iOS 13.0, *)) {
-        if (_textField == nil) {
-            [self initTextField];
-        }
-        [_textField setBackgroundColor: [self colorFromHexString: color]];
-        _currentMethod = kSGMethodColor;
-        [self applySecureState];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self->_textField == nil) {
+                [self initTextField];
+            }
+            if (self->_textField) {
+                [self->_textField setBackgroundColor: [self colorFromHexString: color]];
+                self->_currentMethod = kSGMethodColor;
+                [self applySecureState];
+            }
+        });
     }
 }
 
 - (void)secureViewWithBlurView:(NSNumber *)radius {
+    if (_config == nil) {
+        RCTLogWarn(@"ScreenGuard: initSettings must be called before registerWithBlurView");
+        return;
+    }
     if (@available(iOS 13.0, *)) {
-        if (_textField == nil) {
-            [self initTextField];
-        }
-        
-        [_textField setBackgroundColor: [UIColor clearColor]];
-        UIViewController *presentedViewController = RCTPresentedViewController();
-        if (presentedViewController) {
-             UIImage *imageView = [self convertViewToImage:presentedViewController.view.superview];
-             CIImage *inputImage = [CIImage imageWithCGImage:imageView.CGImage];
-             
-             CIContext *context = [CIContext contextWithOptions:nil];
-             
-             CIFilter *blurFilter = [CIFilter filterWithName:@"CIGaussianBlur"];
-             [blurFilter setValue:inputImage forKey:kCIInputImageKey];
-             [blurFilter setValue:radius forKey:kCIInputRadiusKey];
-             
-             CIImage *outputImage = [blurFilter valueForKey:kCIOutputImageKey];
-             
-             CGImageRef cgImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
-             
-             UIImage *blurredImage = [UIImage imageWithCGImage:cgImage];
-             
-             CGImageRelease(cgImage);
-             
-             [_textField setBackground: blurredImage];
-        }
-        _currentMethod = kSGMethodBlur;
-        [self applySecureState];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self->_textField == nil) {
+                [self initTextField];
+            }
+            if (self->_textField) {
+                [self->_textField setBackgroundColor: [UIColor clearColor]];
+                UIViewController *presentedViewController = RCTPresentedViewController();
+                if (presentedViewController) {
+                     UIImage *imageView = [self convertViewToImage:presentedViewController.view.superview];
+                     CIImage *inputImage = [CIImage imageWithCGImage:imageView.CGImage];
+                     
+                     CIContext *context = [CIContext contextWithOptions:nil];
+                     
+                     CIFilter *blurFilter = [CIFilter filterWithName:@"CIGaussianBlur"];
+                     [blurFilter setValue:inputImage forKey:kCIInputImageKey];
+                     [blurFilter setValue:radius forKey:kCIInputRadiusKey];
+                     
+                     CIImage *outputImage = [blurFilter valueForKey:kCIOutputImageKey];
+                     
+                     CGImageRef cgImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
+                     
+                     UIImage *blurredImage = [UIImage imageWithCGImage:cgImage];
+                     
+                     CGImageRelease(cgImage);
+                     
+                     [self->_textField setBackground: blurredImage];
+                }
+                self->_currentMethod = kSGMethodBlur;
+                [self applySecureState];
+            }
+        });
     }
 }
 
@@ -258,42 +298,49 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
                        withAlignment:(ScreenGuardImageAlignment)alignment
                  withBackgroundColor:(NSString *)backgroundColor
 {
+    if (_config == nil) {
+        RCTLogWarn(@"ScreenGuard: initSettings must be called before registerWithImage");
+        return;
+    }
     if (@available(iOS 13.0, *)) {
-        if (_textField == nil) {
-            [self initTextField];
-        }
-        
-        [_textField setContentMode: UIViewContentModeCenter];
-        
-        _imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
-        
-        _imageView.translatesAutoresizingMaskIntoConstraints = NO;
-        [_imageView setClipsToBounds:YES];
-        
-        if (source[@"uri"] != nil) {
-            NSString *uriImage = source[@"uri"];
-            NSString *uriDefaultSource = defaultSource[@"uri"];
-            NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
-            SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
-            UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
-            
-            [_imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
-                          placeholderImage: thumbnailImage
-                                   options: downloaderOptions
-                                 completed: nil];
-        }
-        if (_scrollView == nil) {
-            _scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-            _scrollView.showsHorizontalScrollIndicator = NO;
-            _scrollView.showsVerticalScrollIndicator = NO;
-            _scrollView.scrollEnabled = false;
-        }
-        [self setImageView: alignment];
-        [_textField addSubview: _scrollView];
-        [_textField sendSubviewToBack: _scrollView];
-        [_textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
-        _currentMethod = kSGMethodImage;
-        [self applySecureState];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self->_textField == nil) {
+                [self initTextField];
+            }
+            if (self->_textField) {
+                [self->_textField setContentMode: UIViewContentModeCenter];
+                
+                self->_imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
+                
+                self->_imageView.translatesAutoresizingMaskIntoConstraints = NO;
+                [self->_imageView setClipsToBounds:YES];
+                
+                if (source[@"uri"] != nil) {
+                    NSString *uriImage = source[@"uri"];
+                    NSString *uriDefaultSource = defaultSource[@"uri"];
+                    NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
+                    SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
+                    UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
+                    
+                    [self->_imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
+                                  placeholderImage: thumbnailImage
+                                           options: downloaderOptions
+                                         completed: nil];
+                }
+                if (self->_scrollView == nil) {
+                    self->_scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+                    self->_scrollView.showsHorizontalScrollIndicator = NO;
+                    self->_scrollView.showsVerticalScrollIndicator = NO;
+                    self->_scrollView.scrollEnabled = false;
+                }
+                [self setupImageViewAlignment: alignment]; 
+                [self->_textField addSubview: self->_scrollView];
+                [self->_textField sendSubviewToBack: self->_scrollView];
+                [self->_textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
+                self->_currentMethod = kSGMethodImage;
+                [self applySecureState];
+            }
+        });
     }
 }
 
@@ -307,42 +354,50 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
                           withRight:(NSNumber *)right
                 withBackgroundColor:(NSString *)backgroundColor
 {
+    if (_config == nil) {
+        RCTLogWarn(@"ScreenGuard: initSettings must be called before registerWithImage");
+        return;
+    }
     if (@available(iOS 13.0, *)) {
-        if (_textField == nil) {
-            [self initTextField];
-        }
-        [_textField setContentMode: UIViewContentModeCenter];
-        
-        if (_scrollView == nil) {
-            _scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-            _scrollView.showsHorizontalScrollIndicator = NO;
-            _scrollView.showsVerticalScrollIndicator = NO;
-            _scrollView.scrollEnabled = false;
-        }
-        
-        _imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
-        _imageView.translatesAutoresizingMaskIntoConstraints = NO;
-        [_imageView setClipsToBounds: TRUE];
-        
-        if (source[@"uri"] != nil) {
-            NSString *uriImage = source[@"uri"];
-            NSString *uriDefaultSource = defaultSource[@"uri"];
-            NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
-            SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
-            UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
-            
-            [_imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
-                          placeholderImage: thumbnailImage
-                                   options: downloaderOptions
-                                 completed: nil];
-        }
-        [self setImageViewBasedOnPosition:[top doubleValue] left:[left doubleValue] bottom:[bottom doubleValue] right:[right doubleValue]];
-        
-        [_textField addSubview: _scrollView];
-        [_textField sendSubviewToBack: _scrollView];
-        [_textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
-        _currentMethod = kSGMethodImage;
-        [self applySecureState];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self->_textField == nil) {
+                [self initTextField];
+            }
+            if (self->_textField) {
+                [self->_textField setContentMode: UIViewContentModeCenter];
+                
+                if (self->_scrollView == nil) {
+                    self->_scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+                    self->_scrollView.showsHorizontalScrollIndicator = NO;
+                    self->_scrollView.showsVerticalScrollIndicator = NO;
+                    self->_scrollView.scrollEnabled = false;
+                }
+                
+                self->_imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
+                self->_imageView.translatesAutoresizingMaskIntoConstraints = NO;
+                [self->_imageView setClipsToBounds: TRUE];
+                
+                if (source[@"uri"] != nil) {
+                    NSString *uriImage = source[@"uri"];
+                    NSString *uriDefaultSource = defaultSource[@"uri"];
+                    NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
+                    SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
+                    UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
+                    
+                    [self->_imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
+                                  placeholderImage: thumbnailImage
+                                           options: downloaderOptions
+                                         completed: nil];
+                }
+                [self setImageViewBasedOnPosition:[top doubleValue] left:[left doubleValue] bottom:[bottom doubleValue] right:[right doubleValue]];
+                
+                [self->_textField addSubview: self->_scrollView];
+                [self->_textField sendSubviewToBack: self->_scrollView];
+                [self->_textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
+                self->_currentMethod = kSGMethodImage;
+                [self applySecureState];
+            }
+        });
     }
 }
 
@@ -469,11 +524,13 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     [self applySecureState];
     
     BOOL displayOverlay = [_config[kSGConfigDisplayOverlay] boolValue];
-    if (displayOverlay) {
+    BOOL enableRecord = [_config[kSGConfigEnableRecord] boolValue];
+    
+    if (displayOverlay && !enableRecord) {
         if (isCaptured) {
             [self showOverlay:YES]; 
         } else {
-            [self removeOverlay]; 
+            [self showOverlay:NO];
         }
     }
     
@@ -559,8 +616,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
         // Return all logs if count >= logs.count or count <= 0 (though typically count should be > 0)
         // If count is 0 or negative, we might arguably return empty, but usually "max 10" implies "up to 10".
         // The requirement says "maxCount defaults to 10. this variable means get at most that many logs."
-        // So if count <= 0, we treat it as "return 0 logs" or "invalid"?
-        // Let's assume maxCount > 0. If maxCount <= 0 passed from JS (unexpected due to default), return empty.
+        // So if count <= 0 passed from JS (unexpected due to default), return empty.
         
         if (count <= 0) {
              if (callback) {
@@ -600,7 +656,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     return image;
 }
 
-- (void)setImageView:(ScreenGuardImageAlignment)alignment {
+- (void)setupImageViewAlignment:(ScreenGuardImageAlignment)alignment {
     [_scrollView addSubview:_imageView];
     
     CGFloat scrollViewWidth = _scrollView.bounds.size.width;
@@ -672,3 +728,4 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 }
 
 @end
+

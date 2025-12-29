@@ -40,3 +40,4 @@ extern NSString *const kSGErrorActivateShieldImage;
 extern NSString *const kSGErrorDeactivateShield;
 extern NSString *const kSGErrorActivateShieldNoEffect;
 extern NSString *const kSGErrorInvalidParams;
+extern NSString *const kSGErrorNotInitialized;

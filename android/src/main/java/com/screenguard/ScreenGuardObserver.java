@@ -12,6 +12,7 @@ import android.view.View;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableMap;
+import com.screenguard.helper.ScreenGuardConstants;
 import com.screenguard.helper.ScreenGuardHelper;
 
 public class ScreenGuardObserver extends ContentObserver {
@@ -70,14 +71,14 @@ public class ScreenGuardObserver extends ContentObserver {
             if (url != null && !url.isEmpty()) {
                 String fileType = url.substring(url.lastIndexOf(".") + 1);
                 String name = url.substring(url.lastIndexOf("/") + 1);
-                map.putString("type", fileType);
-                map.putString("name", name);
+                map.putString(ScreenGuardConstants.TYPE, fileType);
+                map.putString(ScreenGuardConstants.NAME, name);
             }
-            map.putString("path", url);
+            map.putString(ScreenGuardConstants.PATH, url);
         } else {
-            map.putString("type", "");
-            map.putString("name", "");
-            map.putString("path", "");
+            map.putString(ScreenGuardConstants.TYPE, "");
+            map.putString(ScreenGuardConstants.NAME, "");
+            map.putString(ScreenGuardConstants.PATH, "");
         }
         new Handler(Looper.getMainLooper()).post(() -> mListener.onSnap(map));
     }

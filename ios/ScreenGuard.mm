@@ -24,6 +24,7 @@ RCT_EXPORT_MODULE(ScreenGuard)
 }
 
 - (void)invalidate {
+    [super invalidate];
     [[ScreenGuardImpl shared] reset];
     [[ScreenGuardImpl shared] setEventEmitter:nil];
 }
@@ -60,7 +61,6 @@ RCT_EXPORT_METHOD(activateShield: (nonnull NSDictionary *) data resolve:(RCTProm
         @try {
             [[ScreenGuardImpl shared] secureViewWithBackgroundColor:screenshotBackgroundColor];
             resolve(nil);
-            resolve(nil);
         } @catch (NSException *e) {
             NSError *error = [NSError errorWithDomain:kSGErrorDomain code: -1 userInfo:nil];
             reject(kSGErrorActivateShield, e.reason, error);
@@ -75,7 +75,6 @@ RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSDictionary *) data reso
     dispatch_async(dispatch_get_main_queue(), ^{
         @try {
             [[ScreenGuardImpl shared] secureViewWithBlurView: borderRadius];
-            resolve(nil);
             resolve(nil);
         } @catch (NSException *e) {
             NSError *error = [NSError errorWithDomain:kSGErrorDomain code: -1 userInfo:nil];
@@ -144,9 +143,9 @@ RCT_EXPORT_METHOD(getScreenGuardLogs: (nonnull NSNumber *)maxCount resolve:(RCTP
       reject:(RCTPromiseRejectBlock)reject
 {
     NSDictionary *params = @{
-        kSGConfigEnableCapture: @(data.enableCapture().has_value() ? data.enableCapture().value() : NO),
-        kSGConfigEnableRecord: @(data.enableRecord().has_value() ? data.enableRecord().value() : NO),
-        kSGConfigEnableMultitask: @(data.enableContentMultitask().has_value() ? data.enableContentMultitask().value() : NO),
+        kSGConfigEnableCapture: @(data.enableCapture()),
+        kSGConfigEnableRecord: @(data.enableRecord()),
+        kSGConfigEnableMultitask: @(data.enableContentMultitask()),
         kSGConfigDisplayOverlay: @(data.displayOverlay().has_value() ? data.displayOverlay().value() : NO),
         kSGConfigTimeAfterResume: @(data.timeAfterResume().has_value() ? data.timeAfterResume().value() : 1000),
         kSGConfigGetScreenshotPath: @(data.getScreenshotPath().has_value() ? data.getScreenshotPath().value() : NO),
@@ -170,7 +169,6 @@ RCT_EXPORT_METHOD(getScreenGuardLogs: (nonnull NSNumber *)maxCount resolve:(RCTP
             @try {
                 [[ScreenGuardImpl shared] secureViewWithBackgroundColor:screenshotBackgroundColor];
                 resolve(nil);
-                resolve(nil);
             } @catch (NSException *e) {
                 NSError *error = [NSError errorWithDomain:kSGErrorDomain code: -1 userInfo:nil];
                 reject(kSGErrorActivateShield, e.reason, error);
@@ -184,7 +182,6 @@ RCT_EXPORT_METHOD(getScreenGuardLogs: (nonnull NSNumber *)maxCount resolve:(RCTP
         dispatch_async(dispatch_get_main_queue(), ^{
             @try {
                 [[ScreenGuardImpl shared] secureViewWithBlurView: borderRadius];
-                resolve(nil);
                 resolve(nil);
             } @catch (NSException *e) {
                 NSError *error = [NSError errorWithDomain:kSGErrorDomain code: -1 userInfo:nil];

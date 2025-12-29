@@ -18,21 +18,6 @@
 #endif
 
 
-typedef NS_ENUM(NSInteger, ScreenGuardImageAlignment) {
-    AlignmentTopLeft,
-    AlignmentTopCenter,
-    AlignmentTopRight,
-    AlignmentCenterLeft,
-    AlignmentCenter,
-    AlignmentCenterRight,
-    AlignmentBottomLeft,
-    AlignmentBottomCenter,
-    AlignmentBottomRight
-};
-
-
-NSString* _Nullable NSStringFromAlignment(ScreenGuardImageAlignment alignment);
-
 #if RCT_NEW_ARCH_ENABLED
 @interface ScreenGuard: EventEmitter <NativeScreenGuardSpec, RCTInvalidating>
 @property (nonatomic, strong, readonly) NSDictionary *config;
