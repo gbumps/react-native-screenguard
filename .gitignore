@@ -125,3 +125,5 @@ example/vendor/bundle/**
 
 # Jest
 coverage/
+
+yarn.lock
