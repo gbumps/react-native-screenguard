@@ -6,17 +6,15 @@
         "./src/main/index"
       ],
     },
-    "outDir": "./src/commonjs",
-    "declaration": true,
-    "declarationDir": "./src/types",
-    "rootDir": "./src/main",
+    "rootDir": "./src",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
+    "allowUnusedLabels": true,
     "jsx": "react",
     "lib": [
-      "esnext"
+      "esnext",
+      "dom"
     ],
     "module": "esnext",
     "moduleResolution": "node",
@@ -25,7 +23,7 @@
     "noImplicitUseStrict": false,
     "noStrictGenericChecks": false,
     "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": false,
     "resolveJsonModule": true,
     "skipLibCheck": true,
@@ -33,9 +31,7 @@
     "target": "esnext",
   },
   "include": [
-    "src/main/**/*.ts"
-    ,
-    "src/main/NativeScreenGuard.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "example",

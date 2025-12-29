@@ -5,8 +5,8 @@
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
   "types": "lib/typescript/index.d.ts",
-  "react-native": "src/main/index.ts",
-  "source": "src/main/index.ts",
+  "react-native": "src/index.ts",
+  "source": "src/index.ts",
   "directories": {
     "example": "example"
   },
@@ -42,7 +42,7 @@
     "pre": "npm pack --dry-run",
     "pub": "bob build && npm publish",
     "prepare": "bob build",
-    "build": "rm -rf lib && bob build",
+    "build": "rm -rf lib && bob build && rm -f lib/commonjs/NativeScreenGuard.js* lib/module/NativeScreenGuard.js* lib/typescript/NativeScreenGuard.d.ts*",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
@@ -89,7 +89,7 @@
   "codegenConfig": {
     "name": "ScreenGuardSpec",
     "type": "all",
-    "jsSrcsDir": "./src/main",
+    "jsSrcsDir": "./src",
     "android": {
       "javaPackageName": "com.screenguard"
     }
@@ -111,7 +111,7 @@
     "!**/__mocks__"
   ],
   "react-native-builder-bob": {
-    "source": "src/main",
+    "source": "src",
     "output": "lib",
     "targets": [
       "commonjs",
