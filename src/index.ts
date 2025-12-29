@@ -1,6 +1,5 @@
-import { Platform } from 'react-native';
+import { NativeModules, Platform, TurboModuleRegistry } from 'react-native';
 import * as ScreenGuardData from './data';
-import NativeScreenGuard from './NativeScreenGuard';
 import { useScreenGuard } from './useScreenGuard';
 import { useSGScreenShot } from './useSGScreenShot';
 import { useSGScreenRecord } from './useSGScreenRecord';
@@ -9,8 +8,22 @@ import * as ScreenGuardConstants from './constant';
 import * as ScreenGuardHelper from './helper';
 
 
+import { type Spec } from './NativeScreenGuard';
+
+const NativeScreenGuard = TurboModuleRegistry.get<Spec>('ScreenGuard') || NativeModules.ScreenGuard;
+
 
 let _isInitialized = false;
+
+/**
+ * Log error and reject promise
+ * @param message error message
+ * @private
+ */
+const _logError = (message: any) => {
+  console.error(message);
+  return Promise.reject(message);
+};
 
 export default {
   /**
@@ -18,7 +31,7 @@ export default {
    * @param data ScreenGuardSettingsData
    * @version v0.0.2+
    */
-  async initSettings(data?: ScreenGuardData.ScreenGuardSettingsData | null) {
+  async initSettings(data?: ScreenGuardData.ScreenGuardSettingsData | null) : Promise<void | string> {
     let currentSettings = {
       enableCapture: data?.enableCapture ?? false,
       enableRecord: data?.enableRecord ?? false,
@@ -28,18 +41,31 @@ export default {
       getScreenshotPath: data?.getScreenshotPath ?? false,
       limitCaptureEvtCount: data?.limitCaptureEvtCount ?? undefined,
       trackingLog: data?.trackingLog ?? false,
+      allowBackpress: data?.allowBackpress ?? false,
     };
-    await NativeScreenGuard?.initSettings(currentSettings);
-    _isInitialized = true;
+    try {
+      if (NativeScreenGuard == null) {
+        return _logError('ScreenGuard is not initialized, please double check!');
+      }
+      await NativeScreenGuard?.initSettings(currentSettings);
+      _isInitialized = true;
+      return;
+    } catch (error) {
+      _isInitialized = false;
+      return _logError(error);
+    }
   },
   /**
    * activate screenshot blocking with a color effect (iOS 13+, Android 8+)
    * @param data ScreenGuardColorData object
+   * throws error if ScreenGuard is not initialized
    * @version v0.0.2+
    */
-  async register(data: ScreenGuardData.ScreenGuardColorData) {
+  async register(data: ScreenGuardData.ScreenGuardColorData) : Promise<void | string> {
     if (!_isInitialized) {
-      throw new Error('ScreenGuard is not initialized. Please call initSettings() first!');
+      return _logError(
+        'ScreenGuard is not initialized. Please call initSettings() first!'
+      );
     }
     let {
       backgroundColor = ScreenGuardConstants.BLACK_COLOR,
@@ -53,19 +79,24 @@ export default {
         backgroundColor: currentColor,
         timeAfterResume,
       });
+      return;
     } catch (error) {
-      console.error('Error register:', error);
+      return _logError(error);
     }
   },
 
   /**
    * (Android only) activate screenshot and screen record blocking without
    * any effect (blur, image, color) on Android (Android 5+)
+   * throws error if ScreenGuard is not initialized
+   * warning if called on iOS platform
    * @version v1.0.0+
    */
-  async registerWithoutEffect() {
+  async registerWithoutEffect() : Promise<void | string> {
     if (!_isInitialized) {
-      throw new Error('ScreenGuard is not initialized. Please call initSettings() first!');
+      return _logError(
+        'ScreenGuard is not initialized. Please call initSettings() first!'
+      );
     }
     if (Platform.OS === 'android') {
       await NativeScreenGuard?.activateShieldWithoutEffect();
@@ -74,26 +105,30 @@ export default {
         'registerWithoutEffect is only available on Android platform!'
       );
     }
+    return;
   },
 
   /**
    * Activate screenshot blocking with a blur effect after captured (iOS 13+, Android 8+)
+   * throws error if ScreenGuard is not initialized
    * @param data ScreenGuardBlurDataObject data object
    * @version v0.1.2+
    */
-  async registerWithBlurView(data: ScreenGuardData.ScreenGuardBlurDataObject) {
+  async registerWithBlurView(data: ScreenGuardData.ScreenGuardBlurDataObject) : Promise<void | string> {
     if (!_isInitialized) {
-      throw new Error('ScreenGuard is not initialized. Please call initSettings() first!');
+      return _logError(
+        'ScreenGuard is not initialized. Please call initSettings() first!'
+      );
     }
     const {
       radius = ScreenGuardConstants.RADIUS_DEFAULT,
       timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
     } = data;
     if (typeof radius !== 'number') {
-      throw new Error('radius must be a number and bigger than 1');
+      return _logError('radius must be a number and bigger than 1');
     }
     if (radius < 1) {
-      throw new Error('radius must bigger than 1!');
+      return _logError('radius must bigger than 1!');
     }
     if (radius >= 1 && radius < 15) {
       console.warn(
@@ -114,7 +149,7 @@ export default {
       Platform.OS === 'android' &&
       (timeAfterResume < 0 || isNaN(timeAfterResume))
     ) {
-      throw new Error('timeAfterResume must be > 0!');
+      return _logError('timeAfterResume must be > 0!');
     }
 
     try {
@@ -122,19 +157,21 @@ export default {
         radius,
         timeAfterResume,
       });
+      return;
     } catch (error) {
-      console.error('Error registerWithBlurView:', error);
+      return _logError(error);
     }
   },
 
   /**
-   * activate with an Image uri (iOS 13+, Android 8+)
+   * Activate with an Image uri (iOS 13+, Android 8+)
+   * throws error if ScreenGuard is not initialized
    * @param data ScreenGuardImageDataObject data object,
    * @version v1.0.2+
    */
-  async registerWithImage(data: ScreenGuardData.ScreenGuardImageDataObject) {
+  async registerWithImage(data: ScreenGuardData.ScreenGuardImageDataObject) : Promise<void | string> {
     if (!_isInitialized) {
-      throw new Error('ScreenGuard is not initialized. Please call initSettings() first!');
+      return _logError('ScreenGuard is not initialized. Please call initSettings() first!');
     }
     let {
       source,
@@ -154,13 +191,13 @@ export default {
 
     if (typeof source === 'object' && 'uri' in source) {
       if (source.uri.length === 0) {
-        throw new Error('uri must not be empty!');
+        return _logError('uri must not be empty!');
       }
       if (width < 1 || isNaN(width)) {
-        throw new Error('width of image must bigger than 0!');
+        return _logError('width of image must bigger than 0!');
       }
       if (height < 1 || isNaN(height)) {
-        throw new Error('height of image must bigger than 0!');
+        return _logError('height of image must bigger than 0!');
       }
       if (!ScreenGuardConstants.IMAGE_REGEX.test(source.uri)) {
         console.warn(
@@ -177,7 +214,7 @@ export default {
       );
       newDefaultSource = {
         uri: ScreenGuardHelper.resolveAssetSource(
-          require('../images/screenshot_blocking.jpg')
+          require('./images/screenshot_blocking.jpg')
         ),
       };
     } else {
@@ -189,7 +226,7 @@ export default {
       alignment != null &&
       (alignment > 8 || alignment < 0 || isNaN(alignment))
     ) {
-      throw new Error(
+      return _logError(
         'alignment must be in range from 0 -> 8 only, values: \n topLeft: 0; \n topCenter: 1; \n topRight: 2; \n centerLeft: 3; \n Center: 4; \n centerRight: 5; \n bottomLeft: 6; \n bottomCenter: 7;\n bottomRight: 8; \n If you want to center the image, leave null instead!'
       );
     }
@@ -218,35 +255,48 @@ export default {
         backgroundColor: currentColor,
         timeAfterResume,
       });
+      return;
     } catch (error) {
-      console.error('Error registerWithImage:', error);
+      return _logError(error);
     }
   },
 
   /**
    * Deactivate screenguard
    * Clear all screen protector and event listening
+   * throws error if ScreenGuard is not initialized
    * @version v0.0.2+
    */
-  async unregister() {
+  async unregister(): Promise<void | string> {
     try {
+      if (!_isInitialized) {
+        return _logError(
+          'ScreenGuard is not initialized. Please call initSettings() first!'
+        );
+      }
       await NativeScreenGuard?.deactivateShield();
+      return;
     } catch (error) {
-      console.error('Error unregister:', error);
+      return _logError(error);
     }
   },
 
   /**
    * Get the current logs of screenguard
+   * throws error if ScreenGuard is not initialized
    * @param maxCount maximum number of logs to retrieve
    * @version v2.1+
    */
-  async getScreenGuardLogs(maxCount = 10) {
+  async getScreenGuardLogs(maxCount = 10) : Promise<Array<ScreenGuardData.ScreenGuardLogEntry> | null> {
     try {
+      if (!_isInitialized) {
+        return _logError(
+          'ScreenGuard is not initialized. Please call initSettings() first!'
+        );
+      }
       return await NativeScreenGuard?.getScreenGuardLogs(maxCount);
     } catch (error) {
-      console.error('Error getScreenGuardLogs:', error);
-      return [];
+      return _logError(error);
     }
   },
 };

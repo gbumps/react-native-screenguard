@@ -265,6 +265,15 @@ export interface ScreenGuardSettingsData {
    * @defaultValue false
    */
   trackingLog?: boolean | false;
+  /**
+   * (Android only) allow or disallow backpress
+   * 
+   * true: backpress will be handled by the main app
+   * false: backpress will go to home (minimize app)
+   * 
+   * @defaultValue false
+   */
+  allowBackpress?: boolean | false;
 }
 
 export interface ScreenGuardLogEntry {

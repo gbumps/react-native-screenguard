@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
-import { NativeEventEmitter } from 'react-native';
-import NativeScreenGuard from './NativeScreenGuard';
+import { NativeEventEmitter, NativeModules, TurboModuleRegistry } from 'react-native';
+import { type Spec } from './NativeScreenGuard';
 import * as ScreenGuardConstants from './constant';
 import { ScreenGuardScreenRecordDataObject } from './data';
+
+const NativeScreenGuard = TurboModuleRegistry.get<Spec>('ScreenGuard')
+    || NativeModules.ScreenGuard;
+
 
 export function useSGScreenRecord() {
     const [value, setValue] = useState<ScreenGuardScreenRecordDataObject | null>(null);
