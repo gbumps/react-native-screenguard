@@ -38,12 +38,20 @@ export default {
       enableRecord: data?.enableRecord ?? false,
       enableContentMultitask: data?.enableContentMultitask ?? false,
       displayScreenGuardOverlay: data?.displayScreenGuardOverlay ?? false,
-      timeAfterResume: data?.timeAfterResume ?? ScreenGuardConstants.TIME_DELAYED,
+      timeAfterResume: data?.timeAfterResume,
       getScreenshotPath: data?.getScreenshotPath ?? false,
       limitCaptureEvtCount: data?.limitCaptureEvtCount ?? undefined,
       trackingLog: data?.trackingLog ?? false,
       allowBackpress: data?.allowBackpress ?? false,
     };
+    if (
+      data?.timeAfterResume !== undefined &&
+      !currentSettings.displayScreenGuardOverlay
+    ) {
+      console.warn(
+        'ScreenGuard: setting timeAfterResume while displayScreenGuardOverlay = false'
+      );
+    }
     _isTrackingLogEnabled = currentSettings.trackingLog;
     try {
       if (NativeScreenGuard == null) {
