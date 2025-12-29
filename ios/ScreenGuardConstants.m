@@ -4,7 +4,7 @@
 NSString *const kSGConfigEnableCapture = @"enableCapture";
 NSString *const kSGConfigEnableRecord = @"enableRecord";
 NSString *const kSGConfigEnableMultitask = @"enableContentMultitask";
-NSString *const kSGConfigDisplayOverlay = @"displayOverlay";
+NSString *const kSGConfigDisplayScreenGuardOverlay = @"displayScreenGuardOverlay";
 NSString *const kSGConfigTimeAfterResume = @"timeAfterResume";
 NSString *const kSGConfigGetScreenshotPath = @"getScreenshotPath";
 NSString *const kSGConfigLimitCaptureEvtCount = @"limitCaptureEvtCount";

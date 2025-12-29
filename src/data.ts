@@ -236,11 +236,11 @@ export interface ScreenGuardSettingsData {
    * WARNING: USE AT YOUR OWN RISK! ONLY ENABLE IF IT'S NOT AFFECTING UI/UX OR APP'S BUSINESS LOGIC;
    * @defaultValue false
    */
-  displayOverlay?: boolean | false;
+  displayScreenGuardOverlay?: boolean | false;
   /**
    * Time for displaying the screenguard overlay after user captured the screen (in milliseconds)
    * 
-   * Work when displayOverlay = true
+   * Work when displayScreenGuardOverlay = true
    *
    * @exception when < 0 or not a number
    *
@@ -277,8 +277,20 @@ export interface ScreenGuardSettingsData {
 }
 
 export interface ScreenGuardLogEntry {
+  /**
+   * timestamp of the log
+   */
   timestamp: number;
+  /**
+   * action of the log
+   */
   action: string;
+  /**
+   * check if screenguard is currently securing the screen
+   */
   isProtected: boolean;
+  /**
+   * method of screenguard activation (blur, image, color)
+   */
   method: string;
 }

@@ -124,7 +124,7 @@ public class ScreenGuardModule {
                         }
                         
                         boolean enableRecord = mConfigs != null && mConfigs.hasKey(ScreenGuardConstants.ENABLE_RECORD) && mConfigs.getBoolean(ScreenGuardConstants.ENABLE_RECORD);
-                        if (mConfigs != null && mConfigs.hasKey(ScreenGuardConstants.DISPLAY_OVERLAY) && mConfigs.getBoolean(ScreenGuardConstants.DISPLAY_OVERLAY) && !enableRecord) {
+                        if (mConfigs != null && mConfigs.hasKey(ScreenGuardConstants.DISPLAY_SCREENGUARD_OVERLAY) && mConfigs.getBoolean(ScreenGuardConstants.DISPLAY_SCREENGUARD_OVERLAY) && !enableRecord) {
                              showOverlay();
                         }
                     }

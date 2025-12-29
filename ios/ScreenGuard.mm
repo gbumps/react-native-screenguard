@@ -146,7 +146,7 @@ RCT_EXPORT_METHOD(getScreenGuardLogs: (nonnull NSNumber *)maxCount resolve:(RCTP
         kSGConfigEnableCapture: @(data.enableCapture()),
         kSGConfigEnableRecord: @(data.enableRecord()),
         kSGConfigEnableMultitask: @(data.enableContentMultitask()),
-        kSGConfigDisplayOverlay: @(data.displayOverlay().has_value() ? data.displayOverlay().value() : NO),
+        kSGConfigDisplayScreenGuardOverlay: @(data.displayScreenGuardOverlay().has_value() ? data.displayScreenGuardOverlay().value() : NO),
         kSGConfigTimeAfterResume: @(data.timeAfterResume().has_value() ? data.timeAfterResume().value() : 1000),
         kSGConfigGetScreenshotPath: @(data.getScreenshotPath().has_value() ? data.getScreenshotPath().value() : NO),
         kSGConfigLimitCaptureEvtCount: @(data.limitCaptureEvtCount().has_value() ? data.limitCaptureEvtCount().value() : 0),

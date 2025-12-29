@@ -84,7 +84,7 @@ describe('ScreenGuard Module Test Suite', () => {
                 enableCapture: false,
                 enableRecord: false,
                 enableContentMultitask: false,
-                displayOverlay: false,
+                displayScreenGuardOverlay: false,
                 timeAfterResume: 1000,
             }));
         });
@@ -94,7 +94,7 @@ describe('ScreenGuard Module Test Suite', () => {
                 enableCapture: true,
                 enableRecord: true,
                 enableContentMultitask: true,
-                displayOverlay: true,
+                displayScreenGuardOverlay: true,
                 timeAfterResume: 2000,
                 getScreenshotPath: true,
                 limitCaptureEvtCount: 5,
@@ -119,7 +119,7 @@ describe('ScreenGuard Module Test Suite', () => {
             expect(mocks.initSettings).toHaveBeenCalledWith(expect.objectContaining({
                 enableCapture: true,
                 enableRecord: false,
-                displayOverlay: false,
+                displayScreenGuardOverlay: false,
             }));
         });
 

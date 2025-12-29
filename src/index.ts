@@ -14,6 +14,7 @@ const NativeScreenGuard = TurboModuleRegistry.get<Spec>('ScreenGuard') || Native
 
 
 let _isInitialized = false;
+let _isTrackingLogEnabled = false;
 
 /**
  * Log error and reject promise
@@ -36,13 +37,14 @@ export default {
       enableCapture: data?.enableCapture ?? false,
       enableRecord: data?.enableRecord ?? false,
       enableContentMultitask: data?.enableContentMultitask ?? false,
-      displayOverlay: data?.displayOverlay ?? false,
+      displayScreenGuardOverlay: data?.displayScreenGuardOverlay ?? false,
       timeAfterResume: data?.timeAfterResume ?? ScreenGuardConstants.TIME_DELAYED,
       getScreenshotPath: data?.getScreenshotPath ?? false,
       limitCaptureEvtCount: data?.limitCaptureEvtCount ?? undefined,
       trackingLog: data?.trackingLog ?? false,
       allowBackpress: data?.allowBackpress ?? false,
     };
+    _isTrackingLogEnabled = currentSettings.trackingLog;
     try {
       if (NativeScreenGuard == null) {
         return _logError('ScreenGuard is not initialized, please double check!');
@@ -292,6 +294,11 @@ export default {
       if (!_isInitialized) {
         return _logError(
           'ScreenGuard is not initialized. Please call initSettings() first!'
+        );
+      }
+      if (!_isTrackingLogEnabled) {
+        console.warn(
+          'ScreenGuard: you may not get logs properly while trackingLog = false'
         );
       }
       return await NativeScreenGuard?.getScreenGuardLogs(maxCount);

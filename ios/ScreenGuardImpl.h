@@ -57,8 +57,9 @@ typedef NS_ENUM(NSInteger, ScreenGuardImageAlignment) {
 
 // Logic
 - (void)applySecureState;
-- (void)showOverlay:(BOOL)persistent;
-- (void)removeOverlay;
+- (void)initSettings:(BOOL)enableCapture enableRecord:(BOOL)enableRecord enableContentMultitask:(BOOL)enableContentMultitask displayScreenGuardOverlay:(BOOL)displayScreenGuardOverlay timeAfterResume:(NSTimeInterval)timeAfterResume limitCaptureEvtCount:(NSNumber *)limitCaptureEvtCount getScreenshotPath:(BOOL)getScreenshotPath allowBackpress:(BOOL)allowBackpress trackingLog:(BOOL)trackingLog;
+- (void)handleAppWillResignActive;
+- (void)handleAppDidBecomeActive;
 
 // Logging
 - (void)logAction:(NSString *)action status:(BOOL)isProtected;

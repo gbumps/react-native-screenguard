@@ -5,7 +5,7 @@ export interface Spec extends TurboModule {
     enableCapture: boolean;
     enableRecord: boolean;
     enableContentMultitask: boolean;
-    displayOverlay?: boolean;
+    displayScreenGuardOverlay?: boolean;
     timeAfterResume?: number;
     getScreenshotPath?: boolean;
     limitCaptureEvtCount?: number;

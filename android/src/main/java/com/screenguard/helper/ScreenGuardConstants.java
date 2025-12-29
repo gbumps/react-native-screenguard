@@ -9,7 +9,7 @@ public class ScreenGuardConstants {
     public static final String ENABLE_RECORD = "enableRecord";
     public static final String GET_SCREENSHOT_PATH = "getScreenshotPath";
     public static final String LIMIT_CAPTURE_EVT_COUNT = "limitCaptureEvtCount";
-    public static final String DISPLAY_OVERLAY = "displayOverlay";
+    public static final String DISPLAY_SCREENGUARD_OVERLAY = "displayScreenGuardOverlay";
     public static final String TIME_AFTER_RESUME = "timeAfterResume";
     public static final String ALLOW_BACKPRESS = "allowBackpress";
     public static final String TRACKING_LOG = "trackingLog";

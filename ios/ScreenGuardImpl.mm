@@ -444,7 +444,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     _screenshotObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationUserDidTakeScreenshotNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
         [self handleScreenshotNotification:note];
         
-        BOOL displayOverlay = [self->_config[kSGConfigDisplayOverlay] boolValue];
+        BOOL displayOverlay = [_config[kSGConfigDisplayScreenGuardOverlay] boolValue];
         if (displayOverlay) {
             [self showOverlay:NO]; 
         }
@@ -523,7 +523,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     
     [self applySecureState];
     
-    BOOL displayOverlay = [_config[kSGConfigDisplayOverlay] boolValue];
+    BOOL displayOverlay = [_config[kSGConfigDisplayScreenGuardOverlay] boolValue];
     BOOL enableRecord = [_config[kSGConfigEnableRecord] boolValue];
     
     if (displayOverlay && !enableRecord) {
@@ -605,7 +605,6 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 
     NSInteger count = [maxCount integerValue];
     if (count > 0 && count < logs.count) {
-        // Return the last 'count' number of logs
         NSUInteger loc = logs.count - count;
         NSRange range = NSMakeRange(loc, count);
         NSArray *subArray = [logs subarrayWithRange:range];
@@ -613,11 +612,6 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
             callback(subArray);
         }
     } else {
-        // Return all logs if count >= logs.count or count <= 0 (though typically count should be > 0)
-        // If count is 0 or negative, we might arguably return empty, but usually "max 10" implies "up to 10".
-        // The requirement says "maxCount defaults to 10. this variable means get at most that many logs."
-        // So if count <= 0 passed from JS (unexpected due to default), return empty.
-        
         if (count <= 0) {
              if (callback) {
                 callback(@[]);
