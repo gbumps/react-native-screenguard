@@ -1,3 +1,4 @@
+// @ts-nocheck
 import ScreenGuard from '../index';
 import * as ScreenGuardHelper from '../helper';
 import { NativeModules, TurboModuleRegistry } from 'react-native';
