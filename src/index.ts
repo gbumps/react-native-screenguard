@@ -31,7 +31,7 @@ export default {
    * @param data ScreenGuardSettingsData
    * @version v0.0.2+
    */
-  async initSettings(data?: ScreenGuardData.ScreenGuardSettingsData | null) : Promise<void | string> {
+  async initSettings(data?: ScreenGuardData.ScreenGuardSettingsData | null): Promise<void | string> {
     let currentSettings = {
       enableCapture: data?.enableCapture ?? false,
       enableRecord: data?.enableRecord ?? false,
@@ -61,7 +61,7 @@ export default {
    * throws error if ScreenGuard is not initialized
    * @version v0.0.2+
    */
-  async register(data: ScreenGuardData.ScreenGuardColorData) : Promise<void | string> {
+  async register(data: ScreenGuardData.ScreenGuardColorData): Promise<void | string> {
     if (!_isInitialized) {
       return _logError(
         'ScreenGuard is not initialized. Please call initSettings() first!'
@@ -92,7 +92,7 @@ export default {
    * warning if called on iOS platform
    * @version v1.0.0+
    */
-  async registerWithoutEffect() : Promise<void | string> {
+  async registerWithoutEffect(): Promise<void | string> {
     if (!_isInitialized) {
       return _logError(
         'ScreenGuard is not initialized. Please call initSettings() first!'
@@ -114,7 +114,7 @@ export default {
    * @param data ScreenGuardBlurDataObject data object
    * @version v0.1.2+
    */
-  async registerWithBlurView(data: ScreenGuardData.ScreenGuardBlurDataObject) : Promise<void | string> {
+  async registerWithBlurView(data: ScreenGuardData.ScreenGuardBlurDataObject): Promise<void | string> {
     if (!_isInitialized) {
       return _logError(
         'ScreenGuard is not initialized. Please call initSettings() first!'
@@ -169,7 +169,7 @@ export default {
    * @param data ScreenGuardImageDataObject data object,
    * @version v1.0.2+
    */
-  async registerWithImage(data: ScreenGuardData.ScreenGuardImageDataObject) : Promise<void | string> {
+  async registerWithImage(data: ScreenGuardData.ScreenGuardImageDataObject): Promise<void | string> {
     if (!_isInitialized) {
       return _logError('ScreenGuard is not initialized. Please call initSettings() first!');
     }
@@ -219,7 +219,7 @@ export default {
       };
     } else {
       newDefaultSource = {
-        uri: ScreenGuardHelper.resolveAssetSource(data.source),
+        uri: ScreenGuardHelper.resolveAssetSource(defaultSource),
       };
     }
     if (
@@ -287,7 +287,7 @@ export default {
    * @param maxCount maximum number of logs to retrieve
    * @version v2.1+
    */
-  async getScreenGuardLogs(maxCount = 10) : Promise<Array<ScreenGuardData.ScreenGuardLogEntry> | null> {
+  async getScreenGuardLogs(maxCount = 10): Promise<Array<ScreenGuardData.ScreenGuardLogEntry> | null> {
     try {
       if (!_isInitialized) {
         return _logError(
