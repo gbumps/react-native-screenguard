@@ -1,4 +1,4 @@
-import { NativeModules, Platform, TurboModuleRegistry } from 'react-native';
+import { NativeModules, Platform, TurboModuleRegistry, findNodeHandle } from 'react-native';
 import * as ScreenGuardData from './data';
 import { useScreenGuard } from './useScreenGuard';
 import { useSGScreenShot } from './useSGScreenShot';
@@ -38,7 +38,7 @@ export default {
       enableRecord: data?.enableRecord ?? false,
       enableContentMultitask: data?.enableContentMultitask ?? false,
       displayScreenGuardOverlay: data?.displayScreenGuardOverlay ?? false,
-      timeAfterResume: data?.timeAfterResume,
+      timeAfterResume: data?.timeAfterResume ?? ScreenGuardConstants.TIME_DELAYED,
       getScreenshotPath: data?.getScreenshotPath ?? false,
       limitCaptureEvtCount: data?.limitCaptureEvtCount ?? undefined,
       trackingLog: data?.trackingLog ?? false,
@@ -262,6 +262,46 @@ export default {
         bottom,
         right,
         alignment,
+        backgroundColor: currentColor,
+        timeAfterResume,
+      });
+      return;
+    } catch (error) {
+      return _logError(error);
+    }
+  },
+
+  /**
+   * (iOS only) Activate screenguard for a partial view
+   * @param viewRef The React Native View Reference to mask
+   * @param data ScreenGuardColorData
+   * @version v2.0.0+
+   */
+  async registerPartScreenguard(viewRef: any, data: ScreenGuardData.ScreenGuardColorData): Promise<void | string> {
+    if (!_isInitialized) {
+      return _logError(
+        'ScreenGuard is not initialized. Please call initSettings() first!'
+      );
+    }
+    if (Platform.OS !== 'ios') {
+      console.warn('registerPartScreenguard is only available on iOS!');
+      return;
+    }
+    const tag = findNodeHandle(viewRef);
+    if (tag === null) {
+      return _logError('Cannot find node handle for the provided viewRef!');
+    }
+
+    let {
+      backgroundColor = ScreenGuardConstants.BLACK_COLOR,
+      timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
+    } = data;
+
+    let currentColor = ScreenGuardHelper.resolveColorString(backgroundColor);
+
+    try {
+      await NativeScreenGuard?.activateShieldPartially({
+        reactTag: tag,
         backgroundColor: currentColor,
         timeAfterResume,
       });

@@ -15,6 +15,7 @@ jest.mock('react-native', () => {
         activateShieldWithoutEffect: jest.fn(),
         activateShieldWithBlurView: jest.fn(),
         activateShieldWithImage: jest.fn(),
+        activateShieldPartially: jest.fn(),
         deactivateShield: jest.fn(),
         getScreenGuardLogs: jest.fn(),
     };
@@ -38,6 +39,11 @@ jest.mock('react-native', () => {
             OS: 'android',
             select: jest.fn(),
         },
+        findNodeHandle: jest.fn((ref) => {
+            if (ref === 'valid_ref') return 123;
+            if (ref === 'invalid_ref') return null;
+            return 999;
+        }),
         Image: {
             resolveAssetSource: jest.fn((source) => ({ uri: 'mocked_uri_' + source })),
         }
@@ -347,6 +353,43 @@ describe('ScreenGuard Module Test Suite', () => {
 
             const args = mocks.activateShieldWithImage.mock.calls[0][0];
             expect(args.alignment).toBe(4);
+        });
+    });
+
+    describe('activatePartScreenguard', () => {
+        beforeEach(async () => {
+            await ScreenGuard.initSettings();
+        });
+
+        it('should warn and return if Platform is not iOS', async () => {
+            const Platform = require('react-native').Platform;
+            Platform.OS = 'android';
+            const mocks = getMockNativeModule();
+
+            await ScreenGuard.activatePartScreenguard('valid_ref', {});
+            expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('only available on iOS'));
+            expect(mocks.activateShieldPartially).not.toHaveBeenCalled();
+        });
+
+        it('should fail if viewRef cannot be resolved', async () => {
+            const Platform = require('react-native').Platform;
+            Platform.OS = 'ios';
+
+            await expect(ScreenGuard.activatePartScreenguard('invalid_ref', {}))
+                .rejects.toEqual('Cannot find node handle for the provided viewRef!');
+        });
+
+        it('should call native method with correct tag and color on iOS', async () => {
+            const Platform = require('react-native').Platform;
+            Platform.OS = 'ios';
+            const mocks = getMockNativeModule();
+
+            await ScreenGuard.activatePartScreenguard('valid_ref', { backgroundColor: '#FF0000' });
+
+            expect(mocks.activateShieldPartially).toHaveBeenCalledWith(expect.objectContaining({
+                reactTag: 123,
+                backgroundColor: '#ff0000'
+            }));
         });
     });
 

@@ -38,6 +38,11 @@ export interface Spec extends TurboModule {
     backgroundColor: string;
     timeAfterResume?: number;
   }) => Promise<void>;
+  activateShieldPartially: (data: {
+    reactTag: number;
+    backgroundColor: string;
+    timeAfterResume?: number;
+  }) => Promise<void>;
   deactivateShield: () => Promise<void>;
   getScreenGuardLogs: (maxCount: number) => Promise<
     Array<{

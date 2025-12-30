@@ -27,6 +27,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 @property (nonatomic) BOOL isRecording;
 @property (nonatomic, strong) NSString *currentMethod;
 @property (nonatomic) NSInteger currentScreenshotCount;
+@property (nonatomic) CGRect secureFrame;
 
 @end
 
@@ -48,6 +49,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
         _isRecording = NO;
         _currentMethod = @"";
         _currentScreenshotCount = 0;
+        _secureFrame = CGRectZero;
         [self registerAppLifecycleListeners];
     }
     return self;
@@ -70,6 +72,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     _config = nil;
     _currentMethod = @"";
     _currentScreenshotCount = 0;
+    _secureFrame = CGRectZero;
 }
 
 - (void)configureWithParams:(NSDictionary *)params {
@@ -206,7 +209,8 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     }
 
     CGRect screenRect = [[UIScreen mainScreen] bounds];
-    _textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, screenRect.size.width, screenRect.size.height)];
+    CGRect frame = CGRectEqualToRect(_secureFrame, CGRectZero) ? screenRect : _secureFrame;
+    _textField = [[UITextField alloc] initWithFrame:frame];
     _textField.translatesAutoresizingMaskIntoConstraints = NO;
     
     [_textField setTextAlignment:NSTextAlignmentCenter];
@@ -242,6 +246,34 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
             if (self->_textField == nil) {
                 [self initTextField];
             }
+            if (self->_textField) {
+                [self->_textField setBackgroundColor: [self colorFromHexString: color]];
+                self->_currentMethod = kSGMethodColor;
+                [self applySecureState];
+            }
+        });
+    }
+}
+
+- (void)secureViewPartially:(UIView *)view withBackgroundColor:(NSString *)color {
+     if (_config == nil) {
+        RCTLogWarn(@"ScreenGuard: initSettings must be called before activatePartScreenguard");
+        return;
+    }
+    if (@available(iOS 13.0, *)) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIWindow *window = RCTKeyWindow();
+            if (!window) return;
+            
+            CGRect frame = [view convertRect:view.bounds toView:window];
+            self->_secureFrame = frame;
+            
+            if (self->_textField == nil) {
+                [self initTextField];
+            } else {
+                 self->_textField.frame = self->_secureFrame;
+            }
+            
             if (self->_textField) {
                 [self->_textField setBackgroundColor: [self colorFromHexString: color]];
                 self->_currentMethod = kSGMethodColor;
@@ -421,6 +453,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
                 [textFieldLayer removeFromSuperlayer];
             }
             self->_currentMethod = @"";
+            self->_secureFrame = CGRectZero;
             [self sendStateEvent:NO];
             [self logAction:kSGActionRemoveShield status:NO];
         }
