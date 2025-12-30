@@ -98,7 +98,6 @@
     }
   },
   "homepage": "https://gbumps.github.io/react-native-screenguard",
-  "packageManager": "yarn@3.6.4",
   "files": [
     "src",
     "lib",
