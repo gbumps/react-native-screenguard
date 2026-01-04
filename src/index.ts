@@ -1,6 +1,5 @@
 import { NativeModules, Platform, TurboModuleRegistry, findNodeHandle } from 'react-native';
 import * as ScreenGuardData from './data';
-import { useScreenGuard } from './useScreenGuard';
 import { useSGScreenShot } from './useSGScreenShot';
 import { useSGScreenRecord } from './useSGScreenRecord';
 
@@ -356,4 +355,4 @@ export default {
   },
 };
 
-export { ScreenGuardConstants, useScreenGuard, useSGScreenShot, useSGScreenRecord };
+export { ScreenGuardConstants, useSGScreenShot, useSGScreenRecord };
