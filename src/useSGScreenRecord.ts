@@ -1,32 +1,55 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { NativeEventEmitter, NativeModules, TurboModuleRegistry } from 'react-native';
 import { type Spec } from './NativeScreenGuard';
 import * as ScreenGuardConstants from './constant';
-import { ScreenGuardScreenRecordDataObject } from './data';
+import { ScreenGuardScreenRecordDataObject, ScreenGuardHookData } from './data';
 
 const NativeScreenGuard = TurboModuleRegistry.get<Spec>('ScreenGuard')
     || NativeModules.ScreenGuard;
 
 
-export function useSGScreenRecord() {
-    const [value, setValue] = useState<ScreenGuardScreenRecordDataObject | null>(null);
+export function useSGScreenRecord(
+    listener?: (event: ScreenGuardScreenRecordDataObject) => void
+) {
+    const [recordingData, setRecordingData] = useState<ScreenGuardScreenRecordDataObject | null>(null);
+    const [protectionStatus, setProtectionStatus] = useState<ScreenGuardHookData | null>(null);
+
+    const listenerRef = useRef(listener);
+
+    useEffect(() => {
+        listenerRef.current = listener;
+    }, [listener]);
 
     useEffect(() => {
         if (!NativeScreenGuard) return;
 
         const screenGuardEmitter = new NativeEventEmitter(NativeScreenGuard as any);
 
-        const subscription = screenGuardEmitter.addListener(
+        const recordingSubscription = screenGuardEmitter.addListener(
             ScreenGuardConstants.SCREEN_RECORDING_EVT,
             (event: ScreenGuardScreenRecordDataObject) => {
-                setValue(event);
+                setRecordingData(event);
+                if (listenerRef.current) {
+                    listenerRef.current(event);
+                }
+            }
+        );
+
+        const protectionSubscription = screenGuardEmitter.addListener(
+            ScreenGuardConstants.SCREEN_GUARD_EVT,
+            (event: ScreenGuardHookData) => {
+                setProtectionStatus(event);
             }
         );
 
         return () => {
-            subscription.remove();
+            recordingSubscription.remove();
+            protectionSubscription.remove();
         };
     }, []);
 
-    return value;
+    return {
+        recordingData,
+        protectionStatus,
+    };
 }
