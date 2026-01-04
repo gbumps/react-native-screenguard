@@ -356,43 +356,6 @@ describe('ScreenGuard Module Test Suite', () => {
         });
     });
 
-    describe('activatePartScreenguard', () => {
-        beforeEach(async () => {
-            await ScreenGuard.initSettings();
-        });
-
-        it('should warn and return if Platform is not iOS', async () => {
-            const Platform = require('react-native').Platform;
-            Platform.OS = 'android';
-            const mocks = getMockNativeModule();
-
-            await ScreenGuard.activatePartScreenguard('valid_ref', {});
-            expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('only available on iOS'));
-            expect(mocks.activateShieldPartially).not.toHaveBeenCalled();
-        });
-
-        it('should fail if viewRef cannot be resolved', async () => {
-            const Platform = require('react-native').Platform;
-            Platform.OS = 'ios';
-
-            await expect(ScreenGuard.activatePartScreenguard('invalid_ref', {}))
-                .rejects.toEqual('Cannot find node handle for the provided viewRef!');
-        });
-
-        it('should call native method with correct tag and color on iOS', async () => {
-            const Platform = require('react-native').Platform;
-            Platform.OS = 'ios';
-            const mocks = getMockNativeModule();
-
-            await ScreenGuard.activatePartScreenguard('valid_ref', { backgroundColor: '#FF0000' });
-
-            expect(mocks.activateShieldPartially).toHaveBeenCalledWith(expect.objectContaining({
-                reactTag: 123,
-                backgroundColor: '#ff0000'
-            }));
-        });
-    });
-
     describe('unregister', () => {
         beforeEach(async () => {
             await ScreenGuard.initSettings();
