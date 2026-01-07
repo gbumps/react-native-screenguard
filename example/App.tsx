@@ -15,8 +15,7 @@ import {
     Text,
     useColorScheme,
     View,
-    TextInput,
-} from 'react-native';
+    TextInput} from 'react-native';
 import {
     Colors,
     DebugInstructions,
@@ -67,6 +66,12 @@ function App(): JSX.Element {
         backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
     };
 
+    React.useEffect(() => {
+        ScreenGuardModule.initSettings().then(() => {
+            setCurrentState('1');
+        });
+    }, []);
+
     return (
         <SafeAreaView style={backgroundStyle}>
             <StatusBar
@@ -82,8 +87,8 @@ function App(): JSX.Element {
                         backgroundColor: Colors.black,
                     }}>
                     <Pressable
-                        onPress={() => {
-                            ScreenGuardModule.register({
+                        onPress={async () => {
+                            await ScreenGuardModule.register({
                                 backgroundColor: color,
                             });
                             setCurrentState('1');
@@ -135,8 +140,8 @@ function App(): JSX.Element {
                     <View style={{ height: 72 }} />
 
                     <Pressable
-                        onPress={() => {
-                            ScreenGuardModule.unregister();
+                        onPress={async () => {
+                            await ScreenGuardModule.unregister();
                             setCurrentState('3');
                         }}>
                         <Text
@@ -155,12 +160,12 @@ function App(): JSX.Element {
                     <View style={{ height: 72 }} />
 
                     <Pressable
-                        onPress={() => {
+                        onPress={async () => {
                             const data = {
                                 radius: 34,
                                 timeAfterResume: 1000,
                             };
-                            ScreenGuardModule.registerWithBlurView(data);
+                            await ScreenGuardModule.registerWithBlurView(data);
                             setCurrentState('4');
                         }}>
                         <Text
@@ -174,8 +179,8 @@ function App(): JSX.Element {
                     <View style={{ height: 72 }} />
 
                     <Pressable
-                        onPress={() => {
-                            ScreenGuardModule.registerWithImage({
+                        onPress={async () => {
+                            await ScreenGuardModule.registerWithImage({
                                 source: require('./69bd42d799ab4fe1e0bbb4ee01d36be0.JPG'),
                                 height: 150,
                                 width: 200,
