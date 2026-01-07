@@ -216,12 +216,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     [_textField setTextAlignment:NSTextAlignmentCenter];
     [_textField setUserInteractionEnabled: NO];
     
-    // Set default secure status based on config if available
-    BOOL shouldSecure = YES;
-    if (_config != nil) {
-        shouldSecure = ![_config[kSGConfigEnableCapture] boolValue] || ![_config[kSGConfigEnableRecord] boolValue];
-    }
-    [_textField setSecureTextEntry:shouldSecure];
+    [_textField setSecureTextEntry:YES];
     
     [window makeKeyAndVisible];
     
@@ -255,33 +250,6 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     }
 }
 
-- (void)secureViewPartially:(UIView *)view withBackgroundColor:(NSString *)color {
-     if (_config == nil) {
-        RCTLogWarn(@"ScreenGuard: initSettings must be called before activatePartScreenguard");
-        return;
-    }
-    if (@available(iOS 13.0, *)) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            UIWindow *window = RCTKeyWindow();
-            if (!window) return;
-            
-            CGRect frame = [view convertRect:view.bounds toView:window];
-            self->_secureFrame = frame;
-            
-            if (self->_textField == nil) {
-                [self initTextField];
-            } else {
-                 self->_textField.frame = self->_secureFrame;
-            }
-            
-            if (self->_textField) {
-                [self->_textField setBackgroundColor: [self colorFromHexString: color]];
-                self->_currentMethod = kSGMethodColor;
-                [self applySecureState];
-            }
-        });
-    }
-}
 
 - (void)secureViewWithBlurView:(NSNumber *)radius {
     if (_config == nil) {
