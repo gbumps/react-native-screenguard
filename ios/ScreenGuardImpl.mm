@@ -58,6 +58,38 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 - (void)registerAppLifecycleListeners {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAppWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAppDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleDeviceOrientationChange) name:UIDeviceOrientationDidChangeNotification object:nil];
+}
+
+- (void)handleDeviceOrientationChange {
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    
+    if (orientation == UIDeviceOrientationFaceUp || 
+        orientation == UIDeviceOrientationFaceDown ||
+        orientation == UIDeviceOrientationUnknown) {
+        return;
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self->_textField == nil) return;
+        
+        UIWindow *window = RCTKeyWindow();
+        if (window == nil) {
+            window = [UIApplication sharedApplication].keyWindow;
+        }
+        
+        CGRect newFrame = window ? window.bounds : [UIScreen mainScreen].bounds;
+        
+        self->_textField.frame = newFrame;
+        
+        if (self->_overlayView) {
+            self->_overlayView.frame = newFrame;
+        }
+        
+        if (self->_scrollView) {
+            self->_scrollView.frame = newFrame;
+        }
+    });
 }
 
 - (void)setEventEmitter:(RCTEventEmitter *)emitter {
