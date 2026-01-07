@@ -25,8 +25,9 @@ class ScreenGuard extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void initSettings(ReadableMap data) {
+    public void initSettings(ReadableMap data, Promise promise) {
         delegate.initSettings(data);
+        promise.resolve(null);
     }
 
     @ReactMethod

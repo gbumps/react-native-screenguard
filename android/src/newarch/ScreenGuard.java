@@ -15,8 +15,9 @@ class ScreenGuard extends NativeScreenGuardSpec {
     }
 
     @Override
-    public void initSettings(ReadableMap data) {
+    public void initSettings(ReadableMap data, Promise promise) {
         delegate.initSettings(data);
+        promise.resolve(null);
     }
 
     @Override
