@@ -23,8 +23,6 @@ typedef NS_ENUM(NSInteger, ScreenGuardImageAlignment) {
 
 - (void)secureViewWithBackgroundColor:(NSString *)color;
 
-- (void)secureViewPartially:(UIView *)view withBackgroundColor:(NSString *)color;
-
 - (void)secureViewWithBlurView:(NSNumber *)radius;
 
 - (void)secureViewWithImageAlignment:(NSDictionary *)source

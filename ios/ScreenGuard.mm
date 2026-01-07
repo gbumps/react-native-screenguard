@@ -111,26 +111,6 @@ RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data resolve:
     resolve(nil);
 }
 
-RCT_EXPORT_METHOD(activateShieldPartially: (nonnull NSDictionary *) data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
-    NSNumber *reactTag = data[@"reactTag"];
-    NSString *backgroundColor = data[@"backgroundColor"];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        @try {
-            UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
-            if (view == nil) {
-                 reject(kSGErrorInvalidParams, @"Cannot find view for the provided reactTag", nil);
-                 return;
-            }
-             [[ScreenGuardImpl shared] secureViewPartially:view withBackgroundColor:backgroundColor];
-            resolve(nil);
-        } @catch (NSException *e) {
-             NSError *error = [NSError errorWithDomain:kSGErrorDomain code: -1 userInfo:nil];
-            reject(kSGErrorActivateShield, e.reason, error);
-        }
-    });
-}
-
 RCT_EXPORT_METHOD(deactivateShield: (RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
         @try {
             [[ScreenGuardImpl shared] removeScreenShot];
@@ -251,26 +231,6 @@ RCT_EXPORT_METHOD(getScreenGuardLogs: (nonnull NSNumber *)maxCount resolve:(RCTP
         reject(kSGErrorActivateShieldImage, e.reason, error);
     }
         
-}
-
-- (void)activateShieldPartially:(JS::NativeScreenGuard::SpecActivateShieldPartiallyData &)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    NSNumber *reactTag = [NSNumber numberWithDouble: data.reactTag()];
-    NSString *backgroundColor = data.backgroundColor();
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        @try {
-            UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
-            if (view == nil) {
-                 reject(kSGErrorInvalidParams, @"Cannot find view for the provided reactTag", nil);
-                 return;
-            }
-             [[ScreenGuardImpl shared] secureViewPartially:view withBackgroundColor:backgroundColor];
-            resolve(nil);
-        } @catch (NSException *e) {
-             NSError *error = [NSError errorWithDomain:kSGErrorDomain code: -1 userInfo:nil];
-            reject(kSGErrorActivateShield, e.reason, error);
-        }
-    });
 }
 
 - (void)deactivateShield:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
