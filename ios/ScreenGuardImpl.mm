@@ -437,21 +437,40 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     dispatch_async(dispatch_get_main_queue(), ^{
         [self removeOverlay];
         UIWindow *window = RCTKeyWindow();
+        if (window == nil) {
+            window = [UIApplication sharedApplication].keyWindow;
+        }
+        
         if (self->_textField != nil) {
             if (self->_imageView != nil) {
                 [self->_imageView setImage: nil];
                 [self->_imageView removeFromSuperview];
+                self->_imageView = nil;
             }
             if (self->_scrollView != nil) {
                 [self->_scrollView removeFromSuperview];
+                self->_scrollView = nil;
             }
             [self->_textField setSecureTextEntry: FALSE];
             [self->_textField setBackgroundColor: [UIColor clearColor]];
             [self->_textField setBackground: nil];
-            CALayer *textFieldLayer = self->_textField.layer.sublayers.firstObject;
-            if ([window.layer.superlayer.sublayers containsObject:textFieldLayer]) {
-                [textFieldLayer removeFromSuperlayer];
+            
+            CALayer *textFieldLayer = self->_textField.layer;
+            CALayer *windowSuperlayer = textFieldLayer.superlayer;
+            CALayer *textFieldSecureSublayer = textFieldLayer.sublayers.firstObject;
+            
+            if (textFieldSecureSublayer && [textFieldSecureSublayer.sublayers containsObject:window.layer]) {
+                [window.layer removeFromSuperlayer];
+                if (windowSuperlayer) {
+                    [windowSuperlayer addSublayer:window.layer];
+                }
             }
+            
+            [textFieldLayer removeFromSuperlayer];
+            [self->_textField removeFromSuperview];
+            
+            self->_textField = nil;
+            
             self->_currentMethod = @"";
             self->_secureFrame = CGRectZero;
             [self sendStateEvent:NO];

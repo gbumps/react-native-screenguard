@@ -22,4 +22,11 @@ RCT_EXPORT_MODULE();
   }
 }
 
+RCT_EXPORT_METHOD(addListener:(NSString *)eventName) {
+}
+
+RCT_EXPORT_METHOD(removeListeners:(double)count) {
+}
+
 @end
+

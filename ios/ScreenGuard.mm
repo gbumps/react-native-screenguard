@@ -25,7 +25,6 @@ RCT_EXPORT_MODULE(ScreenGuard)
 
 - (void)invalidate {
     [super invalidate];
-    [[ScreenGuardImpl shared] reset];
     [[ScreenGuardImpl shared] setEventEmitter:nil];
 }
 
