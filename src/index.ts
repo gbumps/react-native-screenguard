@@ -14,6 +14,7 @@ const NativeScreenGuard = TurboModuleRegistry.get<Spec>('ScreenGuard') || Native
 
 let _isInitialized = false;
 let _isTrackingLogEnabled = false;
+let _displayScreenguardOverlayAndroid = true;
 
 /**
  * Log error and reject promise
@@ -29,35 +30,49 @@ export default {
   /**
    * initialize the screen guard with settings
    * @param data ScreenGuardSettingsData
-   * @version v0.0.2+
+   * @version v2.0.0+
    */
   async initSettings(data?: ScreenGuardData.ScreenGuardSettingsData | null): Promise<void | string> {
-    let currentSettings = {
-      enableCapture: data?.enableCapture ?? false,
-      enableRecord: data?.enableRecord ?? false,
-      enableContentMultitask: data?.enableContentMultitask ?? false,
-      displayScreenGuardOverlay: data?.displayScreenGuardOverlay ?? false,
-      timeAfterResume: data?.timeAfterResume ?? ScreenGuardConstants.TIME_DELAYED,
-      getScreenshotPath: data?.getScreenshotPath ?? false,
-      limitCaptureEvtCount: data?.limitCaptureEvtCount ?? undefined,
-      trackingLog: data?.trackingLog ?? false,
-      allowBackpress: data?.allowBackpress ?? false,
-    };
+    let currentSettings = ScreenGuardConstants.ScreenGuardDefaultSettings;
+    if (data !== null) {
+      currentSettings = {
+        enableCapture: data?.enableCapture ?? false,
+        enableRecord: data?.enableRecord ?? false,
+        enableContentMultitask: data?.enableContentMultitask ?? false,
+        displayScreenGuardOverlay: data?.displayScreenGuardOverlay ?? false,
+        displayScreenguardOverlayAndroid: data?.displayScreenguardOverlayAndroid ?? true,
+        timeAfterResume: data?.timeAfterResume ?? ScreenGuardConstants.TIME_DELAYED,
+        getScreenshotPath: data?.getScreenshotPath ?? false,
+        limitCaptureEvtCount: data?.limitCaptureEvtCount ?? undefined,
+        trackingLog: data?.trackingLog ?? false,
+      }
+    }
     if (
-      data?.timeAfterResume !== undefined &&
-      !currentSettings.displayScreenGuardOverlay
+      currentSettings.timeAfterResume !== undefined &&
+      !currentSettings.displayScreenGuardOverlay &&
+      !currentSettings.displayScreenguardOverlayAndroid
     ) {
       console.warn(
-        'ScreenGuard: setting timeAfterResume while displayScreenGuardOverlay = false'
+        'ScreenGuard: setting timeAfterResume while displayScreenGuardOverlay/displayScreenguardOverlayAndroid = false'
       );
     }
-    _isTrackingLogEnabled = currentSettings.trackingLog;
+    if (
+      Platform.OS === 'android' &&
+      currentSettings.limitCaptureEvtCount != null &&
+      currentSettings.limitCaptureEvtCount > 0
+    ) {
+      console.warn(
+        'ScreenGuard: limitCaptureEvtCount is not available on Android while screenguard is active (FLAG_SECURE blocks screenshot detection)'
+      );
+    }
+    _isTrackingLogEnabled = currentSettings.trackingLog ?? false;
     try {
       if (NativeScreenGuard == null) {
         return _logError('ScreenGuard is not initialized, please double check!');
       }
       await NativeScreenGuard?.initSettings(currentSettings);
       _isInitialized = true;
+      _displayScreenguardOverlayAndroid = currentSettings.displayScreenguardOverlayAndroid ?? true;
       return;
     } catch (error) {
       _isInitialized = false;
@@ -76,9 +91,16 @@ export default {
         'ScreenGuard is not initialized. Please call initSettings() first!'
       );
     }
+
+    if (Platform.OS === 'android' && !_displayScreenguardOverlayAndroid) {
+      console.warn(
+        'ScreenGuard: register() with overlay is not available when displayScreenguardOverlayAndroid = false. Switching to registerWithoutEffect().'
+      );
+      return this.registerWithoutEffect();
+    }
+
     let {
       backgroundColor = ScreenGuardConstants.BLACK_COLOR,
-      timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
     } = data;
 
     let currentColor = ScreenGuardHelper.resolveColorString(backgroundColor);
@@ -86,7 +108,6 @@ export default {
     try {
       await NativeScreenGuard?.activateShield({
         backgroundColor: currentColor,
-        timeAfterResume,
       });
       return;
     } catch (error) {
@@ -129,9 +150,16 @@ export default {
         'ScreenGuard is not initialized. Please call initSettings() first!'
       );
     }
+
+    if (Platform.OS === 'android' && !_displayScreenguardOverlayAndroid) {
+      console.warn(
+        'ScreenGuard: registerWithBlurView() is not available when displayScreenguardOverlayAndroid = false. Switching to registerWithoutEffect().'
+      );
+      return this.registerWithoutEffect();
+    }
+
     const {
       radius = ScreenGuardConstants.RADIUS_DEFAULT,
-      timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
     } = data;
     if (typeof radius !== 'number') {
       return _logError('radius must be a number and bigger than 1');
@@ -149,22 +177,10 @@ export default {
         'Consider a radius value in between 15 and 50, as blur contents may vanish inside the view!'
       );
     }
-    if (Platform.OS === 'android' && timeAfterResume > 3000) {
-      console.warn(
-        'Consider a number in between 1000 and 3000 for better user experience!'
-      );
-    }
-    if (
-      Platform.OS === 'android' &&
-      (timeAfterResume < 0 || isNaN(timeAfterResume))
-    ) {
-      return _logError('timeAfterResume must be > 0!');
-    }
 
     try {
       await NativeScreenGuard?.activateShieldWithBlurView({
         radius,
-        timeAfterResume,
       });
       return;
     } catch (error) {
@@ -175,6 +191,7 @@ export default {
   /**
    * Activate with an Image uri (iOS 13+, Android 8+)
    * throws error if ScreenGuard is not initialized
+   * throws error if alignment is not in range from 0 -> 8
    * @param data ScreenGuardImageDataObject data object,
    * @version v1.0.2+
    */
@@ -182,6 +199,14 @@ export default {
     if (!_isInitialized) {
       return _logError('ScreenGuard is not initialized. Please call initSettings() first!');
     }
+
+    if (Platform.OS === 'android' && !_displayScreenguardOverlayAndroid) {
+      console.warn(
+        'ScreenGuard: registerWithImage() is not available when displayScreenguardOverlayAndroid = false. Switching to registerWithoutEffect().'
+      );
+      return this.registerWithoutEffect();
+    }
+
     let {
       source,
       width,
@@ -192,7 +217,6 @@ export default {
       right,
       backgroundColor = ScreenGuardConstants.BLACK_COLOR,
       alignment,
-      timeAfterResume = ScreenGuardConstants.TIME_DELAYED,
       defaultSource,
     } = data;
 
@@ -262,7 +286,6 @@ export default {
         right,
         alignment,
         backgroundColor: currentColor,
-        timeAfterResume,
       });
       return;
     } catch (error) {
@@ -293,9 +316,9 @@ export default {
 
   /**
    * Get the current logs of screenguard
-   * throws error if ScreenGuard is not initialized
+   * throws error if ScreenGuard is n0ot initialized
    * @param maxCount maximum number of logs to retrieve
-   * @version v2.1+
+   * @version v2.0.0+
    */
   async getScreenGuardLogs(maxCount = 10): Promise<Array<ScreenGuardData.ScreenGuardLogEntry> | null> {
     try {
@@ -303,6 +326,12 @@ export default {
         return _logError(
           'ScreenGuard is not initialized. Please call initSettings() first!'
         );
+      }
+      if (maxCount < 1) {
+        return _logError('maxCount must be >= 1!');
+      }
+      if (maxCount > 1000000) {
+        return _logError('maxCount must be <= 1000000!');
       }
       if (!_isTrackingLogEnabled) {
         console.warn(

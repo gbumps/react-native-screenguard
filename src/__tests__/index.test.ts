@@ -105,7 +105,6 @@ describe('ScreenGuard Module Test Suite', () => {
                 getScreenshotPath: true,
                 limitCaptureEvtCount: 5,
                 trackingLog: true,
-                allowBackpress: true,
             };
 
             await ScreenGuard.initSettings(config);
@@ -174,6 +173,21 @@ describe('ScreenGuard Module Test Suite', () => {
             mocks.activateShield.mockRejectedValueOnce('Native Error');
             await expect(ScreenGuard.register({})).rejects.toEqual('Native Error');
         });
+
+        it('should switch to registerWithoutEffect on Android when displayScreenguardOverlayAndroid = false', async () => {
+            const Platform = require('react-native').Platform;
+            Platform.OS = 'android';
+            const mocks = getMockNativeModule();
+
+            await ScreenGuard.initSettings({ displayScreenguardOverlayAndroid: false });
+            await ScreenGuard.register({ backgroundColor: '#FF0000' });
+
+            expect(consoleWarnSpy).toHaveBeenCalledWith(
+                expect.stringContaining('Switching to registerWithoutEffect()')
+            );
+            expect(mocks.activateShieldWithoutEffect).toHaveBeenCalled();
+            expect(mocks.activateShield).not.toHaveBeenCalled();
+        });
     });
 
     describe('registerWithoutEffect', () => {
@@ -234,39 +248,26 @@ describe('ScreenGuard Module Test Suite', () => {
             expect(mocks.activateShieldWithBlurView).toHaveBeenCalled();
         });
 
-        it('should fail on Android if timeAfterResume < 0', async () => {
-            const Platform = require('react-native').Platform;
-            Platform.OS = 'android';
-
-            await expect(ScreenGuard.registerWithBlurView({ radius: 20, timeAfterResume: -100 }))
-                .rejects.toEqual('timeAfterResume must be > 0!');
-        });
-
-        it('should warn on Android if timeAfterResume > 3000', async () => {
-            const Platform = require('react-native').Platform;
-            Platform.OS = 'android';
-            const mocks = getMockNativeModule();
-
-            await ScreenGuard.registerWithBlurView({ radius: 20, timeAfterResume: 3500 });
-            expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('Consider a number in between 1000 and 3000'));
-            expect(mocks.activateShieldWithBlurView).toHaveBeenCalled();
-        });
-
-        it('should NOT warn on iOS if timeAfterResume > 3000', async () => {
-            const Platform = require('react-native').Platform;
-            Platform.OS = 'ios';
-            const mocks = getMockNativeModule();
-
-            await ScreenGuard.registerWithBlurView({ radius: 20, timeAfterResume: 3500 });
-            expect(consoleWarnSpy).not.toHaveBeenCalled();
-            expect(mocks.activateShieldWithBlurView).toHaveBeenCalled();
-        });
-
         it('should call native with correct transformed data', async () => {
-            const data = { radius: 25, timeAfterResume: 1500 };
+            const data = { radius: 25 };
             const mocks = getMockNativeModule();
             await ScreenGuard.registerWithBlurView(data);
             expect(mocks.activateShieldWithBlurView).toHaveBeenCalledWith(expect.objectContaining(data));
+        });
+
+        it('should switch to registerWithoutEffect on Android when displayScreenguardOverlayAndroid = false', async () => {
+            const Platform = require('react-native').Platform;
+            Platform.OS = 'android';
+            const mocks = getMockNativeModule();
+
+            await ScreenGuard.initSettings({ displayScreenguardOverlayAndroid: false });
+            await ScreenGuard.registerWithBlurView({ radius: 20 });
+
+            expect(consoleWarnSpy).toHaveBeenCalledWith(
+                expect.stringContaining('Switching to registerWithoutEffect()')
+            );
+            expect(mocks.activateShieldWithoutEffect).toHaveBeenCalled();
+            expect(mocks.activateShieldWithBlurView).not.toHaveBeenCalled();
         });
     });
 
@@ -353,6 +354,21 @@ describe('ScreenGuard Module Test Suite', () => {
 
             const args = mocks.activateShieldWithImage.mock.calls[0][0];
             expect(args.alignment).toBe(4);
+        });
+
+        it('should switch to registerWithoutEffect on Android when displayScreenguardOverlayAndroid = false', async () => {
+            const Platform = require('react-native').Platform;
+            Platform.OS = 'android';
+            const mocks = getMockNativeModule();
+
+            await ScreenGuard.initSettings({ displayScreenguardOverlayAndroid: false });
+            await ScreenGuard.registerWithImage({ source: { uri: 'http.png' }, width: 100, height: 100 });
+
+            expect(consoleWarnSpy).toHaveBeenCalledWith(
+                expect.stringContaining('Switching to registerWithoutEffect()')
+            );
+            expect(mocks.activateShieldWithoutEffect).toHaveBeenCalled();
+            expect(mocks.activateShieldWithImage).not.toHaveBeenCalled();
         });
     });
 

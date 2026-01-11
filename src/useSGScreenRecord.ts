@@ -7,6 +7,7 @@ import { ScreenGuardScreenRecordDataObject, ScreenGuardHookData } from './data';
 const NativeScreenGuard = TurboModuleRegistry.get<Spec>('ScreenGuard')
     || NativeModules.ScreenGuard;
 
+const screenGuardEmitter = new NativeEventEmitter(NativeScreenGuard as any);
 
 export function useSGScreenRecord(
     listener?: (event: ScreenGuardScreenRecordDataObject) => void
@@ -22,8 +23,6 @@ export function useSGScreenRecord(
 
     useEffect(() => {
         if (!NativeScreenGuard) return;
-
-        const screenGuardEmitter = new NativeEventEmitter(NativeScreenGuard as any);
 
         const recordingSubscription = screenGuardEmitter.addListener(
             ScreenGuardConstants.SCREEN_RECORDING_EVT,

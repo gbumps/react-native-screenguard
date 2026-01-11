@@ -2,7 +2,6 @@
 import { useSGScreenShot } from '../useSGScreenShot';
 import { useSGScreenRecord } from '../useSGScreenRecord';
 
-// Mock React hooks
 const mockSetState = jest.fn();
 let mockUseEffectCallbacks: Array<() => void | (() => void)> = [];
 let mockCleanupFunctions: Array<() => void> = [];
@@ -19,7 +18,6 @@ jest.mock('react', () => ({
     useRef: jest.fn((initial) => ({ current: initial })),
 }));
 
-// Mock emitter instance
 let mockScreenshotListener: ((event: any) => void) | null = null;
 let mockRecordingListener: ((event: any) => void) | null = null;
 let mockProtectionListener: ((event: any) => void) | null = null;
@@ -113,7 +111,6 @@ describe('useSGScreenShot Hook', () => {
     it('should cleanup subscriptions on unmount', () => {
         useSGScreenShot();
 
-        // Execute cleanup functions
         mockCleanupFunctions.forEach(cleanup => cleanup());
 
         expect(mockRemove).toHaveBeenCalled();

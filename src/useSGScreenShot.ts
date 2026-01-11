@@ -7,6 +7,8 @@ import { ScreenGuardScreenShotPathDataObject, ScreenGuardHookData } from './data
 const NativeScreenGuard = TurboModuleRegistry.get<Spec>('ScreenGuard')
     || NativeModules.ScreenGuard;
 
+const screenGuardEmitter = new NativeEventEmitter(NativeScreenGuard as any);
+
 export function useSGScreenShot(
     listener?: (event: ScreenGuardScreenShotPathDataObject) => void
 ) {
@@ -22,7 +24,6 @@ export function useSGScreenShot(
     useEffect(() => {
         if (!NativeScreenGuard) return;
 
-        const screenGuardEmitter = new NativeEventEmitter(NativeScreenGuard as any);
 
         const screenshotSubscription = screenGuardEmitter.addListener(
             ScreenGuardConstants.SCREENSHOT_EVT,

@@ -109,19 +109,6 @@ export interface ScreenGuardImageDataObject {
    *
    */
   backgroundColor?: string;
-  /**
-   * (Android only) Time delayed for the view to stop displaying when going back
-   * to the application (in milliseconds)
-   *
-   * @warning when bigger than 3000ms means users have to wait for the application
-   * to turn off the filter before going back to the main view, which is a very bad user
-   * experiences.
-   *
-   * @exception when < 0 or not a number
-   *
-   * @defaultValue `1000`
-   */
-  timeAfterResume?: number | 1000;
 }
 
 export interface ScreenGuardBlurDataObject {
@@ -137,19 +124,6 @@ export interface ScreenGuardBlurDataObject {
    * @defaultValue `15`
    */
   radius?: number | 15;
-  /**
-   * (Android only) Time delayed for the blur view to stop displaying when going back
-   * to the application (in milliseconds)
-   *
-   * @warning when bigger than 3000ms means users have to wait for the application
-   * to turn off the filter before going back to the main view, which is a very bad user
-   * experiences.
-   *
-   * @exception when < 0 or not a number
-   *
-   * @defaultValue `1000`
-   */
-  timeAfterResume?: number | 1000;
 }
 
 export interface ScreenGuardColorData {
@@ -160,19 +134,6 @@ export interface ScreenGuardColorData {
    *
    */
   backgroundColor: string;
-  /**
-   * (Android only) Time delayed for the view to stop displaying when going back
-   * to the application (in milliseconds)
-   *
-   * @warning when bigger than 3000ms means users have to wait for the application
-   * to turn off the filter before going back to the main view, which is a very bad user
-   * experiences.
-   *
-   * @exception when < 0 or not a number
-   *
-   * @defaultValue `1000`
-   */
-  timeAfterResume?: number | 1000;
 }
 
 export interface ScreenGuardScreenShotPathDataObject {
@@ -219,17 +180,25 @@ export interface ScreenGuardSettingsData {
    */
   enableCapture?: boolean | false;
   /**
-   * Enable or disable screen recording option
+   * Enable or disable screen recording
+   * 
+   * Supported: iOS 13+, Android 15+ (API 35+)
+   * On Android < 15, this setting is ignored and defaults to false.
+   * 
    * @defaultValue false
    */
   enableRecord?: boolean | false;
   /**
-   * Enable or disable content while multitasking (App Switcher / Recent Apps)
+   * (iOS only) Enable or disable content visibility while multitasking (App Switcher / Recent Apps)
+   * 
+   * On Android, this is not supported. FLAG_SECURE already blocks content in recent apps,
+   * and there's no reliable way to control this behavior separately.
+   * 
    * @defaultValue false
    */
   enableContentMultitask?: boolean | false;
   /**
-   * When enabled, the screen guard will be displayed over the app if user capture the screen 
+   * (iOS only) When enabled, the screen guard will be displayed over the app if user capture the screen 
    * for a time period based on the timeAfterResume property. If user recording, the screen guard
    * will be displayed over the app and disappear after user stop recording.
    * 
@@ -238,9 +207,20 @@ export interface ScreenGuardSettingsData {
    */
   displayScreenGuardOverlay?: boolean | false;
   /**
+   * (Android only) When enabled, the screen guard overlay will be displayed when user 
+   * returns to the app (after going to home or switching apps) for a time period based 
+   * on the timeAfterResume property. If recording, the overlay will show immediately 
+   * and stay until recording stops.
+   * 
+   * NOTE: Unlike iOS, this shows on app resume rather than on screenshot capture.
+   * 
+   * @defaultValue true
+   */
+  displayScreenguardOverlayAndroid?: boolean | true;
+  /**
    * Time for displaying the screenguard overlay after user captured the screen (in milliseconds)
    * 
-   * Work when displayScreenGuardOverlay = true
+   * Work when displayScreenGuardOverlay = true (iOS) or displayScreenguardOverlayAndroid = true (Android)
    *
    * @exception when < 0 or not a number
    *
@@ -265,15 +245,6 @@ export interface ScreenGuardSettingsData {
    * @defaultValue false
    */
   trackingLog?: boolean | false;
-  /**
-   * (Android only) allow or disallow backpress
-   * 
-   * true: backpress will be handled by the main app
-   * false: backpress will go to home (minimize app)
-   * 
-   * @defaultValue false
-   */
-  allowBackpress?: boolean | false;
 }
 
 export interface ScreenGuardLogEntry {

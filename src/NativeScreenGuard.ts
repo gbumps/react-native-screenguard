@@ -6,20 +6,18 @@ export interface Spec extends TurboModule {
     enableRecord: boolean;
     enableContentMultitask: boolean;
     displayScreenGuardOverlay?: boolean;
+    displayScreenguardOverlayAndroid?: boolean;
     timeAfterResume?: number;
     getScreenshotPath?: boolean;
     limitCaptureEvtCount?: number;
     trackingLog?: boolean;
-    allowBackpress?: boolean;
   }) => Promise<void>;
   activateShield: (data: {
     backgroundColor: string;
-    timeAfterResume?: number;
   }) => Promise<void>;
   activateShieldWithoutEffect: () => Promise<void>;
   activateShieldWithBlurView: (data: {
     radius: number;
-    timeAfterResume?: number;
   }) => Promise<void>;
   activateShieldWithImage: (data: {
     source: {
@@ -36,7 +34,6 @@ export interface Spec extends TurboModule {
     bottom?: number;
     right?: number;
     backgroundColor: string;
-    timeAfterResume?: number;
   }) => Promise<void>;
   deactivateShield: () => Promise<void>;
   getScreenGuardLogs: (maxCount: number) => Promise<
@@ -47,6 +44,8 @@ export interface Spec extends TurboModule {
       method: string;
     }>
   >;
+  addListener: (eventName: string) => void;
+  removeListeners: (count: number) => void;
 }
 
 export default TurboModuleRegistry.get<Spec>('ScreenGuard');
