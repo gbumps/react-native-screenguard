@@ -1,8 +1,8 @@
-#import "EventEmitter/EventEmitter.h"
 #import <Foundation/Foundation.h>
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
+#import <React/RCTEventEmitter.h>
 #import <React/RCTComponent.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTConvert.h>
@@ -19,11 +19,11 @@
 
 
 #if RCT_NEW_ARCH_ENABLED
-@interface ScreenGuard: EventEmitter <NativeScreenGuardSpec, RCTInvalidating>
+@interface ScreenGuard: RCTEventEmitter <NativeScreenGuardSpec, RCTInvalidating>
 @property (nonatomic, strong, readonly) NSDictionary *config;
 @end
 #else
-@interface ScreenGuard : EventEmitter <RCTBridgeModule, RCTInvalidating>
+@interface ScreenGuard : RCTEventEmitter <RCTBridgeModule, RCTInvalidating>
 @property (nonatomic, strong, readonly) NSDictionary *config;
 + (instancetype) shared;
 - (void)configureWithParams: (NSDictionary *)params;

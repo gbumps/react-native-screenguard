@@ -6,7 +6,9 @@
 #import <React/RCTImageLoader.h>
 
 @implementation ScreenGuard
+
 RCT_EXPORT_MODULE(ScreenGuard)
+static bool hasListeners = NO;
 
 + (instancetype)shared {
   static ScreenGuard *s;
@@ -16,15 +18,18 @@ RCT_EXPORT_MODULE(ScreenGuard)
 }
 
 - (void)startObserving {
+    hasListeners = YES;
     [[ScreenGuardImpl shared] setEventEmitter:self];
 }
 
 - (void)stopObserving {
+    hasListeners = NO;
     [[ScreenGuardImpl shared] setEventEmitter:nil];
 }
 
 - (void)invalidate {
     [super invalidate];
+    [[ScreenGuardImpl shared] reset];
     [[ScreenGuardImpl shared] setEventEmitter:nil];
 }
 
@@ -50,6 +55,7 @@ RCT_EXPORT_METHOD(initSettings:(NSDictionary *)params
     reject(kSGErrorInvalidParams, @"params must be an object", nil);
     return;
   }
+  [[ScreenGuardImpl shared] setEventEmitter:self];
   [[ScreenGuardImpl shared] configureWithParams:params];
   resolve(@(YES));
 }
@@ -151,6 +157,7 @@ RCT_EXPORT_METHOD(getScreenGuardLogs: (nonnull NSNumber *)maxCount resolve:(RCTP
         kSGConfigLimitCaptureEvtCount: @(data.limitCaptureEvtCount().has_value() ? data.limitCaptureEvtCount().value() : 0),
         kSGConfigTrackingLog: @(data.trackingLog().has_value() ? data.trackingLog().value() : NO)
     };
+  [[ScreenGuardImpl shared] setEventEmitter:self];
   [[ScreenGuardImpl shared] configureWithParams:params];
   resolve(@(YES));
 }
