@@ -47,7 +47,7 @@ class ScreenGuard extends ReactContextBaseJavaModule {
             promise.resolve(null);
         } catch (Exception e) {
             promise.reject("activateShieldWithImage", e.getMessage());
-        }   
+        }
     }
 
     @ReactMethod
@@ -83,6 +83,14 @@ class ScreenGuard extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getScreenGuardLogs(double maxCount, Promise promise) {
         delegate.getScreenGuardLogs(maxCount, promise);
+    }
+
+    @ReactMethod
+    public void addListener(String eventName) {
+    }
+
+    @ReactMethod
+    public void removeListeners(int count) {
     }
 
 }

@@ -74,4 +74,12 @@ class ScreenGuard extends NativeScreenGuardSpec {
     public void getScreenGuardLogs(double maxCount, Promise promise) {
         delegate.getScreenGuardLogs(maxCount, promise);
     }
+
+    @Override
+    public void addListener(String eventName) {
+    }
+
+    @Override
+    public void removeListeners(double count) {
+    }
 }

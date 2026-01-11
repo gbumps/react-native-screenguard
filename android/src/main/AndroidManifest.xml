@@ -2,13 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.screenguard">
 
-    <application>
-        <activity
-            android:name=".ScreenGuardColorActivity"
-            android:theme="@style/Theme.AppCompat.Translucent"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-            android:windowSoftInputMode="stateAlwaysVisible|adjustResize"
-            android:exported="false" />
-    </application>
+    <uses-permission android:name="android.permission.DETECT_SCREEN_RECORDING" />
 
 </manifest>
