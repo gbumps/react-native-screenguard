@@ -398,8 +398,8 @@ describe('ScreenGuard Module Test Suite', () => {
         it('should return logs from native', async () => {
             const mocks = getMockNativeModule();
             const mockLogs = [
-                { timestamp: 1000, action: 'init', isProtected: false },
-                { timestamp: 2000, action: 'screenshot', isProtected: true }
+                { timestamp: 1000, action: 'init', isActivated: false },
+                { timestamp: 2000, action: 'screenshot', isActivated: true }
             ];
             mocks.getScreenGuardLogs.mockResolvedValueOnce(mockLogs);
 

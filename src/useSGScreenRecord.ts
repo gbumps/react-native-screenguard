@@ -13,7 +13,7 @@ export function useSGScreenRecord(
     listener?: (event: ScreenGuardScreenRecordDataObject) => void
 ) {
     const [recordingData, setRecordingData] = useState<ScreenGuardScreenRecordDataObject | null>(null);
-    const [protectionStatus, setProtectionStatus] = useState<ScreenGuardHookData | null>(null);
+    const [activationStatus, setActivationStatus] = useState<ScreenGuardHookData | null>(null);
 
     const listenerRef = useRef(listener);
 
@@ -34,21 +34,21 @@ export function useSGScreenRecord(
             }
         );
 
-        const protectionSubscription = screenGuardEmitter.addListener(
+        const statusSubscription = screenGuardEmitter.addListener(
             ScreenGuardConstants.SCREEN_GUARD_EVT,
             (event: ScreenGuardHookData) => {
-                setProtectionStatus(event);
+                setActivationStatus(event);
             }
         );
 
         return () => {
             recordingSubscription.remove();
-            protectionSubscription.remove();
+            statusSubscription.remove();
         };
     }, []);
 
     return {
         recordingData,
-        protectionStatus,
+        activationStatus,
     };
 }

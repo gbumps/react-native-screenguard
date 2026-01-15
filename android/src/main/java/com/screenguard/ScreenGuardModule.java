@@ -353,7 +353,7 @@ public class ScreenGuardModule implements LifecycleEventListener {
         logAction(ScreenGuardConstants.ACTION_DEACTIVATE, false);
     }
 
-    private void logAction(String action, boolean isProtected) {
+    private void logAction(String action, boolean isActivated) {
         if (mConfigs != null && mConfigs.hasKey(ScreenGuardConstants.TRACKING_LOG)
                 && !mConfigs.getBoolean(ScreenGuardConstants.TRACKING_LOG)) {
             return;
@@ -368,7 +368,7 @@ public class ScreenGuardModule implements LifecycleEventListener {
             JSONObject logEntry = new JSONObject();
             logEntry.put(ScreenGuardConstants.TIMESTAMP, System.currentTimeMillis());
             logEntry.put(ScreenGuardConstants.ACTION, action);
-            logEntry.put(ScreenGuardConstants.IS_PROTECTED, isProtected);
+            logEntry.put(ScreenGuardConstants.IS_ACTIVATED, isActivated);
             logEntry.put(ScreenGuardConstants.METHOD, "");
 
             logs.put(logEntry);
@@ -407,7 +407,7 @@ public class ScreenGuardModule implements LifecycleEventListener {
                 WritableMap map = Arguments.createMap();
                 map.putDouble(ScreenGuardConstants.TIMESTAMP, log.getDouble(ScreenGuardConstants.TIMESTAMP));
                 map.putString(ScreenGuardConstants.ACTION, log.getString(ScreenGuardConstants.ACTION));
-                map.putBoolean(ScreenGuardConstants.IS_PROTECTED, log.getBoolean(ScreenGuardConstants.IS_PROTECTED));
+                map.putBoolean(ScreenGuardConstants.IS_ACTIVATED, log.getBoolean(ScreenGuardConstants.IS_ACTIVATED));
                 map.putString(ScreenGuardConstants.METHOD, log.getString(ScreenGuardConstants.METHOD));
                 result.pushMap(map);
             }

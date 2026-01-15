@@ -40,7 +40,7 @@ export interface Spec extends TurboModule {
     Array<{
       timestamp: number;
       action: string;
-      isProtected: boolean;
+      isActivated: boolean;
       method: string;
     }>
   >;

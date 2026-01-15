@@ -20,7 +20,7 @@ jest.mock('react', () => ({
 
 let mockScreenshotListener: ((event: any) => void) | null = null;
 let mockRecordingListener: ((event: any) => void) | null = null;
-let mockProtectionListener: ((event: any) => void) | null = null;
+let mockStatusListener: ((event: any) => void) | null = null;
 const mockRemove = jest.fn();
 
 jest.mock('react-native', () => {
@@ -38,7 +38,7 @@ jest.mock('react-native', () => {
                 } else if (eventName === 'onScreenRecordingCaptured') {
                     mockRecordingListener = callback;
                 } else if (eventName === 'onScreenGuardEvt') {
-                    mockProtectionListener = callback;
+                    mockStatusListener = callback;
                 }
                 return { remove: mockRemove };
             }),
@@ -52,7 +52,7 @@ describe('useSGScreenShot Hook', () => {
         mockUseEffectCallbacks = [];
         mockCleanupFunctions = [];
         mockScreenshotListener = null;
-        mockProtectionListener = null;
+        mockStatusListener = null;
     });
 
     it('should return initial null values', () => {
@@ -60,7 +60,7 @@ describe('useSGScreenShot Hook', () => {
 
         expect(result).toEqual({
             screenshotData: null,
-            protectionStatus: null,
+            activationStatus: null,
         });
     });
 
@@ -70,7 +70,7 @@ describe('useSGScreenShot Hook', () => {
 
         expect(result).toEqual({
             screenshotData: null,
-            protectionStatus: null,
+            activationStatus: null,
         });
     });
 
@@ -97,14 +97,14 @@ describe('useSGScreenShot Hook', () => {
         }
     });
 
-    it('should update protectionStatus when protection event fires', () => {
+    it('should update activationStatus when status event fires', () => {
         useSGScreenShot();
 
-        if (mockProtectionListener) {
-            const protectionData = { timestamp: 1234, method: 'color', isProtected: true };
-            mockProtectionListener(protectionData);
+        if (mockStatusListener) {
+            const statusData = { timestamp: 1234, method: 'color', isActivated: true };
+            mockStatusListener(statusData);
 
-            expect(mockSetState).toHaveBeenCalledWith(protectionData);
+            expect(mockSetState).toHaveBeenCalledWith(statusData);
         }
     });
 
@@ -123,7 +123,7 @@ describe('useSGScreenRecord Hook', () => {
         mockUseEffectCallbacks = [];
         mockCleanupFunctions = [];
         mockRecordingListener = null;
-        mockProtectionListener = null;
+        mockStatusListener = null;
     });
 
     it('should return initial null values', () => {
@@ -131,7 +131,7 @@ describe('useSGScreenRecord Hook', () => {
 
         expect(result).toEqual({
             recordingData: null,
-            protectionStatus: null,
+            activationStatus: null,
         });
     });
 
@@ -141,7 +141,7 @@ describe('useSGScreenRecord Hook', () => {
 
         expect(result).toEqual({
             recordingData: null,
-            protectionStatus: null,
+            activationStatus: null,
         });
     });
 
@@ -164,14 +164,14 @@ describe('useSGScreenRecord Hook', () => {
         }
     });
 
-    it('should update protectionStatus when protection event fires', () => {
+    it('should update activationStatus when status event fires', () => {
         useSGScreenRecord();
 
-        if (mockProtectionListener) {
-            const protectionData = { timestamp: 5678, method: 'blur', isProtected: true };
-            mockProtectionListener(protectionData);
+        if (mockStatusListener) {
+            const statusData = { timestamp: 5678, method: 'blur', isActivated: true };
+            mockStatusListener(statusData);
 
-            expect(mockSetState).toHaveBeenCalledWith(protectionData);
+            expect(mockSetState).toHaveBeenCalledWith(statusData);
         }
     });
 

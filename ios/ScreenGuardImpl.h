@@ -62,7 +62,7 @@ typedef NS_ENUM(NSInteger, ScreenGuardImageAlignment) {
 - (void)handleAppDidBecomeActive;
 
 // Logging
-- (void)logAction:(NSString *)action status:(BOOL)isProtected;
+- (void)logAction:(NSString *)action status:(BOOL)isActivated;
 - (void)getScreenGuardLogs:(NSNumber *)maxCount callback:(void (^)(NSArray *logs))callback;
 
 // Logic Helpers

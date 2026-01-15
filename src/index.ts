@@ -316,7 +316,7 @@ export default {
 
   /**
    * Get the current logs of screenguard
-   * throws error if ScreenGuard is n0ot initialized
+   * throws error if ScreenGuard is not initialized
    * @param maxCount maximum number of logs to retrieve
    * @version v2.0.0+
    */

@@ -597,15 +597,15 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
       }
 }
 
-- (void)sendStateEvent:(BOOL)isProtected {
+- (void)sendStateEvent:(BOOL)isActivated {
     NSDictionary *body = @{
         @"timestamp": @((long)([[NSDate date] timeIntervalSince1970] * 1000)),
         @"method": _currentMethod ?: @"",
-        @"isProtected": @(isProtected)
+        @"isActivated": @(isActivated)
     };
     [self sendEvent:kSGEventScreenGuard body:body];
     
-    [self logAction:kSGActionStateChange status:isProtected];
+    [self logAction:kSGActionStateChange status:isActivated];
 }
 
 - (void)sendEvent:(NSString *)eventName body:(id)body {
@@ -616,7 +616,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 
 #pragma mark - Logging
 
-- (void)logAction:(NSString *)action status:(BOOL)isProtected {
+- (void)logAction:(NSString *)action status:(BOOL)isActivated {
     BOOL shouldRecord = [_config[kSGConfigTrackingLog] boolValue];
     if (!shouldRecord) return;
 
@@ -629,7 +629,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     NSDictionary *logEntry = @{
         @"timestamp": @((long)([[NSDate date] timeIntervalSince1970] * 1000)),
         @"action": action ?: @"unknown",
-        @"isProtected": @(isProtected),
+        @"isActivated": @(isActivated),
         @"method": _currentMethod ?: @""
     };
     

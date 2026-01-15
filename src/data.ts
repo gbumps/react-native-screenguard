@@ -167,10 +167,10 @@ export interface ScreenGuardHookData {
    */
   method: string;
   /**
-  * check if screenguard is currently securing the screen
+  * check if screenguard is activated
   * @defaultValue false
   */
-  isProtected: boolean;
+  isActivated: boolean;
 }
 
 export interface ScreenGuardSettingsData {
@@ -257,9 +257,9 @@ export interface ScreenGuardLogEntry {
    */
   action: string;
   /**
-   * check if screenguard is currently securing the screen
+   * check if screenguard is activated
    */
-  isProtected: boolean;
+  isActivated: boolean;
   /**
    * method of screenguard activation (blur, image, color)
    */

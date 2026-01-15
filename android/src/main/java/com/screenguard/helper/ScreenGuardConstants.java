@@ -27,7 +27,7 @@ public class ScreenGuardConstants {
 
     // Event Payload Keys
     public static final String IS_RECORDING = "isRecording";
-    public static final String IS_PROTECTED = "isProtected";
+    public static final String IS_ACTIVATED = "isActivated";
     public static final String METHOD = "method";
     public static final String ACTION = "action";
     public static final String TIMESTAMP = "timestamp";
