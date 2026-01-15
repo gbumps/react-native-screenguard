@@ -71,7 +71,7 @@ function App(): React.JSX.Element {
   // const isDarkMode = useColorScheme() === 'dark';
   const [currentState, setCurrentState] = React.useState('');
 
-  useSGScreenShot((event) => {
+  const { activationStatus } = useSGScreenShot((event) => {
     console.log('event screenshot ', event);
   });
 
@@ -189,7 +189,7 @@ function App(): React.JSX.Element {
               style={{
                 color:  Colors.white,
               }}>
-                screenguard status {`${protectionStatus}`}
+                screenguard status {`${activationStatus}`}
             </Text>
           </Pressable>
           
