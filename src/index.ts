@@ -56,15 +56,6 @@ export default {
         'ScreenGuard: setting timeAfterResume while displayScreenGuardOverlay/displayScreenguardOverlayAndroid = false'
       );
     }
-    if (
-      Platform.OS === 'android' &&
-      currentSettings.limitCaptureEvtCount != null &&
-      currentSettings.limitCaptureEvtCount > 0
-    ) {
-      console.warn(
-        'ScreenGuard: limitCaptureEvtCount is not available on Android while screenguard is active (FLAG_SECURE blocks screenshot detection)'
-      );
-    }
     _isTrackingLogEnabled = currentSettings.trackingLog ?? false;
     try {
       if (NativeScreenGuard == null) {
@@ -120,6 +111,7 @@ export default {
    * any effect (blur, image, color) on Android (Android 5+)
    * throws error if ScreenGuard is not initialized
    * warning if called on iOS platform
+   * @deprecated Use register function with displayScreenguardOverlayAndroid = false instead
    * @version v1.0.0+
    */
   async registerWithoutEffect(): Promise<void | string> {
