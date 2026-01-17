@@ -121,14 +121,6 @@ public class ScreenGuardModule implements LifecycleEventListener {
             boolean getScreenshotPath = data.hasKey(ScreenGuardConstants.GET_SCREENSHOT_PATH)
                     && data.getBoolean(ScreenGuardConstants.GET_SCREENSHOT_PATH);
 
-            currentActivity.runOnUiThread(() -> {
-                if (enableCapture || enableRecord) {
-                    currentActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-                } else {
-                    currentActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-                }
-            });
-
             ScreenGuardOverlay.getInstance().init(currentActivity);
 
             registerScreenShotEventListener(getScreenshotPath);
@@ -163,7 +155,9 @@ public class ScreenGuardModule implements LifecycleEventListener {
                         || !mConfigs.hasKey(ScreenGuardConstants.DISPLAY_SCREENGUARD_OVERLAY_ANDROID)
                         || mConfigs.getBoolean(ScreenGuardConstants.DISPLAY_SCREENGUARD_OVERLAY_ANDROID);
 
-                if (displayOverlayAndroid) {
+                boolean isOverlayActivated = ScreenGuardOverlay.getInstance().isActivated();
+
+                if (displayOverlayAndroid && isOverlayActivated) {
                     if (isRecording) {
                         showOverlayPermanent();
                         currentActivity.runOnUiThread(() -> {
@@ -171,9 +165,9 @@ public class ScreenGuardModule implements LifecycleEventListener {
                                     Toast.LENGTH_SHORT).show();
                         });
                     } else {
-                        ScreenGuardOverlay.getInstance().hide();
+                        ScreenGuardOverlay.getInstance().showPendingOverlay();
                     }
-                } else if (isRecording) {
+                } else if (isRecording && isOverlayActivated) {
                     currentActivity.runOnUiThread(() -> {
                         Toast.makeText(currentReactContext, ScreenGuardConstants.MSG_RECORDING_BLOCKED,
                                 Toast.LENGTH_SHORT).show();
