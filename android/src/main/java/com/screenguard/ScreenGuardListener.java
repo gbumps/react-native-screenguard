@@ -1,7 +1,6 @@
 package com.screenguard;
 
 import android.content.ContentResolver;
-import android.database.ContentObserver;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.MediaStore;
@@ -15,9 +14,10 @@ public class ScreenGuardListener {
     private final HandlerThread mHandlerThread;
     private final Handler mHandler;
     private final ContentResolver mContentResolver;
-    private final ContentObserver mContentObserver;
+    private final ScreenGuardObserver mContentObserver;
 
-    public ScreenGuardListener(ReactApplicationContext context, Boolean getScreenShot, int limitCount, Listener listener) {
+    public ScreenGuardListener(ReactApplicationContext context, Boolean getScreenShot, int limitCount,
+            Listener listener) {
         mHandlerThread = new HandlerThread(NAME);
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
@@ -28,11 +28,11 @@ public class ScreenGuardListener {
 
     public void register() {
         mContentResolver.unregisterContentObserver(mContentObserver);
+        mContentObserver.setRegistrationTime();
         mContentResolver.registerContentObserver(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 true,
-                mContentObserver
-        );
+                mContentObserver);
     }
 
     public void unregister() {
