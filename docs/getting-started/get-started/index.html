@@ -13,7 +13,7 @@
 <meta name="screenguard, detector, screen-capture, capture, prevent, screenshot, capture-protection, screenshot-prevent, screenshot-blocker, screenshot-detector, screenshot-protection, screenshot-prevention, screenshot-blocking, screenshot-block, screenshot-blocking-ios, screenshot-blocking-android, screenshot-block-ios, screenshot-block-android, screenshot-blocker-ios, screenshot-blocker-android, react, native, ios, android">
 <meta name="description" content="A Native library for blocking screenshot for react-native developer, with background screenshot customizable.">
 <script src="https://www.statcounter.com/counter/counter.js" async></script><link rel="stylesheet" href="/react-native-screenguard/assets/css/styles.2c6d37ad.css">
-<script src="/react-native-screenguard/assets/js/runtime~main.84dcd976.js" defer="defer"></script>
+<script src="/react-native-screenguard/assets/js/runtime~main.5ccdd88a.js" defer="defer"></script>
 <script src="/react-native-screenguard/assets/js/main.73126ec8.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -24,30 +24,29 @@
 <hr>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="-key-features">✨ Key Features<a class="hash-link" aria-label="Direct link to ✨ Key Features" title="Direct link to ✨ Key Features" href="/react-native-screenguard/docs/getting-started/get-started#-key-features">​</a></h2>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="️-screenshot-and-screen-recording-prevention">🛡️ Screenshot and Screen Recording prevention<a class="hash-link" aria-label="Direct link to 🛡️ Screenshot and Screen Recording prevention" title="Direct link to 🛡️ Screenshot and Screen Recording prevention" href="/react-native-screenguard/docs/getting-started/get-started#️-screenshot-and-screen-recording-prevention">​</a></h3>
-<p>Prevent your app&#x27;s sensitive content from being captured or recorded. When users attempt to take screenshots or record the screen, the library automatically replaces your app&#x27;s content with an overlay. You have full control over what appears during capture:</p>
+<p>Prevent your app&#x27;s sensitive content from being captured or recorded, with 3 separated overlay types:</p>
 <ul>
-<li><strong>Solid color overlay</strong> — Display a solid color (e.g., black, white, or your brand color) to completely hide the underlying content.</li>
-<li><strong>Blur effect</strong> — Apply a blur overlay that obscures the content while maintaining a polished user experience, perfect for apps that want a softer approach to content security.</li>
-<li><strong>Custom image</strong> — Show your own image, logo, or watermark during capture. This is ideal for branding purposes or displaying a &quot;Content Secured&quot; message to users.</li>
+<li><strong>Solid color overlay</strong> — Display a solid color (e.g., black, white, or your custom hex color).</li>
+<li><strong>Blur effect</strong> — Apply a blur overlay that obscures the content.</li>
+<li><strong>Custom image</strong> — Show your own image, logo, or watermark during capture.</li>
 </ul>
-<p>The prevention works seamlessly in the background without affecting normal app usage — users can interact with your app normally, and the overlay only appears during capture attempts.</p>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="-screenshot-detection">📸 Screenshot Detection<a class="hash-link" aria-label="Direct link to 📸 Screenshot Detection" title="Direct link to 📸 Screenshot Detection" href="/react-native-screenguard/docs/getting-started/get-started#-screenshot-detection">​</a></h3>
-<p>Know exactly when users take screenshots of your app. The library provides real-time event detection that triggers immediately when a screenshot is captured, allowing you to:</p>
+<p>Know exactly when users take screenshots of your app. The library provides real-time event detection that triggers immediately when a screenshot is captured:</p>
 <ul>
-<li><strong>React instantly</strong> — Execute custom logic the moment a screenshot is taken, such as showing a warning, logging the event, or notifying your backend.</li>
-<li><strong>Access screenshot metadata</strong> — Optionally retrieve the file path of the captured screenshot on the device for advanced use cases.</li>
-<li><strong>Control event frequency</strong> — Limit the number of screenshot events your app responds to, preventing spam or excessive triggering in rapid succession.</li>
-<li><strong>Track status</strong> — Know whether your screen is currently active when the screenshot event occurs.</li>
+<li><strong>React instantly</strong> — Execute custom logic when a screenshot is taken,like showing a warning, log event, etc..........</li>
+<li><strong>Access screenshot metadata</strong> — Retrieve the file path of the captured screenshot on the device for your own purposes.</li>
+<li><strong>Control event frequency</strong> — Limit the number of screenshot events.</li>
+<li><strong>Track status</strong> — Know whether Screenguard is currently active when the screenshot event occurs.</li>
 </ul>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="-screen-recording-detection">🎥 Screen Recording Detection<a class="hash-link" aria-label="Direct link to 🎥 Screen Recording Detection" title="Direct link to 🎥 Screen Recording Detection" href="/react-native-screenguard/docs/getting-started/get-started#-screen-recording-detection">​</a></h3>
-<p>Monitor screen recording activity in real-time. The library detects when users start or stop recording their screen, giving you the ability to:</p>
+<p>Monitor screen recording activity in real-time.</p>
 <ul>
-<li><strong>Detect recording state</strong> — Know immediately when screen recording begins and ends on the device.</li>
-<li><strong>Respond to recording attempts</strong> — Execute custom actions such as pausing video playback, hiding sensitive data, or alerting users when recording is detected.</li>
-<li><strong>Cross-platform support</strong> — Works on <strong>iOS 13+</strong> and <strong>Android 15+ (API 35+)</strong>, covering the vast majority of modern devices.</li>
+<li><strong>Detect recording state</strong> — Know when screen recording begins and ends on the device.</li>
+<li><strong>Respond to recording attempts</strong> — Execute custom actions when recording is detected.</li>
+<li><strong>Cross-platform support</strong> — Works on <strong>iOS 13+</strong> and <strong>Android 15+ (API 35+)</strong>.</li>
 </ul>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="-activity-logging">📝 Activity Logging<a class="hash-link" aria-label="Direct link to 📝 Activity Logging" title="Direct link to 📝 Activity Logging" href="/react-native-screenguard/docs/getting-started/get-started#-activity-logging">​</a></h3>
-<p>Comprehensive logging system for debugging and auditing purposes. The library automatically tracks all ScreenGuard-related events, making it easy to:</p>
+<p>Comprehensive logging for editing or debugging purposes. The library automatically tracks all ScreenGuard-related events, usually for:</p>
 <ul>
 <li><strong>Debug issues</strong> — Quickly identify when and how screen prevention was activated or deactivated during development.</li>
 <li><strong>Audit capture attempts</strong> — Keep a record of all screenshot and screen recording events for security auditing or analytics.</li>
