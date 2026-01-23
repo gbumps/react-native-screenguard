@@ -20,8 +20,6 @@ public class ScreenGuardPackage extends TurboReactPackage {
   public NativeModule getModule(@NonNull String name, @NonNull ReactApplicationContext context) {
       return switch (name) {
           case ScreenGuardClassName.SCREENGUARD -> new com.screenguard.ScreenGuard(context);
-          case ScreenGuardClassName.SG_SCREEN_SHOT -> new com.screenguard.SGScreenshot(context);
-          case ScreenGuardClassName.SG_SCREEN_RECORD -> new com.screenguard.SGScreenRecord(context);
           default -> null;
       };
   }
@@ -34,22 +32,6 @@ public class ScreenGuardPackage extends TurboReactPackage {
       moduleInfos.put(ScreenGuardClassName.SCREENGUARD, new ReactModuleInfo(
               ScreenGuardClassName.SCREENGUARD,
               ScreenGuardClassName.SCREENGUARD,
-              false,  // canOverrideExistingModule
-              false,  // needsEagerInit
-              false,  // isCxxModule
-              true    // isTurboModule
-      ));
-      moduleInfos.put(ScreenGuardClassName.SG_SCREEN_SHOT, new ReactModuleInfo(
-              ScreenGuardClassName.SG_SCREEN_SHOT,
-              ScreenGuardClassName.SG_SCREEN_SHOT,
-              false,  // canOverrideExistingModule
-              false,  // needsEagerInit
-              false,  // isCxxModule
-              true    // isTurboModule
-      ));
-      moduleInfos.put(ScreenGuardClassName.SG_SCREEN_RECORD, new ReactModuleInfo(
-              ScreenGuardClassName.SG_SCREEN_RECORD,
-              ScreenGuardClassName.SG_SCREEN_RECORD,
               false,  // canOverrideExistingModule
               false,  // needsEagerInit
               false,  // isCxxModule

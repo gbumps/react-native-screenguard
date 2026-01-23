@@ -7,7 +7,7 @@
  */
 
 import * as React from 'react';
-import type {PropsWithChildren} from 'react';
+import type { PropsWithChildren } from 'react';
 import {
   Modal,
   Pressable,
@@ -21,22 +21,28 @@ import {
   TextInput,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-import ScreenGuardModule, {ScreenGuardConstants} from 'react-native-screenguard';
+import ScreenGuardModule, {
+  ScreenGuardConstants,
+  useSGScreenRecord,
+  useSGScreenShot,
+} from 'react-native-screenguard';
 
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
-function Section({children, title}: SectionProps): React.JSX.Element {
+const Colors = {
+  darker: '#121212',
+  dark: '#1E1E1E',
+  light: '#F5F5F5',
+  lighter: '#FFFFFF',
+  black: '#000000',
+  white: '#FFFFFF',
+};
+
+function Section({ children, title }: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+
   return (
     <View style={styles.sectionContainer}>
       <Text
@@ -62,8 +68,17 @@ function Section({children, title}: SectionProps): React.JSX.Element {
 }
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  // const isDarkMode = useColorScheme() === 'dark';
   const [currentState, setCurrentState] = React.useState('');
+
+  const { activationStatus } = useSGScreenShot((event) => {
+    console.log('event screenshot ', event);
+  });
+
+  useSGScreenRecord((event) => {
+    console.log('event record ', event);
+  });
+
 
   const textInputRef = React.useRef<TextInput | null>(null);
   const [modalVisible, setModalVisible] = React.useState(false);
@@ -71,7 +86,7 @@ function App(): React.JSX.Element {
   const [color, _] = React.useState('#DB4437');
 
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    backgroundColor: Colors.darker,
   };
 
   const toggleModal = () => {
@@ -81,13 +96,12 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        barStyle={'light-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <Header />
         <Pressable style={styles.button} onPress={toggleModal}>
           <Text style={styles.buttonText}>Show Modal</Text>
         </Pressable>
@@ -102,7 +116,7 @@ function App(): React.JSX.Element {
                 <Text style={styles.modalText}>Hello World!</Text>
 
                 <Pressable
-                  style={{...styles.button, backgroundColor: '#2196F3'}}
+                  style={{ ...styles.button, backgroundColor: '#2196F3' }}
                   onPress={() => setModalVisible(!modalVisible)}>
                   <Text style={styles.buttonText}>Hide Modal</Text>
                 </Pressable>
@@ -114,22 +128,29 @@ function App(): React.JSX.Element {
           style={{
             backgroundColor: Colors.black,
           }}>
+          <View style={{ height: 23 }} />
           <Pressable
-            onPress={() => {
-              ScreenGuardModule.register({
+            onPress={async () => {
+              await ScreenGuardModule.initSettings({
+                timeAfterResume: 3000,
+                trackingLog: true,
+                displayScreenguardOverlayAndroid:true,
+              })
+              setCurrentState('0');
+            }}>
+            <Text
+              style={{
+                color: currentState === '0' ? '#00FF00' : Colors.white,
+              }}>
+              initSettings
+            </Text>
+          </Pressable>
+          <View style={{ height: 23 }} />
+          <Pressable
+            onPress={async () => {
+              await ScreenGuardModule.register({
                 backgroundColor: color,
-                timeAfterResume: 2000,
-              }).then(res => {
-
-              // ScreenGuardModule.registerScreenshotEventListener(false, _ =>
-              //   Alert.alert(`register screenshot,`),
-              // );
-                console.log('register success:', res);
-                // Alert.alert('register success');
-              });
-              // ScreenGuardModule.registerScreenRecordingEventListener(_ =>
-              //   Alert.alert('register screen record'),
-              // );
+              })
               setCurrentState('1');
             }}>
             <Text
@@ -139,8 +160,8 @@ function App(): React.JSX.Element {
               Turn on screenguard with color
             </Text>
           </Pressable>
-          <View style={{height: 23}} />
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ height: 23 }} />
+          <View style={{ flexDirection: 'row' }}>
             <Text
               style={{
                 color: currentState === '1' ? '#00FF00' : Colors.white,
@@ -156,63 +177,47 @@ function App(): React.JSX.Element {
               }}
             />
           </View>
-          <View style={{height: 72}} />
+          <View style={{ height: 22 }} />
           <Pressable
-            onPress={() => {
-              ScreenGuardModule.registerScreenshotEventListener(true,
-                res => {
-                  console.log('screenshot path ', res);
-                },
-              );
-              setCurrentState('2');
+            onPress={async () => {
+              // await ScreenGuardModule.register({
+              //   backgroundColor: color,
+              // })
+              // setCurrentState('1');
             }}>
             <Text
               style={{
-                color: currentState === '2' ? '#00FF00' : Colors.white,
+                color:  Colors.white,
               }}>
-              Turn on screenshot listener
+                screenguard status {`${activationStatus}`}
             </Text>
           </Pressable>
-          <View style={{height: 72}} />
+          
+          <View style={{ height: 23 }} />
           <Pressable
-            onPress={() => {
-              ScreenGuardModule.registerScreenRecordingEventListener(false, res => {
-                console.log('screen record path ', res);
-              });
+            onPress={async () => {
+              await ScreenGuardModule.unregister();
               setCurrentState('3');
             }}>
             <Text
               style={{
                 color: currentState === '3' ? '#00FF00' : Colors.white,
               }}>
-              Turn on screen record listener
-            </Text>
-          </Pressable>
-          <View style={{height: 72}} />
-          <Pressable
-            onPress={ async () => {
-              await ScreenGuardModule.unregister();
-              setCurrentState('4');
-            }}>
-            <Text
-              style={{
-                color: currentState === '4' ? '#00FF00' : Colors.white,
-              }}>
               Turn off screenguard
             </Text>
           </Pressable>
           <TextInput
             ref={textInputRef}
-            style={{borderColor: Colors.white, borderWidth: 1, height: 40}}
+            style={{ borderColor: Colors.white, borderWidth: 1, height: 40 }}
             multiline={true}
             autoCapitalize="sentences"
             autoCorrect={true}
             keyboardType="default"
             returnKeyType="done"
-            onKeyPress={() => {}}
+            onKeyPress={() => { }}
             placeholder="Enter text here..."
           />
-          <View style={{height: 72}} />
+          <View style={{ height: 72 }} />
           <Pressable
             onPress={async () => {
               const data = {
@@ -220,17 +225,23 @@ function App(): React.JSX.Element {
                 timeAfterResume: 1000,
               };
               console.log('blur view');
-              await ScreenGuardModule.registerWithBlurView(data);
-              setCurrentState(() => '5');
+              ScreenGuardModule.registerWithBlurView(data).then(
+                () => {
+                  setCurrentState(() => '4');
+                },
+                err => {
+                  console.log('err screenguard blur view ', err);
+                },
+              );
             }}>
             <Text
               style={{
-                color: currentState === '5' ? '#00FF00' : Colors.white,
+                color: currentState === '4' ? '#00FF00' : Colors.white,
               }}>
               Turn on screenguard with blur radius = 35
             </Text>
           </Pressable>
-          <View style={{height: 72}} />
+          <View style={{ height: 72 }} />
           <Pressable
             onPress={async () => {
               await ScreenGuardModule.registerWithImage({
@@ -243,47 +254,61 @@ function App(): React.JSX.Element {
                   uri: 'https://www.icegif.com/wp-content/uploads/2022/09/icegif-386.gif',
                 },
                 alignment: ScreenGuardConstants.Alignment.topCenter,
-                timeAfterResume: 2000,
                 backgroundColor: color,
               });
               console.log('image view');
+              setCurrentState('5');
+            }}>
+            <Text
+              style={{
+                color: currentState === '5' ? '#00FF00' : Colors.white,
+              }}>
+              Turn on screenguard with Image
+            </Text>
+          </Pressable>
+          <View style={{ height: 72 }} />
+          <Pressable
+            onPress={async () => {
+              await ScreenGuardModule.registerWithoutEffect();
+              console.log('Android only');
               setCurrentState('6');
             }}>
             <Text
               style={{
                 color: currentState === '6' ? '#00FF00' : Colors.white,
               }}>
-              Turn on screenguard with Image
+              Turn on screenguard (android only)
             </Text>
           </Pressable>
-          <View style={{height: 72}} />
+          <View style={{ height: 72 }} />
           <Pressable
             onPress={async () => {
-              await ScreenGuardModule.registerWithoutEffect();
+              await ScreenGuardModule.getScreenGuardLogs();
               console.log('Android only');
-              setCurrentState('7');
+              setCurrentState('6');
             }}>
             <Text
               style={{
-                color: currentState === '7' ? '#00FF00' : Colors.white,
+                color: currentState === '6' ? '#00FF00' : Colors.white,
               }}>
               Turn on screenguard (android only)
             </Text>
           </Pressable>
+          <View style={{ height: 72 }} />
           <Section title="Step One">
             Edit <Text style={styles.highlight}>App.tsx</Text> to change this
             screen and then come back to see your edits.
           </Section>
           <Section title="See Your Changes">
-            <ReloadInstructions />
+            {/* <ReloadInstructions /> */}
           </Section>
           <Section title="Debug">
-            <DebugInstructions />
+            {/* <DebugInstructions /> */}
           </Section>
           <Section title="Learn More">
             Read the docs to discover what to do next:
           </Section>
-          <LearnMoreLinks />
+          {/* <LearnMoreLinks /> */}
         </View>
       </ScrollView>
     </SafeAreaView>
