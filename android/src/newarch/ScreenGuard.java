@@ -15,6 +15,12 @@ class ScreenGuard extends NativeScreenGuardSpec {
     }
 
     @Override
+    public void initSettings(ReadableMap data, Promise promise) {
+        delegate.initSettings(data);
+        promise.resolve(null);
+    }
+
+    @Override
     public void activateShield(ReadableMap data, Promise promise) {
         try {
             delegate.activateShield(data);
@@ -62,5 +68,18 @@ class ScreenGuard extends NativeScreenGuardSpec {
         } catch (Exception e) {
             promise.reject("deactivateShield", e.getMessage());
         }
+    }
+
+    @Override
+    public void getScreenGuardLogs(double maxCount, Promise promise) {
+        delegate.getScreenGuardLogs(maxCount, promise);
+    }
+
+    @Override
+    public void addListener(String eventName) {
+    }
+
+    @Override
+    public void removeListeners(double count) {
     }
 }

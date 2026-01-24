@@ -8,7 +8,7 @@
 
 ![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue)
 
-https://github-production-user-asset-6210df.s3.amazonaws.com/16846439/246678740-26d8ac37-9bc3-4d5b-8ad5-93525fb90a72.mp4
+![main](https://github.com/user-attachments/assets/135826cd-9cc7-4d7d-a4c4-8237efe36816)
 
 You can find full documentation and how to use [here](https://gbumps.github.io/react-native-screenguard)
 
@@ -23,13 +23,18 @@ Web docs repo (for contribution) [here](https://github.com/gbumps/rn-screenguard
     * [1.Install](https://gbumps.github.io/react-native-screenguard/docs/getting-started/install)
     * [2.Linking](https://gbumps.github.io/react-native-screenguard/docs/getting-started/linking)
   * [Usage](#usage)
+     * [initSettings](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/init-settings)
      * [register](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/register)
      * [registerWithoutEffect](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/register-without-effect-android)
-     * [registerScreenshotEventListener](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/register-screenshot-event-listener)
-     * [registerScreenRecordingEventListener](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/register-screen-recording-event-listener)
+     * [registerScreenshotEventListener](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/register-screenshot-event-listener)(removed in v2.0.0)
+     * [registerScreenRecordingEventListener](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/register-screen-recording-event-listener)(removed in v2.0.0)
      * [registerWithBlurView](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/register-with-blurview)
      * [registerWithImage](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/register-with-image)
      * [unregister](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/unregister)
+     * [getScreenGuardLogs](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/get-screen-guard-logs)
+  * [Hooks](#hooks)
+    * [useSGScreenShot](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/use-sg-screenshot)
+    * [useSGScreenRecord](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/use-sg-screen-record)
   * [Limitation](https://gbumps.github.io/react-native-screenguard/docs/limitation/)
   * [Contributing](#contributing)
   * [License](#license)

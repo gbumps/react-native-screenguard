@@ -1,5 +1,13 @@
-
 {
   "extends": "./tsconfig",
-  "exclude": ["example", "node_modules"]
+  "exclude": [
+    "example",
+    "node_modules",
+    "src/NativeScreenGuard.ts",
+    "**/__test__",
+    "**/__tests__"
+  ],
+  "compilerOptions": {
+    "rootDir": "src"
+  }
 }

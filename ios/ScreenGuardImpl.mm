@@ -1,0 +1,777 @@
+#import "ScreenGuardImpl.h"
+#import "ScreenGuardConstants.h"
+#import "SDWebImage/SDWebImage.h"
+#import <React/RCTUtils.h>
+#import <React/RCTImageLoader.h>
+
+NSString * const SCREEN_GUARD_EVT = @"onScreenGuardEvt";
+NSString * const SCREENSHOT_EVT = @"onScreenShotCaptured";
+NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
+
+@interface ScreenGuardImpl()
+@property (nonatomic, strong) UITextField *textField;
+@property (nonatomic, strong) UIImageView *imageView;
+@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) NSDictionary *config;
+@property (nonatomic, weak) RCTEventEmitter *eventEmitter;
+
+// Overlay
+@property (nonatomic, strong) UIView *overlayView;
+
+// Observers
+@property (nonatomic, strong) id screenshotObserver;
+@property (nonatomic, strong) id screenRecordingObserver;
+
+// State
+@property (nonatomic) BOOL isMultitasking;
+@property (nonatomic) BOOL isRecording;
+@property (nonatomic, strong) NSString *currentMethod;
+@property (nonatomic) NSInteger currentScreenshotCount;
+@property (nonatomic) CGRect secureFrame;
+
+@end
+
+@implementation ScreenGuardImpl
+
++ (instancetype)shared {
+    static ScreenGuardImpl *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[ScreenGuardImpl alloc] init];
+    });
+    return sharedInstance;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _isMultitasking = NO;
+        _isRecording = NO;
+        _currentMethod = @"";
+        _currentScreenshotCount = 0;
+        _secureFrame = CGRectZero;
+        [self registerAppLifecycleListeners];
+    }
+    return self;
+}
+
+- (void)registerAppLifecycleListeners {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAppWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAppDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleDeviceOrientationChange) name:UIDeviceOrientationDidChangeNotification object:nil];
+}
+
+- (void)handleDeviceOrientationChange {
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    
+    if (orientation == UIDeviceOrientationFaceUp || 
+        orientation == UIDeviceOrientationFaceDown ||
+        orientation == UIDeviceOrientationUnknown) {
+        return;
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self->_textField == nil) return;
+        
+        UIWindow *window = RCTKeyWindow();
+        if (window == nil) {
+            window = [UIApplication sharedApplication].keyWindow;
+        }
+        
+        CGRect newFrame = window ? window.bounds : [UIScreen mainScreen].bounds;
+        
+        self->_textField.frame = newFrame;
+        
+        if (self->_overlayView) {
+            self->_overlayView.frame = newFrame;
+        }
+        
+        if (self->_scrollView) {
+            self->_scrollView.frame = newFrame;
+        }
+    });
+}
+
+- (void)setEventEmitter:(RCTEventEmitter *)emitter {
+    _eventEmitter = emitter;
+}
+
+- (void)reset {
+    [self removeScreenShot];
+    [self removeOverlay]; 
+    [self removeScreenshotEventListener];
+    [self removeScreenRecordingEventListener];
+    _config = nil;
+    _currentMethod = @"";
+    _currentScreenshotCount = 0;
+    _secureFrame = CGRectZero;
+}
+
+- (void)configureWithParams:(NSDictionary *)params {
+    _config = [params copy];
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    [ud setObject:_config forKey:kSGUserDefaultsConfig];
+    [ud synchronize];
+    
+    BOOL getScreenshotPath = NO;
+    if (params[kSGConfigGetScreenshotPath] != nil) {
+        getScreenshotPath = [params[kSGConfigGetScreenshotPath] boolValue];
+    }
+    [self registerScreenshotEventListener:getScreenshotPath];
+    [self registerScreenRecordingEventListener:YES];
+    
+    [self logAction:kSGActionInit status:NO];
+    [self applySecureState];
+}
+
+#pragma mark - Logic Core
+
+- (void)handleAppWillResignActive {
+    _isMultitasking = YES;
+    [self applySecureState];
+}
+
+- (void)handleAppDidBecomeActive {
+    _isMultitasking = NO;
+    [self applySecureState];
+}
+
+- (void)applySecureState {
+    if (_textField == nil) return;
+    
+    BOOL enableCapture = [_config[kSGConfigEnableCapture] boolValue];
+    BOOL enableRecord = [_config[kSGConfigEnableRecord] boolValue];
+    BOOL enableContentMultitask = [_config[kSGConfigEnableMultitask] boolValue];
+    
+    BOOL shouldSecure = YES;
+    
+    if (_isMultitasking) {
+        shouldSecure = !enableContentMultitask;
+    } else {
+        BOOL isRec = [UIScreen mainScreen].isCaptured;
+        
+        if (enableCapture && !enableRecord) {
+            shouldSecure = isRec ? YES : NO;
+        } else if (!enableCapture && enableRecord) {
+            shouldSecure = isRec ? NO : YES;
+        } else if (enableCapture && enableRecord) {
+             shouldSecure = NO;
+        } else {
+             shouldSecure = YES;
+        }
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self->_textField setSecureTextEntry:shouldSecure];
+        [self sendStateEvent:shouldSecure];
+    });
+}
+
+#pragma mark - Overlay Logic
+
+- (void)showOverlay:(BOOL)persistent {
+    if (_textField == nil) return;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self removeOverlay];
+        
+        UIWindow *keyWindow = RCTKeyWindow();
+        if (!keyWindow) return;
+        
+        self->_overlayView = [[UIView alloc] initWithFrame:keyWindow.bounds];
+        self->_overlayView.backgroundColor = self->_textField.backgroundColor;
+        self->_overlayView.userInteractionEnabled = NO; 
+        
+        if (self->_textField.background) {
+            UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:self->_overlayView.bounds];
+            bgImageView.image = self->_textField.background;
+            bgImageView.contentMode = UIViewContentModeScaleAspectFill;
+            [self->_overlayView addSubview:bgImageView];
+        }
+        
+        if (self->_imageView && self->_imageView.superview) {
+            UIImageView *imgCopy = [[UIImageView alloc] initWithFrame:self->_imageView.frame];
+            imgCopy.image = self->_imageView.image;
+            imgCopy.contentMode = self->_imageView.contentMode;
+            imgCopy.clipsToBounds = self->_imageView.clipsToBounds;
+            
+            [self->_overlayView addSubview:imgCopy];
+        }
+        
+        [keyWindow addSubview:self->_overlayView];
+        [keyWindow bringSubviewToFront:self->_overlayView];
+        
+        if (!persistent) {
+             double delayInSeconds = [self->_config[kSGConfigTimeAfterResume] doubleValue] / 1000.0;
+             if (delayInSeconds <= 0) delayInSeconds = 1.0;
+             
+             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+             dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                [self removeOverlay];
+            });
+        }
+    });
+}
+
+- (void)removeOverlay {
+    if ([NSThread isMainThread]) {
+        if (self->_overlayView) {
+            [self->_overlayView removeFromSuperview];
+            self->_overlayView = nil;
+        }
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self removeOverlay];
+        });
+    }
+}
+
+
+#pragma mark - Secure View Methods
+
+- (void)initTextField {
+    UIWindow *window = RCTKeyWindow();
+    if (window == nil) {
+        window = [UIApplication sharedApplication].keyWindow;
+    }
+    
+    if (window == nil) {
+        RCTLogInfo(@"ScreenGuard: Window not found, retrying...");
+        return;
+    }
+
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGRect frame = CGRectEqualToRect(_secureFrame, CGRectZero) ? screenRect : _secureFrame;
+    _textField = [[UITextField alloc] initWithFrame:frame];
+    _textField.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [_textField setTextAlignment:NSTextAlignmentCenter];
+    [_textField setUserInteractionEnabled: NO];
+    
+    [_textField setSecureTextEntry:YES];
+    
+    [window makeKeyAndVisible];
+    
+    if (window.layer.superlayer) {
+        [window.layer.superlayer addSublayer:_textField.layer];
+    } else {
+        [window addSubview:_textField];
+    }
+    
+    if (_textField.layer.sublayers.count > 0) {
+        [_textField.layer.sublayers.firstObject addSublayer: window.layer];
+    }
+}
+
+- (void)secureViewWithBackgroundColor:(NSString *)color {
+    if (_config == nil) {
+        RCTLogWarn(@"ScreenGuard: initSettings must be called before register");
+        return;
+    }
+    if (@available(iOS 13.0, *)) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self->_textField == nil) {
+                [self initTextField];
+            }
+            if (self->_textField) {
+                [self->_textField setBackgroundColor: [self colorFromHexString: color]];
+                self->_currentMethod = kSGMethodColor;
+                [self applySecureState];
+            }
+        });
+    }
+}
+
+
+- (void)secureViewWithBlurView:(NSNumber *)radius {
+    if (_config == nil) {
+        RCTLogWarn(@"ScreenGuard: initSettings must be called before registerWithBlurView");
+        return;
+    }
+    if (@available(iOS 13.0, *)) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self->_textField == nil) {
+                [self initTextField];
+            }
+            if (self->_textField) {
+                [self->_textField setBackgroundColor: [UIColor clearColor]];
+                UIViewController *presentedViewController = RCTPresentedViewController();
+                if (presentedViewController) {
+                     UIImage *imageView = [self convertViewToImage:presentedViewController.view.superview];
+                     CIImage *inputImage = [CIImage imageWithCGImage:imageView.CGImage];
+                     
+                     CIContext *context = [CIContext contextWithOptions:nil];
+                     
+                     CIFilter *blurFilter = [CIFilter filterWithName:@"CIGaussianBlur"];
+                     [blurFilter setValue:inputImage forKey:kCIInputImageKey];
+                     [blurFilter setValue:radius forKey:kCIInputRadiusKey];
+                     
+                     CIImage *outputImage = [blurFilter valueForKey:kCIOutputImageKey];
+                     
+                     CGImageRef cgImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
+                     
+                     UIImage *blurredImage = [UIImage imageWithCGImage:cgImage];
+                     
+                     CGImageRelease(cgImage);
+                     
+                     [self->_textField setBackground: blurredImage];
+                }
+                self->_currentMethod = kSGMethodBlur;
+                [self applySecureState];
+            }
+        });
+    }
+}
+
+- (void)secureViewWithImageAlignment:(NSDictionary *)source
+                   withDefaultSource:(NSDictionary *)defaultSource
+                           withWidth:(NSNumber *)width
+                          withHeight:(NSNumber *)height
+                       withAlignment:(ScreenGuardImageAlignment)alignment
+                 withBackgroundColor:(NSString *)backgroundColor
+{
+    if (_config == nil) {
+        RCTLogWarn(@"ScreenGuard: initSettings must be called before registerWithImage");
+        return;
+    }
+    if (@available(iOS 13.0, *)) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self->_textField == nil) {
+                [self initTextField];
+            }
+            if (self->_textField) {
+                [self->_textField setContentMode: UIViewContentModeCenter];
+                
+                self->_imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
+                
+                self->_imageView.translatesAutoresizingMaskIntoConstraints = NO;
+                [self->_imageView setClipsToBounds:YES];
+                
+                if (source[@"uri"] != nil) {
+                    NSString *uriImage = source[@"uri"];
+                    NSString *uriDefaultSource = defaultSource[@"uri"];
+                    NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
+                    SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
+                    UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
+                    
+                    [self->_imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
+                                  placeholderImage: thumbnailImage
+                                           options: downloaderOptions
+                                         completed: nil];
+                }
+                if (self->_scrollView == nil) {
+                    self->_scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+                    self->_scrollView.showsHorizontalScrollIndicator = NO;
+                    self->_scrollView.showsVerticalScrollIndicator = NO;
+                    self->_scrollView.scrollEnabled = false;
+                }
+                [self setupImageViewAlignment: alignment]; 
+                [self->_textField addSubview: self->_scrollView];
+                [self->_textField sendSubviewToBack: self->_scrollView];
+                [self->_textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
+                self->_currentMethod = kSGMethodImage;
+                [self applySecureState];
+            }
+        });
+    }
+}
+
+- (void)secureViewWithImagePosition:(NSDictionary *)source
+                  withDefaultSource:(NSDictionary *)defaultSource
+                          withWidth:(NSNumber *)width
+                         withHeight:(NSNumber *)height
+                            withTop:(NSNumber *)top
+                           withLeft:(NSNumber *)left
+                         withBottom:(NSNumber *)bottom
+                          withRight:(NSNumber *)right
+                withBackgroundColor:(NSString *)backgroundColor
+{
+    if (_config == nil) {
+        RCTLogWarn(@"ScreenGuard: initSettings must be called before registerWithImage");
+        return;
+    }
+    if (@available(iOS 13.0, *)) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self->_textField == nil) {
+                [self initTextField];
+            }
+            if (self->_textField) {
+                [self->_textField setContentMode: UIViewContentModeCenter];
+                
+                if (self->_scrollView == nil) {
+                    self->_scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+                    self->_scrollView.showsHorizontalScrollIndicator = NO;
+                    self->_scrollView.showsVerticalScrollIndicator = NO;
+                    self->_scrollView.scrollEnabled = false;
+                }
+                
+                self->_imageView = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, [width doubleValue], [height doubleValue])];
+                self->_imageView.translatesAutoresizingMaskIntoConstraints = NO;
+                [self->_imageView setClipsToBounds: TRUE];
+                
+                if (source[@"uri"] != nil) {
+                    NSString *uriImage = source[@"uri"];
+                    NSString *uriDefaultSource = defaultSource[@"uri"];
+                    NSURL *urlDefaultSource = [NSURL URLWithString: uriDefaultSource];
+                    SDWebImageDownloaderOptions downloaderOptions = SDWebImageDownloaderScaleDownLargeImages;
+                    UIImage *thumbnailImage = uriDefaultSource != nil ? [UIImage imageWithData: [NSData dataWithContentsOfURL: urlDefaultSource]] : nil;
+                    
+                    [self->_imageView sd_setImageWithURL: [NSURL URLWithString: uriImage]
+                                  placeholderImage: thumbnailImage
+                                           options: downloaderOptions
+                                         completed: nil];
+                }
+                [self setImageViewBasedOnPosition:[top doubleValue] left:[left doubleValue] bottom:[bottom doubleValue] right:[right doubleValue]];
+                
+                [self->_textField addSubview: self->_scrollView];
+                [self->_textField sendSubviewToBack: self->_scrollView];
+                [self->_textField setBackgroundColor: [self colorFromHexString: backgroundColor]];
+                self->_currentMethod = kSGMethodImage;
+                [self applySecureState];
+            }
+        });
+    }
+}
+
+- (void)removeScreenShot {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self removeOverlay];
+        UIWindow *window = RCTKeyWindow();
+        if (window == nil) {
+            window = [UIApplication sharedApplication].keyWindow;
+        }
+        
+        if (self->_textField != nil) {
+            if (self->_imageView != nil) {
+                [self->_imageView setImage: nil];
+                [self->_imageView removeFromSuperview];
+                self->_imageView = nil;
+            }
+            if (self->_scrollView != nil) {
+                [self->_scrollView removeFromSuperview];
+                self->_scrollView = nil;
+            }
+            [self->_textField setSecureTextEntry: FALSE];
+            [self->_textField setBackgroundColor: [UIColor clearColor]];
+            [self->_textField setBackground: nil];
+            
+            CALayer *textFieldLayer = self->_textField.layer;
+            CALayer *windowSuperlayer = textFieldLayer.superlayer;
+            CALayer *textFieldSecureSublayer = textFieldLayer.sublayers.firstObject;
+            
+            if (textFieldSecureSublayer && [textFieldSecureSublayer.sublayers containsObject:window.layer]) {
+                [window.layer removeFromSuperlayer];
+                if (windowSuperlayer) {
+                    [windowSuperlayer addSublayer:window.layer];
+                }
+            }
+            
+            [textFieldLayer removeFromSuperlayer];
+            [self->_textField removeFromSuperview];
+            
+            self->_textField = nil;
+            
+            self->_currentMethod = @"";
+            self->_secureFrame = CGRectZero;
+            [self sendStateEvent:NO];
+            [self logAction:kSGActionRemoveShield status:NO];
+        }
+    });
+}
+
+#pragma mark - Event Listeners
+
+- (void)registerScreenshotEventListener:(BOOL)getScreenshotPath {
+    BOOL currentPath = getScreenshotPath;
+    NSMutableDictionary *newConfig = [_config mutableCopy];
+    if (newConfig) {
+        newConfig[kSGConfigGetScreenshotPath] = @(getScreenshotPath);
+        _config = newConfig;
+    }
+    
+    if (_screenshotObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:_screenshotObserver];
+    }
+    
+    _screenshotObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationUserDidTakeScreenshotNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+        [self handleScreenshotNotification:note];
+        
+        BOOL displayOverlay = [_config[kSGConfigDisplayScreenGuardOverlay] boolValue];
+        if (displayOverlay) {
+            [self showOverlay:NO]; 
+        }
+    }];
+}
+
+- (void)removeScreenshotEventListener {
+    if (_screenshotObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:_screenshotObserver];
+        _screenshotObserver = nil;
+    }
+}
+
+- (void)registerScreenRecordingEventListener:(BOOL)getRecordingStatus {
+    if (_screenRecordingObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:_screenRecordingObserver];
+    }
+    
+    _screenRecordingObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIScreenCapturedDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+        [self handleScreenRecordNotification:note];
+    }];
+}
+
+- (void)removeScreenRecordingEventListener {
+    if (_screenRecordingObserver) {
+        [[NSNotificationCenter defaultCenter] removeObserver:_screenRecordingObserver];
+        _screenRecordingObserver = nil;
+    }
+}
+
+#pragma mark - Handlers
+
+- (void)handleScreenshotNotification:(NSNotification *)notification {
+    _currentScreenshotCount++;
+    
+    NSNumber *limitCount = _config[kSGConfigLimitCaptureEvtCount];
+    if (limitCount != nil && [limitCount integerValue] > 0) {
+        if (_currentScreenshotCount < [limitCount integerValue]) {
+             // Not reached limit yet
+             return;
+        }
+    }
+    
+    BOOL getPath = [_config[kSGConfigGetScreenshotPath] boolValue];
+  
+    if (getPath) {
+        UIViewController *presentedViewController = RCTPresentedViewController();
+        UIImage *image = [self convertViewToImage:presentedViewController.view.superview];
+        NSData *data = UIImagePNGRepresentation(image);
+        if (!data) {
+             [self sendEvent:SCREENSHOT_EVT body:nil];
+            return;
+        }
+        NSString *tempDir = NSTemporaryDirectory();
+        NSString *fileName = [[NSUUID UUID] UUIDString];
+        NSString *filePath = [tempDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", fileName]];
+        NSError *error = nil;
+        NSDictionary *result;
+        BOOL success = [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
+        if (!success) {
+            result = @{@"path": @"Error retrieving file", @"name": @"", @"type": @""};
+        } else {
+            result = @{@"path": filePath, @"name": fileName, @"type": @"PNG"};
+        }
+         [self sendEvent:SCREENSHOT_EVT body:result];
+    } else {
+         [self sendEvent:SCREENSHOT_EVT body:nil];
+    }
+    
+    [self logAction:kSGActionScreenshotTaken status:_textField.secureTextEntry];
+}
+
+- (void)handleScreenRecordNotification:(NSNotification *)notification {
+    BOOL isCaptured = [[UIScreen mainScreen] isCaptured];
+    NSDictionary *result;
+    
+    [self applySecureState];
+    
+    BOOL displayOverlay = [_config[kSGConfigDisplayScreenGuardOverlay] boolValue];
+    BOOL enableRecord = [_config[kSGConfigEnableRecord] boolValue];
+    
+    if (displayOverlay && !enableRecord) {
+        if (isCaptured) {
+            [self showOverlay:YES]; 
+        } else {
+            [self showOverlay:NO];
+        }
+    }
+    
+    [self logAction:isCaptured ? kSGActionRecordingStart : kSGActionRecordingStop status:_textField.secureTextEntry];
+    
+    if (isCaptured) {
+        result = @{@"isRecording": @"true"};
+        [self sendEvent:SCREEN_RECORDING_EVT body: result];
+     } else {
+        result = @{@"isRecording": @"false"};
+        [self sendEvent:SCREEN_RECORDING_EVT body: result];
+      }
+}
+
+- (void)sendStateEvent:(BOOL)isActivated {
+    NSDictionary *body = @{
+        @"timestamp": @((long)([[NSDate date] timeIntervalSince1970] * 1000)),
+        @"method": _currentMethod ?: @"",
+        @"isActivated": @(isActivated)
+    };
+    [self sendEvent:kSGEventScreenGuard body:body];
+    
+    [self logAction:kSGActionStateChange status:isActivated];
+}
+
+- (void)sendEvent:(NSString *)eventName body:(id)body {
+    if (_eventEmitter) {
+        [_eventEmitter sendEventWithName:eventName body:body];
+    }
+}
+
+#pragma mark - Logging
+
+- (void)logAction:(NSString *)action status:(BOOL)isActivated {
+    BOOL shouldRecord = [_config[kSGConfigTrackingLog] boolValue];
+    if (!shouldRecord) return;
+
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    NSMutableArray *logs = [[ud arrayForKey:kSGUserDefaultsLogs] mutableCopy];
+    if (!logs) {
+        logs = [NSMutableArray array];
+    }
+    
+    NSDictionary *logEntry = @{
+        @"timestamp": @((long)([[NSDate date] timeIntervalSince1970] * 1000)),
+        @"action": action ?: @"unknown",
+        @"isActivated": @(isActivated),
+        @"method": _currentMethod ?: @""
+    };
+    
+    [logs addObject:logEntry];
+    
+    // Limit logs to last 1000
+    if (logs.count > 1000) {
+        [logs removeObjectAtIndex:0];
+    }
+    
+    [ud setObject:logs forKey:kSGUserDefaultsLogs];
+    [ud synchronize];
+}
+
+- (void)getScreenGuardLogs:(NSNumber *)maxCount callback:(void (^)(NSArray *logs))callback {
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    NSArray *logs = [ud arrayForKey:kSGUserDefaultsLogs];
+    
+    if (!logs) {
+        if (callback) {
+            callback(@[]);
+        }
+        return;
+    }
+
+    NSInteger count = [maxCount integerValue];
+    if (count > 0 && count < logs.count) {
+        NSUInteger loc = logs.count - count;
+        NSRange range = NSMakeRange(loc, count);
+        NSArray *subArray = [logs subarrayWithRange:range];
+        if (callback) {
+            callback(subArray);
+        }
+    } else {
+        if (count <= 0) {
+             if (callback) {
+                callback(@[]);
+            }
+        } else {
+             if (callback) {
+                callback(logs);
+            }
+        }
+    }
+}
+
+#pragma mark - Helpers
+
+- (UIColor *)colorFromHexString:(NSString *)hexString {
+    if (hexString.length != 7 || ![hexString hasPrefix:@"#"]) {
+        return [UIColor whiteColor];
+    }
+    unsigned rgbValue = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:hexString];
+    [scanner setScanLocation:1];
+    if (![scanner scanHexInt:&rgbValue]) {
+        return [UIColor whiteColor];
+    }
+    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0
+                           green:((rgbValue & 0xFF00) >> 8)/255.0
+                            blue:(rgbValue & 0xFF)/255.0
+                           alpha:1.0];
+}
+
+- (UIImage *)convertViewToImage:(UIView *)view {
+    UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.opaque, 0.0);
+    [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}
+
+- (void)setupImageViewAlignment:(ScreenGuardImageAlignment)alignment {
+    [_scrollView addSubview:_imageView];
+    
+    CGFloat scrollViewWidth = _scrollView.bounds.size.width;
+    CGFloat scrollViewHeight = _scrollView.bounds.size.height;
+    CGFloat imageViewWidth = _imageView.bounds.size.width;
+    CGFloat imageViewHeight = _imageView.bounds.size.height;
+    
+    CGPoint imageViewOrigin;
+    
+    switch (alignment) {
+        case AlignmentTopLeft:
+            imageViewOrigin = CGPointMake(0, 0);
+            break;
+        case AlignmentTopCenter:
+            imageViewOrigin = CGPointMake((scrollViewWidth - imageViewWidth) / 2, 0);
+            break;
+        case AlignmentTopRight:
+            imageViewOrigin = CGPointMake(scrollViewWidth - imageViewWidth, 0);
+            break;
+        case AlignmentCenterLeft:
+            imageViewOrigin = CGPointMake(0, (scrollViewHeight - imageViewHeight) / 2);
+            break;
+        case AlignmentCenter:
+            imageViewOrigin = CGPointMake((scrollViewWidth - imageViewWidth) / 2, (scrollViewHeight - imageViewHeight) / 2);
+            break;
+        case AlignmentCenterRight:
+            imageViewOrigin = CGPointMake(scrollViewWidth - imageViewWidth, (scrollViewHeight - imageViewHeight) / 2);
+            break;
+        case AlignmentBottomLeft:
+            imageViewOrigin = CGPointMake(0, scrollViewHeight - imageViewHeight);
+            break;
+        case AlignmentBottomCenter:
+            imageViewOrigin = CGPointMake((scrollViewWidth - imageViewWidth) / 2, scrollViewHeight - imageViewHeight);
+            break;
+        case AlignmentBottomRight:
+            imageViewOrigin = CGPointMake(scrollViewWidth - imageViewWidth, scrollViewHeight - imageViewHeight);
+            break;
+        default:
+            imageViewOrigin = CGPointZero;
+            break;
+    }
+    
+    _imageView.frame = CGRectMake(imageViewOrigin.x, imageViewOrigin.y, imageViewWidth, imageViewHeight);
+    
+    CGFloat contentWidth = MAX(scrollViewWidth, imageViewOrigin.x + imageViewWidth);
+    CGFloat contentHeight = MAX(scrollViewHeight, imageViewOrigin.y + imageViewHeight);
+    _scrollView.contentSize = CGSizeMake(contentWidth, contentHeight);
+}
+
+- (void)setImageViewBasedOnPosition:(double)top left:(double)left bottom:(double)bottom right:(double)right {
+    [_scrollView addSubview:_imageView];
+    
+    CGFloat scrollViewWidth = _scrollView.bounds.size.width;
+    CGFloat scrollViewHeight = _scrollView.bounds.size.height;
+    CGFloat imageViewWidth = _imageView.bounds.size.width;
+    CGFloat imageViewHeight = _imageView.bounds.size.height;
+    
+    CGFloat centerX = scrollViewWidth / 2;
+    CGFloat centerY = scrollViewHeight / 2;
+    
+    CGFloat imageViewX = centerX + left - right - (imageViewWidth / 2);
+    CGFloat imageViewY = centerY + top - bottom - (imageViewHeight / 2);
+    
+    _imageView.frame = CGRectMake(imageViewX, imageViewY, imageViewWidth, imageViewHeight);
+    
+    CGFloat contentWidth = MAX(scrollViewWidth, fabs(left - right) + imageViewWidth);
+    CGFloat contentHeight = MAX(scrollViewHeight, fabs(top - bottom) + imageViewHeight);
+    _scrollView.contentSize = CGSizeMake(contentWidth, contentHeight);
+}
+
+@end
+
