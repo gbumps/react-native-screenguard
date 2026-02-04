@@ -13,7 +13,7 @@
 <meta name="screenguard, detector, screen-capture, capture, prevent, screenshot, capture-protection, screenshot-prevent, screenshot-blocker, screenshot-detector, screenshot-protection, screenshot-prevention, screenshot-blocking, screenshot-block, screenshot-blocking-ios, screenshot-blocking-android, screenshot-block-ios, screenshot-block-android, screenshot-blocker-ios, screenshot-blocker-android, react, native, ios, android">
 <meta name="description" content="A Native library for blocking screenshot for react-native developer, with background screenshot customizable.">
 <script src="https://www.statcounter.com/counter/counter.js" async></script><link rel="stylesheet" href="/react-native-screenguard/zh-Hans/assets/css/styles.2c6d37ad.css">
-<script src="/react-native-screenguard/zh-Hans/assets/js/runtime~main.bd914a69.js" defer="defer"></script>
+<script src="/react-native-screenguard/zh-Hans/assets/js/runtime~main.574a5f0e.js" defer="defer"></script>
 <script src="/react-native-screenguard/zh-Hans/assets/js/main.aed2a304.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -31,27 +31,22 @@
 <li><strong>自定义图片</strong> — 在截屏时显示您自己的图片、徽标或水印。</li>
 </ul>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="-截屏检测">📸 截屏检测<a class="hash-link" aria-label="📸 截屏检测的直接链接" title="📸 截屏检测的直接链接" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#-截屏检测">​</a></h3>
-<p>精确了解用户何时对您的应用进行截屏。该库提供实时事件检测，在截获屏幕快照时立即触发：</p>
+<p>提供实时事件检测，在截获屏幕快照时立即触发：</p>
 <ul>
-<li><strong>即时响应</strong> — 在截屏时执行自定义逻辑，如显示警告、记录事件等。</li>
+<li><strong>即时响应</strong> — 在截屏时执行自定义逻辑。</li>
 <li><strong>访问截屏元数据</strong> — 获取设备上截获的屏幕快照文件路径，用于您自己的用途。</li>
-<li><strong>控制事件频率</strong> — 限制截屏事件的数量。</li>
-<li><strong>追踪状态</strong> — 了解截屏事件发生时 Screenguard 是否处于激活状态。</li>
+<li><strong>控制截屏事件</strong> — 限制截屏事件的数量。</li>
+<li><strong>追踪状态</strong> — 检查截屏事件发生时 ScreenGuard 是否处于激活状态。</li>
 </ul>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="-录屏检测">🎥 录屏检测<a class="hash-link" aria-label="🎥 录屏检测的直接链接" title="🎥 录屏检测的直接链接" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#-录屏检测">​</a></h3>
 <p>实时监控录屏活动。</p>
 <ul>
 <li><strong>检测录屏状态</strong> — 了解设备何时开始和结束录屏。</li>
 <li><strong>响应录屏尝试</strong> — 在检测到录屏时执行自定义操作。</li>
-<li><strong>跨平台 支持</strong> — 适用于 <strong>iOS 13+</strong> 和 <strong>Android 15+ (API 35+)</strong>。</li>
+<li><strong>跨平台支持</strong> — 适用于 <strong>iOS 13+</strong> 和 <strong>Android 15+ (API 35+)</strong>。</li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="-活动日志-activity-logging">📝 活动日志 (Activity Logging)<a class="hash-link" aria-label="📝 活动日志 (Activity Logging)的直接链接" title="📝 活动日志 (Activity Logging)的直接链接" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#-活动日志-activity-logging">​</a></h3>
-<p>为编辑或调试提供全面的日志记录。该库会自动追踪所有与 ScreenGuard 相关的事件，通常用于：</p>
-<ul>
-<li><strong>调试问题</strong> — 在开发过程中快速识别屏幕防护何时以及如何被激活或停用。</li>
-<li><strong>审核截取尝试</strong> — 保留所有截屏和录屏事件的记录，用于安全审计或分析。</li>
-<li><strong>检索事件历史</strong> — 以编程方式访问 ScreenGuard 活动的完整日志，用于自定义报告或监控。</li>
-</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="-活动日志">📝 活动日志<a class="hash-link" aria-label="📝 活动日志的直接链接" title="📝 活动日志的直接链接" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#-活动日志">​</a></h3>
+<p>为编辑或调试提供全面的日志记录。</p>
 <hr>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="工作原理">工作原理<a class="hash-link" aria-label="工作原理的直接链接" title="工作原理的直接链接" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#工作原理">​</a></h2>
 <p>React Native ScreenGuard 桥接了原生代码（iOS Objective-C, Android Java）和 JavaScript，在 Android 上使用 <code>FLAG_SECURE</code>，在 iOS 上使用可自定义的 <code>UITextField</code>。</p>
@@ -82,6 +77,6 @@
 <li><code>Cocoapods</code> &gt;= 1.1.4</li>
 <li><code>iOS 最低部署目标</code> &gt;= 13</li>
 <li><code>typescript</code> &gt;= 4.0.0</li>
-</ul></div></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="文件选项卡"><a class="pagination-nav__link pagination-nav__link--next" href="/react-native-screenguard/zh-Hans/docs/getting-started/install"><div class="pagination-nav__sublabel">下一页</div><div class="pagination-nav__label">安装</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#-核心特性">✨ 核心特性</a><ul><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#️-截屏与录屏防护">🛡️ 截屏与录屏防护</a></li><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#-截屏检测">📸 截屏检测</a></li><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#-录屏检测">🎥 录屏检测</a></li><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#-活动日志-activity-logging">📝 活动日志 (Activity Logging)</a></li></ul></li><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#工作原理">工作原理</a><ul><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#前置要求">前置要求</a></li><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#最低要求">最低要求</a></li></ul></li></ul></div></div></div></div></main></div></div></div></div>
+</ul></div></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="文件选项卡"><a class="pagination-nav__link pagination-nav__link--next" href="/react-native-screenguard/zh-Hans/docs/getting-started/install"><div class="pagination-nav__sublabel">下一页</div><div class="pagination-nav__label">安装</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#-核心特性">✨ 核心特性</a><ul><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#️-截屏与录屏防护">🛡️ 截屏与录屏防护</a></li><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#-截屏检测">📸 截屏检测</a></li><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#-录屏检测">🎥 录屏检测</a></li><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#-活动日志">📝 活动日志</a></li></ul></li><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#工作原理">工作原理</a><ul><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#前置要求">前置要求</a></li><li><a class="table-of-contents__link toc-highlight" href="/react-native-screenguard/zh-Hans/docs/getting-started/get-started#最低要求">最低要求</a></li></ul></li></ul></div></div></div></div></main></div></div></div></div>
 </body>
 </html>
