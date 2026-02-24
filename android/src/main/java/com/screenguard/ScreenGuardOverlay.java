@@ -46,7 +46,6 @@ public class ScreenGuardOverlay {
     private boolean isActivated = false;
 
     private static final int COLOR_TRANS = 0x00000000;
-    private static final int OVERLAY_VIEW_ID = View.generateViewId();
 
     private ScreenGuardOverlay() {
         handler = new Handler(Looper.getMainLooper());
@@ -77,15 +76,22 @@ public class ScreenGuardOverlay {
 
     private void createOverlayView(Activity activity) {
         ViewGroup decorView = getDecorView(activity);
-        View existingOverlay = decorView.findViewById(OVERLAY_VIEW_ID);
-        if (existingOverlay != null) {
-            overlayView = (FrameLayout) existingOverlay;
-            imageView = (ImageView) overlayView.getChildAt(0);
+
+        if (overlayView != null && overlayView.getParent() == decorView) {
+            if (imageView != null && imageView.getParent() == overlayView) {
+                return;
+            }
+            overlayView.removeAllViews();
+            imageView = createImageView(activity);
+            overlayView.addView(imageView);
             return;
         }
 
+        if (overlayView != null && overlayView.getParent() != null) {
+            ((ViewGroup) overlayView.getParent()).removeView(overlayView);
+        }
+
         overlayView = new FrameLayout(activity);
-        overlayView.setId(OVERLAY_VIEW_ID);
 
         overlayView.setClickable(false);
         overlayView.setFocusable(false);
@@ -95,20 +101,24 @@ public class ScreenGuardOverlay {
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT);
 
-        imageView = new ImageView(activity);
-        imageView.setLayoutParams(new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT));
-        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-        imageView.setClickable(false);
-        imageView.setFocusable(false);
+        imageView = createImageView(activity);
 
         overlayView.addView(imageView);
         overlayView.setBackgroundColor(COLOR_TRANS);
         overlayView.setVisibility(View.GONE);
 
         decorView.addView(overlayView, overlayParams);
+    }
+
+    private ImageView createImageView(Activity activity) {
+        ImageView iv = new ImageView(activity);
+        iv.setLayoutParams(new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT));
+        iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        iv.setClickable(false);
+        iv.setFocusable(false);
+        return iv;
     }
 
     public void prepareColor(Activity activity, String hexColor, int timeAfterResume) {
