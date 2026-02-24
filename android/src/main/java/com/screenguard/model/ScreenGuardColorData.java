@@ -9,15 +9,13 @@ import com.screenguard.enums.ScreenGuardActionEnum;
 
 public class ScreenGuardColorData extends ScreenGuardData implements Parcelable {
 
-    public ScreenGuardColorData(String color, int timeAfterResume) {
+    public ScreenGuardColorData(String color) {
        this.backgroundColor = color;
-       this.timeAfterResume = timeAfterResume;
        this.action = ScreenGuardActionEnum.color;
     }
 
     protected ScreenGuardColorData(Parcel in) {
         backgroundColor = in.readString();
-        timeAfterResume = in.readInt();
         action = ScreenGuardActionEnum.color;
     }
 
@@ -41,6 +39,5 @@ public class ScreenGuardColorData extends ScreenGuardData implements Parcelable 
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeString(backgroundColor);
-        parcel.writeInt(timeAfterResume);
     }
 }
