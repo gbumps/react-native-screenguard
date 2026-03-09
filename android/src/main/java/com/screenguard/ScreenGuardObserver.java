@@ -24,7 +24,9 @@ public class ScreenGuardObserver extends ContentObserver {
     private int mLimitCount = 0;
     private int mCurrentCount = 0;
     private long mRegistrationTime = 0;
+    private long mLastChangeTime = 0;
     private static final long INITIAL_IGNORE_DURATION_MS = 500;
+    private static final long DEBOUNCE_DURATION_MS = 1000;
 
     public ScreenGuardObserver(
             ReactApplicationContext context,
@@ -63,6 +65,12 @@ public class ScreenGuardObserver extends ContentObserver {
         if (mRegistrationTime > 0 && System.currentTimeMillis() - mRegistrationTime < INITIAL_IGNORE_DURATION_MS) {
             return;
         }
+
+        long now = System.currentTimeMillis();
+        if (now - mLastChangeTime < DEBOUNCE_DURATION_MS) {
+            return;
+        }
+        mLastChangeTime = now;
 
         mCurrentCount++;
         if (mLimitCount > 0 && mCurrentCount < mLimitCount) {
