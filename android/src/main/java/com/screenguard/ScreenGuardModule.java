@@ -197,12 +197,14 @@ public class ScreenGuardModule implements LifecycleEventListener {
 
                         logAction(ScreenGuardConstants.ACTION_SCREENSHOT_TAKEN, true);
 
-                        Activity currentActivity = currentReactContext.getCurrentActivity();
-                        if (currentActivity != null) {
-                            currentActivity.runOnUiThread(() -> {
-                                Toast.makeText(currentReactContext, ScreenGuardConstants.MSG_SCREENSHOT_BLOCKED,
-                                        Toast.LENGTH_SHORT).show();
-                            });
+                        if (ScreenGuardOverlay.getInstance().isActivated()) {
+                            Activity currentActivity = currentReactContext.getCurrentActivity();
+                            if (currentActivity != null) {
+                                currentActivity.runOnUiThread(() -> {
+                                    Toast.makeText(currentReactContext, ScreenGuardConstants.MSG_SCREENSHOT_BLOCKED,
+                                            Toast.LENGTH_SHORT).show();
+                                });
+                            }
                         }
                     });
         }
