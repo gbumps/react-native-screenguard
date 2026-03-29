@@ -40,3 +40,6 @@ Web docs repo (for contribution) [here](https://github.com/gbumps/rn-screenguard
   * [License](#license)
 <!--te-->
 
+
+
+Made with [react-native-builder-bob](https://github.com/callstack/react-native-builder-bob)
