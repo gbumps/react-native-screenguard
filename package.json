@@ -1,7 +1,7 @@
 {
   "name": "react-native-screenguard",
-  "version": "2.0.1",
-  "description": "A Native screenshot blocking library for React-Native developer, with background customizable after captured. Screenshot detector are also supported.",
+  "version": "2.0.0-beta5",
+  "description": "A React Native library for preventing your app from screenshots and screen recordings, with powerful event detection capabilities.",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
   "types": "lib/typescript/index.d.ts",
@@ -34,13 +34,20 @@
     "@types/react": "17.0.21"
   },
   "peerDependencies": {
-    "react": ">=17 <19",
-    "react-native": ">=0.68.0"
+    "expo": ">=36.0.0",
+    "react": ">=16.8.3",
+    "react-native": ">=0.59.0"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">= 16.0.0"
   },
   "scripts": {
+    "postinstall": "node scripts/postinstall.js",
     "test": "jest",
     "pre": "npm pack --dry-run",
     "pub": "npm publish",
@@ -104,6 +111,7 @@
     "android",
     "ios",
     "cpp",
+    "scripts",
     "app.plugin.js",
     "*.podspec",
     "!lib/typescript/example",
