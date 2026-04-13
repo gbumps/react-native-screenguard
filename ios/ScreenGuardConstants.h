@@ -27,6 +27,7 @@ extern NSString *const kSGEventScreenRecording;
 extern NSString *const kSGMethodBlur;
 extern NSString *const kSGMethodImage;
 extern NSString *const kSGMethodColor;
+extern NSString *const kSGMethodPartially;
 
 // User Defaults
 extern NSString *const kSGUserDefaultsConfig;
@@ -39,5 +40,6 @@ extern NSString *const kSGErrorActivateShieldBlur;
 extern NSString *const kSGErrorActivateShieldImage;
 extern NSString *const kSGErrorDeactivateShield;
 extern NSString *const kSGErrorActivateShieldNoEffect;
+extern NSString *const kSGErrorActivateShieldPartially;
 extern NSString *const kSGErrorInvalidParams;
 extern NSString *const kSGErrorNotInitialized;

@@ -136,6 +136,24 @@ export interface ScreenGuardColorData {
   backgroundColor: string;
 }
 
+export interface ScreenGuardPartiallyData {
+  /**
+   * Reference to a mounted React Native component whose region should be masked.
+   *
+   * The component's position and dimensions are measured at call time via
+   * measureInWindow().
+   *
+   * @required
+   */
+  viewRef: React.RefObject<any>;
+  /**
+   * Hex color to fill the masked region.
+   *
+   * @defaultValue `#000000` (BLACK)
+   */
+  backgroundColor?: string;
+}
+
 export interface ScreenGuardScreenShotPathDataObject {
   /**
    * Path of the image after captured

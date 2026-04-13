@@ -1,6 +1,6 @@
 {
   "name": "react-native-screenguard",
-  "version": "2.0.0-beta5",
+  "version": "2.0.2",
   "description": "A React Native library for preventing your app from screenshots and screen recordings, with powerful event detection capabilities.",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",

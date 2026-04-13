@@ -61,6 +61,13 @@ class ScreenGuard extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void activateShieldPartially(ReadableMap data, Promise promise) {
+        delegate.activateShieldPartially(data);
+        Log.w("ScreenGuard", "activateShieldPartially is only available on iOS. Android is not supported yet.");
+        promise.resolve(null);
+    }
+
+    @ReactMethod
     public void activateShieldWithoutEffect(Promise promise) {
         try {
             delegate.activateShieldWithoutEffect();

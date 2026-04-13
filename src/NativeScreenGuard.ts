@@ -35,6 +35,13 @@ export interface Spec extends TurboModule {
     right?: number;
     backgroundColor: string;
   }) => Promise<void>;
+  activateShieldPartially: (data: {
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+    backgroundColor?: string;
+  }) => Promise<void>;
   deactivateShield: () => Promise<void>;
   getScreenGuardLogs: (maxCount: number) => Promise<
     Array<{

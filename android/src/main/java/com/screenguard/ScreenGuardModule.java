@@ -321,6 +321,10 @@ public class ScreenGuardModule implements LifecycleEventListener {
         logAction(ScreenGuardConstants.ACTION_ACTIVATE_SHIELD, true);
     }
 
+    public void activateShieldPartially(ReadableMap data) {
+        Log.w("ScreenGuard", "activateShieldPartially is only available on iOS. Android is not supported yet.");
+    }
+
     public void activateShieldWithoutEffect() {
         try {
             Activity currentActivity = currentReactContext.getCurrentActivity();

@@ -27,6 +27,7 @@ NSString *const kSGEventScreenRecording = @"onScreenRecordingCaptured";
 NSString *const kSGMethodBlur = @"blur";
 NSString *const kSGMethodImage = @"image";
 NSString *const kSGMethodColor = @"color";
+NSString *const kSGMethodPartially = @"partially";
 
 // User Defaults
 NSString *const kSGUserDefaultsConfig = @"com.screenguard";
@@ -39,5 +40,6 @@ NSString *const kSGErrorActivateShieldBlur = @"activateShieldWithBlurView";
 NSString *const kSGErrorActivateShieldImage = @"activateShieldWithImage";
 NSString *const kSGErrorDeactivateShield = @"deactivateShield";
 NSString *const kSGErrorActivateShieldNoEffect = @"activateShieldWithoutEffect";
+NSString *const kSGErrorActivateShieldPartially = @"activateShieldPartially";
 NSString *const kSGErrorInvalidParams = @"SG_ERROR_INVALID_PARAMS";
 NSString *const kSGErrorNotInitialized = @"SG_ERROR_NOT_INITIALIZED";
