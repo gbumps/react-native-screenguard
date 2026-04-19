@@ -1,6 +1,6 @@
 <p align="center">
   <h1>React Native Screenguard</h1>
-  <p>A Native library for blocking screenshot for react-native developer, with background screenshot customizable.</p>
+  <p>A React Native library for preventing your app from screenshots and screen recordings, with powerful event detection capabilities.</p>
   <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/styled_with-prettier-ff69b4.svg"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
   <a href="https://aleen42.github.io/badges/src/eslint.svg"><img src="https://aleen42.github.io/badges/src/eslint.svg"></a>
