@@ -51,6 +51,13 @@ class ScreenGuard extends NativeScreenGuardSpec {
     }
 
     @Override
+    public void activateShieldPartially(ReadableMap data, Promise promise) {
+        delegate.activateShieldPartially(data);
+        Log.w("ScreenGuard", "activateShieldPartially is only available on iOS. Android is not supported yet.");
+        promise.resolve(null);
+    }
+
+    @Override
     public void activateShieldWithoutEffect(Promise promise) {
         try {
             delegate.activateShieldWithoutEffect();

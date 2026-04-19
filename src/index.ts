@@ -287,6 +287,41 @@ export default {
 
 
   /**
+   * (iOS only) Activate screenshot blocking on a specific view region (iOS 13+)
+   *
+   * Measures the current position of the view referenced by `viewRef` via
+   * measureInWindow() and overlays that region with `backgroundColor` in
+   * screenshots / screen recordings.
+   *
+   * Note: the mask is captured once at call time. If the view moves after
+   * this call, re-invoke to update the masked region.
+   *
+   * throws error if ScreenGuard is not initialized
+   * @param data ScreenGuardPartiallyData object containing viewRef and optional backgroundColor
+   * @version v2.1.0+
+   */
+  async registerScreenguardPartially(data: ScreenGuardData.ScreenGuardPartiallyData): Promise<void | string> {
+    if (!_isInitialized) {
+      return _logError(
+        'ScreenGuard is not initialized. Please call initSettings() first!'
+      );
+    }
+
+    const { viewRef, backgroundColor = '#000000' } = data;
+
+    if (!viewRef || !viewRef.current) {
+      return _logError(
+        'viewRef is required and must point to a mounted component!'
+      );
+    }
+
+    viewRef.current.measureInWindow((x: number, y: number, width: number, height: number) => {
+      NativeScreenGuard?.activateShieldPartially({ top: y, left: x, width, height, backgroundColor });
+    });
+  },
+
+
+  /**
    * Deactivate screenguard
    * Clear all screen protector and event listening
    * throws error if ScreenGuard is not initialized

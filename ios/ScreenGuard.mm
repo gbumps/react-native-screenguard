@@ -88,6 +88,28 @@ RCT_EXPORT_METHOD(activateShieldWithBlurView: (nonnull NSDictionary *) data reso
     });
 }
 
+RCT_EXPORT_METHOD(activateShieldPartially: (nonnull NSDictionary *)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    NSNumber *top = data[@"top"];
+    NSNumber *left = data[@"left"];
+    NSNumber *width = data[@"width"];
+    NSNumber *height = data[@"height"];
+    NSString *backgroundColor = data[@"backgroundColor"] ?: @"#000000";
+    if (!top || !left || !width || !height) {
+        NSError *error = [NSError errorWithDomain:kSGErrorDomain code:-1 userInfo:nil];
+        reject(kSGErrorInvalidParams, @"top, left, width and height are required", error);
+        return;
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @try {
+            [[ScreenGuardImpl shared] secureViewPartially:top withLeft:left withWidth:width withHeight:height withBackgroundColor:backgroundColor];
+            resolve(nil);
+        } @catch (NSException *e) {
+            NSError *error = [NSError errorWithDomain:kSGErrorDomain code:-1 userInfo:nil];
+            reject(kSGErrorActivateShieldPartially, e.reason, error);
+        }
+    });
+}
+
 RCT_EXPORT_METHOD(activateShieldWithImage: (nonnull NSDictionary *)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     if (![data isKindOfClass:[NSDictionary class]]) {
         return;
@@ -237,6 +259,23 @@ RCT_EXPORT_METHOD(getScreenGuardLogs: (nonnull NSNumber *)maxCount resolve:(RCTP
         reject(kSGErrorActivateShieldImage, e.reason, error);
     }
         
+}
+
+- (void)activateShieldPartially:(JS::NativeScreenGuard::SpecActivateShieldPartiallyData &)data resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    NSNumber *top = @(data.top());
+    NSNumber *left = @(data.left());
+    NSNumber *width = @(data.width());
+    NSNumber *height = @(data.height());
+    NSString *backgroundColor = data.backgroundColor();
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @try {
+            [[ScreenGuardImpl shared] secureViewPartially:top withLeft:left withWidth:width withHeight:height withBackgroundColor:backgroundColor];
+            resolve(nil);
+        } @catch (NSException *e) {
+            NSError *error = [NSError errorWithDomain:kSGErrorDomain code:-1 userInfo:nil];
+            reject(kSGErrorActivateShieldPartially, e.reason, error);
+        }
+    });
 }
 
 - (void)deactivateShield:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {

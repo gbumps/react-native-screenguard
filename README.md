@@ -30,6 +30,7 @@ Web docs repo (for contribution) [here](https://github.com/gbumps/rn-screenguard
      * [registerScreenRecordingEventListener](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/register-screen-recording-event-listener)(removed in v2.0.0)
      * [registerWithBlurView](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/register-with-blurview)
      * [registerWithImage](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/register-with-image)
+     * [registerScreenguardPartially](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/register-screenguard-partially)
      * [unregister](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/unregister)
      * [getScreenGuardLogs](https://gbumps.github.io/react-native-screenguard/docs/usages-and-apis/get-screen-guard-logs)
   * [Hooks](#hooks)

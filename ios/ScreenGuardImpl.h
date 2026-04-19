@@ -32,6 +32,12 @@ typedef NS_ENUM(NSInteger, ScreenGuardImageAlignment) {
                        withAlignment:(ScreenGuardImageAlignment)alignment
                  withBackgroundColor:(NSString *)backgroundColor;
 
+- (void)secureViewPartially:(NSNumber *)top
+                  withLeft:(NSNumber *)left
+                 withWidth:(NSNumber *)width
+                withHeight:(NSNumber *)height
+       withBackgroundColor:(NSString *)backgroundColor;
+
 - (void)secureViewWithImagePosition:(NSDictionary *)source
                   withDefaultSource:(NSDictionary *)defaultSource
                           withWidth:(NSNumber *)width

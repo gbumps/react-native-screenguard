@@ -263,6 +263,56 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     }
 }
 
+- (void)secureViewPartially:(NSNumber *)top
+                  withLeft:(NSNumber *)left
+                 withWidth:(NSNumber *)width
+                withHeight:(NSNumber *)height
+       withBackgroundColor:(NSString *)backgroundColor {
+    if (_config == nil) {
+        RCTLogWarn(@"ScreenGuard: initSettings must be called before registerScreenguardPartially");
+        return;
+    }
+    if (@available(iOS 13.0, *)) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self->_textField == nil) {
+                [self initTextField];
+            }
+            if (self->_textField) {
+                [self->_textField setBackgroundColor:[UIColor clearColor]];
+                UIViewController *presentedViewController = RCTPresentedViewController();
+                if (presentedViewController) {
+                    UIImage *screenshot = [self convertViewToImage:presentedViewController.view.superview];
+
+                    UIGraphicsBeginImageContextWithOptions(screenshot.size, YES, screenshot.scale);
+                    [screenshot drawAtPoint:CGPointZero];
+
+                    CGRect maskRect = CGRectMake(
+                        [left doubleValue] * screenshot.scale,
+                        [top doubleValue] * screenshot.scale,
+                        [width doubleValue] * screenshot.scale,
+                        [height doubleValue] * screenshot.scale
+                    );
+                    CGRect maskRectPt = CGRectMake(
+                        [left doubleValue],
+                        [top doubleValue],
+                        [width doubleValue],
+                        [height doubleValue]
+                    );
+                    [[self colorFromHexString:backgroundColor] setFill];
+                    UIRectFill(maskRectPt);
+
+                    UIImage *maskedImage = UIGraphicsGetImageFromCurrentImageContext();
+                    UIGraphicsEndImageContext();
+
+                    [self->_textField setBackground:maskedImage];
+                }
+                self->_currentMethod = kSGMethodPartially;
+                [self applySecureState];
+            }
+        });
+    }
+}
+
 - (void)secureViewWithBackgroundColor:(NSString *)color {
     if (_config == nil) {
         RCTLogWarn(@"ScreenGuard: initSettings must be called before register");
@@ -440,7 +490,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
         if (window == nil) {
             window = [UIApplication sharedApplication].keyWindow;
         }
-        
+
         if (self->_textField != nil) {
             if (self->_imageView != nil) {
                 [self->_imageView setImage: nil];
