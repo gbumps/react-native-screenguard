@@ -234,6 +234,23 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     if (window == nil) {
         window = [UIApplication sharedApplication].keyWindow;
     }
+    if (window == nil) {
+        if (@available(iOS 13.0, *)) {
+            for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+                if (![scene isKindOfClass:UIWindowScene.class] || scene.activationState == UISceneActivationStateUnattached) {
+                    continue;
+                }
+                UIWindowScene *windowScene = (UIWindowScene *)scene;
+                for (UIWindow *candidate in windowScene.windows) {
+                    if (!candidate.hidden && candidate.windowLevel == UIWindowLevelNormal) {
+                        window = candidate;
+                        break;
+                    }
+                }
+                if (window != nil) break;
+            }
+        }
+    }
     
     if (window == nil) {
         RCTLogInfo(@"ScreenGuard: Window not found, retrying...");
