@@ -237,6 +237,21 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     if (keyWindow == nil) {
         keyWindow = [UIApplication sharedApplication].keyWindow;
     }
+    if (keyWindow == nil) {
+        if (@available(iOS 13.0, *)) {
+            for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+                if (![scene isKindOfClass:UIWindowScene.class] || scene.activationState == UISceneActivationStateUnattached) {
+                    continue;
+                }
+                UIWindowScene *windowScene = (UIWindowScene *)scene;
+                for (UIWindow *window in windowScene.windows) {
+                    if (!window.hidden && window.windowLevel == UIWindowLevelNormal) {
+                        return window;
+                    }
+                }
+            }
+        }
+    }
     if (keyWindow == nil || keyWindow.windowLevel == UIWindowLevelNormal) {
         return keyWindow;
     }
