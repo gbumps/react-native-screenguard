@@ -28,6 +28,7 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 @property (nonatomic, strong) NSString *currentMethod;
 @property (nonatomic) NSInteger currentScreenshotCount;
 @property (nonatomic) CGRect secureFrame;
+@property (nonatomic, weak) UIWindow *securedWindow;
 
 @end
 
@@ -229,12 +230,44 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 
 #pragma mark - Secure View Methods
 
-- (void)initTextField {
-    UIWindow *window = RCTKeyWindow();
-    if (window == nil) {
-        window = [UIApplication sharedApplication].keyWindow;
+// The key window can be a transient overlay above the app, such as the expo-updates
+// reload screen during a JS reload, so prefer the normal level window of its scene.
+- (UIWindow *)windowToSecure {
+    UIWindow *keyWindow = RCTKeyWindow();
+    if (keyWindow == nil) {
+        keyWindow = [UIApplication sharedApplication].keyWindow;
     }
-    
+    if (keyWindow == nil) {
+        if (@available(iOS 13.0, *)) {
+            for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+                if (![scene isKindOfClass:UIWindowScene.class] || scene.activationState == UISceneActivationStateUnattached) {
+                    continue;
+                }
+                UIWindowScene *windowScene = (UIWindowScene *)scene;
+                for (UIWindow *window in windowScene.windows) {
+                    if (!window.hidden && window.windowLevel == UIWindowLevelNormal) {
+                        return window;
+                    }
+                }
+            }
+        }
+    }
+    if (keyWindow == nil || keyWindow.windowLevel == UIWindowLevelNormal) {
+        return keyWindow;
+    }
+    if (@available(iOS 13.0, *)) {
+        for (UIWindow *window in keyWindow.windowScene.windows) {
+            if (!window.hidden && window.windowLevel == UIWindowLevelNormal) {
+                return window;
+            }
+        }
+    }
+    return keyWindow;
+}
+
+- (void)initTextField {
+    UIWindow *window = [self windowToSecure];
+
     if (window == nil) {
         RCTLogInfo(@"ScreenGuard: Window not found, retrying...");
         return;
@@ -249,7 +282,8 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
     [_textField setUserInteractionEnabled: NO];
     
     [_textField setSecureTextEntry:YES];
-    
+    _securedWindow = window;
+
     [window makeKeyAndVisible];
     
     if (window.layer.superlayer) {
@@ -486,10 +520,9 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
 - (void)removeScreenShot {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self removeOverlay];
-        UIWindow *window = RCTKeyWindow();
-        if (window == nil) {
-            window = [UIApplication sharedApplication].keyWindow;
-        }
+        // Restore the window initTextField secured. The key window may have changed since,
+        // and restoring that one would leave the secured window detached and black.
+        UIWindow *window = self->_securedWindow;
 
         if (self->_textField != nil) {
             if (self->_imageView != nil) {
@@ -520,7 +553,8 @@ NSString * const SCREEN_RECORDING_EVT = @"onScreenRecordingCaptured";
             [self->_textField removeFromSuperview];
             
             self->_textField = nil;
-            
+            self->_securedWindow = nil;
+
             self->_currentMethod = @"";
             self->_secureFrame = CGRectZero;
             [self sendStateEvent:NO];
